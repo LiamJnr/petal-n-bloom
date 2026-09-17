@@ -4,6 +4,7 @@
  */
 
 import { PRODUCTS, getAllOccasions } from "../data/products.js";
+import { isInWishlist, toggleWishlist } from "./wishlist.js";
 import { ICONS } from "../lib/icons.js";
 
 let activeCategory = "all";
@@ -90,7 +91,7 @@ export function initShop({ onProductClick, onQuickAdd }) {
       }
     });
 
-    // 6. Event delegation on grid for card clicks & quick add
+    // 6. Event delegation on grid for card clicks & wishlist toggle
     grid?.addEventListener("click", (e) => {
       const card = e.target.closest(".product-card");
       if (!card) return;
@@ -98,17 +99,22 @@ export function initShop({ onProductClick, onQuickAdd }) {
       const slug = card.dataset.slug;
       if (!slug) return;
 
-      // Quick add button click
-      if (e.target.closest(".btn-card-add")) {
+      // Wishlist button click
+      const wishlistBtn = e.target.closest(".product-card-wishlist-btn");
+      if (wishlistBtn) {
         e.stopPropagation();
         e.preventDefault();
-        if (typeof quickAddHandler === "function") {
-          quickAddHandler(slug);
+        const product = PRODUCTS.find(p => p.slug === slug);
+        if (product) {
+          const saved = toggleWishlist(product);
+          wishlistBtn.classList.toggle("active", saved);
+          const svg = wishlistBtn.querySelector("svg");
+          if (svg) svg.setAttribute("fill", saved ? "currentColor" : "none");
         }
         return;
       }
 
-      // Default card click -> Open PDP
+      // Default card click or "VIEW OPTIONS" -> Open PDP
       if (typeof productClickHandler === "function") {
         e.preventDefault();
         productClickHandler(slug);
@@ -366,42 +372,38 @@ export function renderShopGrid() {
   // 4. Render Product Cards
   grid.innerHTML = items.map(product => {
     const minPrice = Math.min(...product.sizes.map(s => s.price));
-    const stemSummary = product.stems.map(s => s.name.split(" ")[0]).slice(0, 3).join(" • ");
+    const isSaved = isInWishlist(product.slug);
+    const ratingDisplay = (product.rating || 4.8).toFixed(1);
 
     return `
       <article class="product-card" data-slug="${product.slug}" tabindex="0" role="button" aria-label="View details for ${product.name}">
         <div class="product-card-media">
-          <img src="${product.images.primary}" alt="${product.name} bouquet" loading="lazy" />
-          ${product.tag ? `<span class="badge badge-cream product-card-tag">${product.tag}</span>` : ""}
-          <button class="product-quick-btn" type="button">Quick View ${ICONS.flower}</button>
+          <img src="${product.images.primary}" alt="${product.name}" loading="lazy" />
+          <button 
+            class="product-card-wishlist-btn ${isSaved ? 'active' : ''}" 
+            type="button" 
+            aria-label="${isSaved ? 'Remove from wishlist' : 'Add to wishlist'}" 
+            title="${isSaved ? 'Saved in wishlist' : 'Add to wishlist'}"
+            data-slug="${product.slug}"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+              <path d="M0 0h24v24H0z" fill="none" />
+              <path fill="currentColor" fill-rule="evenodd" d="M3.25 10.03c0-2.7 2.37-4.78 5.15-4.78c1.433 0 2.695.672 3.6 1.542c.905-.87 2.166-1.542 3.6-1.542c2.78 0 5.15 2.08 5.15 4.78c0 1.85-.789 3.476-1.882 4.852c-1.09 1.372-2.518 2.537-3.884 3.484c-.523.362-1.05.695-1.534.941c-.453.231-.975.443-1.45.443s-.996-.212-1.45-.443a14 14 0 0 1-1.533-.941c-1.367-.947-2.794-2.112-3.885-3.484C4.039 13.506 3.25 11.88 3.25 10.03M8.4 6.75c-2.08 0-3.65 1.53-3.65 3.28c0 1.403.596 2.71 1.556 3.918c.962 1.21 2.257 2.279 3.565 3.185c.495.343.96.634 1.36.838c.428.218.676.279.769.279s.341-.061.77-.28a12 12 0 0 0 1.36-.837c1.307-.906 2.602-1.974 3.564-3.185c.96-1.208 1.556-2.515 1.556-3.918c0-1.75-1.57-3.28-3.65-3.28c-1.194 0-2.31.713-3.005 1.619a.75.75 0 0 1-1.19 0C10.71 7.463 9.595 6.75 8.4 6.75" clip-rule="evenodd" />
+            </svg>
+          </button>
         </div>
 
         <div class="product-card-body">
-          <div class="product-card-meta">
-            <span class="product-card-category">${product.category} • ${product.occasion}</span>
-            <div class="stars" title="${product.rating} stars">
-              ${ICONS.star} <span>${product.rating}</span> <span class="review-count-small">(${product.reviewCount || 0})</span>
-            </div>
+          <div class="product-card-top-row">
+            <h3 class="product-card-title">${product.name}</h3>
+            <span class="product-card-rating">${ratingDisplay}</span>
           </div>
 
-          <h3 class="product-card-title">${product.name}</h3>
-          <p class="product-card-desc">${product.shortDescription}</p>
+          <div class="product-card-starting-label">STARTING FROM</div>
 
-          <div class="product-card-stems">
-            <span>${ICONS.leaf}</span> ${stemSummary}
-          </div>
-
-          <div class="product-card-footer">
-            <div class="product-card-price">
-              <span>Starting from</span>
-              <strong>$${minPrice}</strong>
-            </div>
-
-            <div class="product-card-actions">
-              <button class="btn-card-add" type="button" aria-label="Add ${product.name} to cart">
-                + Add
-              </button>
-            </div>
+          <div class="product-card-bottom-row">
+            <div class="product-card-price">$${minPrice}</div>
+            <span class="product-card-view-options">VIEW OPTIONS</span>
           </div>
         </div>
       </article>

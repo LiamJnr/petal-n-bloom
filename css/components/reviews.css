@@ -408,7 +408,7 @@
   color: var(--star-color);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 992px) {
   .reviews-dashboard {
     grid-template-columns: 1fr;
     gap: 28px;
@@ -420,6 +420,13 @@
     border: none;
   }
 
+  .reviews-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 680px) {
   .reviews-grid {
     grid-template-columns: 1fr;
   }

@@ -2,6 +2,9 @@
    PETAL & BLOOM
    ========================= */
 
+@import url('https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:ital,wght@0,100..900;1,100..900&display=swap');
+
 :root {
   --cream: #fbf7f2;
   --cream-dark: #f1e9df;
@@ -12,8 +15,8 @@
   --muted: #756c67;
   --white: #ffffff;
   --border: rgba(45, 41, 39, 0.12);
-  --serif: "Playfair Display", Georgia, serif;
-  --sans: "DM Sans", Arial, sans-serif;
+  --serif: "Hedvig Letters Serif", serif;
+  --sans: "Geist", Arial, sans-serif;
   --shadow: 0 18px 45px rgba(45, 41, 39, 0.08);
   --birthday-pink: rgb(156, 82, 82);
 }
@@ -165,9 +168,7 @@ h2 em {
   display: grid;
   place-items: center;
   overflow: hidden;
-  background: 
-    linear-gradient(rgba(251, 247, 242, 0.78), rgba(251, 247, 242, 0.78)),
-    url('images/hero.webp') no-repeat center center;
+  background: url('images/hero.webp') no-repeat center center;
   background-size: cover;
 }
 

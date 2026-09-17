@@ -1,5 +1,6 @@
 /**
  * Client Reviews & Testimonials Module
+ * Verified customer feedback, rating dashboard, and review cards grid
  */
 import { getReviewsForProduct, getReviewMetrics } from "../data/reviews.js";
 import { ICONS, renderStars } from "../lib/icons.js";
@@ -11,15 +12,41 @@ export function initReviews({ onReviewAdded } = {}) {
   renderReviews();
 }
 
+function renderReviewCard(rev) {
+  return `
+    <article class="review-card" data-rating="${rev.rating}">
+      <div class="review-card-header">
+        <div class="reviewer-profile">
+          <div class="reviewer-avatar">${rev.author.charAt(0)}</div>
+          <div>
+            <div class="reviewer-name">${rev.author}</div>
+            <div class="reviewer-verified">${ICONS.check} Verified Recipient</div>
+          </div>
+        </div>
+        <div class="review-card-stars">${renderStars(rev.rating)}</div>
+      </div>
+
+      <div class="review-product-tag">${rev.productName || "Bouquet"}</div>
+      <h4 class="review-card-title">${rev.title}</h4>
+      <p class="review-card-comment">"${rev.comment}"</p>
+
+      <div class="review-card-footer">
+        <span>${rev.location || "Local Delivery"}</span>
+        <span>${rev.date || "Recent"}</span>
+      </div>
+    </article>
+  `;
+}
+
 /**
- * Render the review metrics dashboard and review cards list
+ * Render the review metrics dashboard and 3 scroll-triggered horizontal carousel rows
  */
 export function renderReviews() {
   const container = document.getElementById("reviews-container");
   if (!container) return;
 
   const metrics = getReviewMetrics();
-  const reviews = getReviewsForProduct("all");
+  const allReviews = getReviewsForProduct("all");
 
   const totalReviews = metrics.count;
   const avg = metrics.average;
@@ -30,6 +57,9 @@ export function renderReviews() {
   const pct3 = totalReviews > 0 ? Math.round((metrics.distribution[3] / totalReviews) * 100) : 0;
   const pct2 = totalReviews > 0 ? Math.round((metrics.distribution[2] / totalReviews) * 100) : 0;
   const pct1 = totalReviews > 0 ? Math.round((metrics.distribution[1] / totalReviews) * 100) : 0;
+
+  // Display top reviews in the default grid
+  const displayedReviews = allReviews.slice(0, 6);
 
   container.innerHTML = `
     <!-- Reviews Summary Dashboard -->
@@ -91,31 +121,9 @@ export function renderReviews() {
       </div>
     </div>
 
-    <!-- Reviews Grid -->
+    <!-- Reviews Cards Grid -->
     <div class="reviews-grid" id="reviews-cards-grid">
-      ${reviews.map(rev => `
-        <article class="review-card" data-rating="${rev.rating}">
-          <div class="review-card-header">
-            <div class="reviewer-profile">
-              <div class="reviewer-avatar">${rev.author.charAt(0)}</div>
-              <div>
-                <div class="reviewer-name">${rev.author}</div>
-                <div class="reviewer-verified">${ICONS.check} Verified Recipient</div>
-              </div>
-            </div>
-            <div class="review-card-stars">${renderStars(rev.rating)}</div>
-          </div>
-
-          <div class="review-product-tag">${rev.productName || "Bouquet"}</div>
-          <h4 class="review-card-title">${rev.title}</h4>
-          <p class="review-card-comment">"${rev.comment}"</p>
-
-          <div class="review-card-footer">
-            <span>${rev.location || "Local Delivery"}</span>
-            <span>${rev.date || "Recent"}</span>
-          </div>
-        </article>
-      `).join("")}
+      ${displayedReviews.map(renderReviewCard).join("")}
     </div>
   `;
 }

@@ -273,6 +273,5 @@
 }
 
 .btn-wishlist.active svg {
-  fill: var(--pink-hover);
-  stroke: var(--pink-hover);
+  color: var(--pink-hover);
 }

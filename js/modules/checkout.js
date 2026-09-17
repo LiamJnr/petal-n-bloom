@@ -201,7 +201,6 @@ export function renderCheckoutPage() {
             <div class="checkout-header-intro">
               <h2>Recipient &amp; Delivery Logistics</h2>
               <p class="checkout-subtitle">Please provide the delivery destination and flower recipient details below.</p>
-              <p class="checkout-data-notice">Preview fields remain in this browser only. They are not saved or submitted; secure checkout uses the name and email entered above.</p>
             </div>
 
             <form id="recipient-order-form">
@@ -256,32 +255,6 @@ export function renderCheckoutPage() {
                   <div class="form-group">
                     <label for="rec-zip">Postal / ZIP Code *</label>
                     <input type="text" id="rec-zip" class="form-control" placeholder="e.g. T5N 1R5" required />
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label>Destination Location Type:</label>
-                  <div class="location-type-grid">
-                    <label class="location-type-label active" data-type="residential">
-                      <input type="radio" name="loc-type" value="residential" checked />
-                      <div class="location-type-icon">${homeSvg}</div>
-                      <span class="location-type-name">Residential</span>
-                    </label>
-                    <label class="location-type-label" data-type="business">
-                      <input type="radio" name="loc-type" value="business" />
-                      <div class="location-type-icon">${businessSvg}</div>
-                      <span class="location-type-name">Business</span>
-                    </label>
-                    <label class="location-type-label" data-type="hospital">
-                      <input type="radio" name="loc-type" value="hospital" />
-                      <div class="location-type-icon">${hospitalSvg}</div>
-                      <span class="location-type-name">Hospital</span>
-                    </label>
-                    <label class="location-type-label" data-type="venue">
-                      <input type="radio" name="loc-type" value="venue" />
-                      <div class="location-type-icon">${venueSvg}</div>
-                      <span class="location-type-name">Event Venue</span>
-                    </label>
                   </div>
                 </div>
 
@@ -411,26 +384,25 @@ export function renderCheckoutPage() {
                 <span>Total Due:</span>
                 <strong>$${subtotal.toFixed(2)}</strong>
               </div>
-              <div class="checkout-calc-row" style="margin-top: 6px; font-size: 0.85rem; color: var(--text-muted, #666);">
-                <span>Paystack Charge (GHS):</span>
-                <span style="font-weight: 600; color: var(--color-primary, #1b3d2f);">GH₵ ${(subtotal * 11.17).toFixed(2)}</span>
+              <div class="checkout-intl-prices" style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border, #e5e7eb); font-size: 0.84rem; color: var(--muted, #6b7280);">
+                <div style="font-weight: 600; color: var(--ink, #1e1e24); margin-bottom: 6px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em;">International Store Estimates</div>
+                <div class="checkout-calc-row" style="padding: 2px 0; font-size: 0.82rem;">
+                  <span>Canadian Dollars (CAD):</span>
+                  <span style="font-weight: 600; color: var(--ink, #1e1e24);">CA$ ${(subtotal * 1.36).toFixed(2)}</span>
+                </div>
+                <div class="checkout-calc-row" style="padding: 2px 0; font-size: 0.82rem;">
+                  <span>British Pounds (GBP):</span>
+                  <span style="font-weight: 600; color: var(--ink, #1e1e24);">£${(subtotal * 0.79).toFixed(2)}</span>
+                </div>
+                <div class="checkout-calc-row" style="padding: 2px 0; font-size: 0.82rem;">
+                  <span>Ghanaian Cedis (GHS):</span>
+                  <span style="font-weight: 600; color: var(--ink, #1e1e24);">GH₵ ${(subtotal * 11.17).toFixed(2)}</span>
+                </div>
               </div>
             </div>
 
             <!-- Trust & Freshness Badges -->
             <div class="checkout-trust-badges">
-              <div class="trust-badge-item">
-                <div class="trust-badge-icon">${leafSvg}</div>
-                <span><strong>7-Day Freshness Guarantee</strong></span>
-              </div>
-              <div class="trust-badge-item">
-                <div class="trust-badge-icon">${ribbonSvg}</div>
-                <span><strong>Artisan Hand-Tied Blooms</strong></span>
-              </div>
-              <div class="trust-badge-item">
-                <div class="trust-badge-icon">${cardSvg}</div>
-                <span><strong>Custom Letterpress Card Included</strong></span>
-              </div>
               <div class="trust-badge-item">
                 <div class="trust-badge-icon">${lockSvg}</div>
                 <span><strong>256-Bit SSL Encrypted Checkout</strong></span>
@@ -472,19 +444,6 @@ function bindCheckoutEvents() {
       document.querySelectorAll(".time-window-pill").forEach(p => p.classList.remove("active"));
       pill.classList.add("active");
       selectedTimeWindow = pill.dataset.window || "morning";
-    });
-  });
-
-  // Location type radio pills
-  document.querySelectorAll(".location-type-label").forEach(labelEl => {
-    labelEl.addEventListener("click", () => {
-      document.querySelectorAll(".location-type-label").forEach(l => l.classList.remove("active"));
-      labelEl.classList.add("active");
-      const radio = labelEl.querySelector("input[type='radio']");
-      if (radio) {
-        radio.checked = true;
-        selectedLocationType = radio.value;
-      }
     });
   });
 

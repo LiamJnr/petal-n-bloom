@@ -45,11 +45,14 @@
 .checkout-fieldset {
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: 32px;
+  padding: 28px 32px 32px;
   margin-bottom: 28px;
   background-color: #ffffff;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
   transition: border-color var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .checkout-fieldset:focus-within {
@@ -62,6 +65,7 @@
   font-weight: 700;
   color: var(--ink);
   padding: 0 12px;
+  margin-bottom: 2px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -85,17 +89,14 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
+  margin: 0;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-bottom: 18px;
-}
-
-.form-group:last-child {
-  margin-bottom: 0;
+  margin: 0;
 }
 
 .form-group label {

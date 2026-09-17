@@ -112,16 +112,6 @@ function updatePDPWishlistButton(slug, isSaved) {
     pdpWishlistBtn.classList.toggle("active", isSaved);
     pdpWishlistBtn.setAttribute("title", isSaved ? "Remove from wishlist" : "Add to wishlist");
     pdpWishlistBtn.setAttribute("aria-label", isSaved ? "Remove from wishlist" : "Add to wishlist");
-    
-    // Update SVG fill
-    const svgPath = pdpWishlistBtn.querySelector("path");
-    if (svgPath) {
-      if (isSaved) {
-        svgPath.setAttribute("fill", "currentColor");
-      } else {
-        svgPath.setAttribute("fill", "none");
-      }
-    }
   }
 }
 

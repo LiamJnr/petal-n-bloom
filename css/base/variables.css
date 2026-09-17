@@ -2,14 +2,17 @@
    DESIGN TOKENS & CSS VARIABLES — FLOWER SHOP THEME
    ========================================================================== */
 
+@import url('https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:ital,wght@0,100..900;1,100..900&display=swap');
+
 :root {
   /* Primary Violet & Magenta Brand Colors */
-  --primary: #5e1173;
-  --primary-hover: #4c0d5e;
-  --primary-dark: #3b074a;
-  --primary-light: #fbf5fd;
-  --primary-border: #e9d5ff;
-  --primary-subtle: #f3e8ff;
+  --primary: #9d007e;
+  --primary-hover: #820067;
+  --primary-dark: #63004f;
+  --primary-light: #fbf2fa;
+  --primary-border: #f0cceb;
+  --primary-subtle: #fcecf9;
 
   /* Accent Pink / Rose (Buy Now & Highlights) */
   --pink: #f06292;
@@ -37,11 +40,12 @@
   --gold: #f59e0b;
   --star-color: #f59e0b;
 
-  /* Typography */
-  --font-heading: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-body: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --serif: "Playfair Display", Georgia, serif;
-  --sans: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* Typography — Exclusively Geist & Hedvig Letters Serif */
+  --font-heading: "Hedvig Letters Serif", serif;
+  --font-body: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --serif: "Hedvig Letters Serif", serif;
+  --sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Radii */
   --radius-sm: 6px;

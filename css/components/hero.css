@@ -1,0 +1,162 @@
+/* ==========================================================================
+   HERO & HIGHLIGHTS COMPONENT — PURPLE THEME
+   ========================================================================== */
+
+.hero {
+  position: relative;
+  min-height: 560px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(248, 249, 250, 0.88), rgba(248, 249, 250, 0.92)),
+    url('../../images/hero.webp') no-repeat center center;
+  background-size: cover;
+  padding: 80px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.hero-content .eyebrow {
+  color: var(--primary);
+}
+
+.hero h1 {
+  font-family: var(--sans);
+  font-size: clamp(2.6rem, 5vw, 4.6rem);
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 20px;
+  line-height: 1.15;
+}
+
+.hero h1 em {
+  color: var(--primary);
+  font-style: normal;
+}
+
+.hero-copy {
+  max-width: 520px;
+  margin: 0 auto 32px;
+  color: var(--muted);
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* Ambient floating petal blobs */
+.hero-petal {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 70% 30% 70% 30%;
+  background: radial-gradient(circle, rgba(94, 17, 115, 0.12) 0%, rgba(94, 17, 115, 0.01) 70%);
+  filter: blur(16px);
+}
+
+.petal-one {
+  width: 280px;
+  height: 380px;
+  right: -60px;
+  bottom: -50px;
+  transform: rotate(35deg);
+}
+
+.petal-two {
+  width: 200px;
+  height: 290px;
+  left: -50px;
+  top: 60px;
+  transform: rotate(-35deg);
+}
+
+/* Trust Pillars Strip */
+.trust-strip {
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--border);
+  padding: 22px 0;
+}
+
+.trust-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-content: center;
+}
+
+.trust-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background-color: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.trust-icon svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+  display: block;
+}
+
+.trust-text h4 {
+  font-family: var(--sans);
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+  color: var(--ink);
+}
+
+.trust-text p {
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    min-height: 460px;
+    padding: 60px 0;
+  }
+
+  .trust-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .trust-item {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero h1 {
+    font-size: clamp(2rem, 9vw, 2.6rem);
+    line-height: 1.1;
+  }
+}

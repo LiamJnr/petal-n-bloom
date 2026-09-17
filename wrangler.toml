@@ -6,6 +6,6 @@ pages_build_output_dir = "."
 # the Cloudflare dashboard.
 [[d1_databases]]
 binding = "DB"
-database_name = "petal-and-bloom-db"
-database_id = "0ac9d555-d4f7-4587-a8c3-c03d2b443571"
+database_name = "petal-bloom-ps-db"
+database_id = "7c50d9f3-4e62-4831-97a5-5ee46bafbb39"
 preview_database_id = "DB"

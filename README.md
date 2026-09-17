@@ -34,7 +34,8 @@ continue to deploy the storefront as they do today.
 5. In Pages → Settings → Environment variables, add the values named in
    `.env.example` as encrypted secrets:
    - `PAYSTACK_SECRET_KEY` — your Paystack secret key (`sk_test_…` or `sk_live_…`)
-   - `PAYSTACK_CURRENCY` — set to `GHS` (or omit; defaults to `GHS`)
+   - `PAYSTACK_CURRENCY` — set to `GHS` (defaults to `GHS`)
+   - `PAYSTACK_EXCHANGE_RATE` — USD to GHS exchange rate (defaults to `11.17` if omitted)
 
 Do not add any of those secret values to GitHub.
 

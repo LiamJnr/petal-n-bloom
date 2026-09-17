@@ -411,6 +411,10 @@ export function renderCheckoutPage() {
                 <span>Total Due:</span>
                 <strong>$${subtotal.toFixed(2)}</strong>
               </div>
+              <div class="checkout-calc-row" style="margin-top: 6px; font-size: 0.85rem; color: var(--text-muted, #666);">
+                <span>Paystack Charge (GHS):</span>
+                <span style="font-weight: 600; color: var(--color-primary, #1b3d2f);">GH₵ ${(subtotal * 11.17).toFixed(2)}</span>
+              </div>
             </div>
 
             <!-- Trust & Freshness Badges -->

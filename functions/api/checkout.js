@@ -36,8 +36,10 @@ async function createCheckout({ request, env }) {
     return json({ error: error.message }, 400)
   }
 
-  const subtotalCents = items.reduce((sum, item) => sum + item.unit_price_cents * item.quantity, 0)
-  const totalPesewas = subtotalCents // prices are already stored as lowest currency unit
+  const exchangeRate = Number(env.PAYSTACK_EXCHANGE_RATE || 11.17)
+  const subtotalUsd = items.reduce((sum, item) => sum + item.unit_price_usd * item.quantity, 0)
+  const totalGhs = Number((subtotalUsd * exchangeRate).toFixed(2))
+  const totalPesewas = Math.round(totalGhs * 100)
   const orderId = crypto.randomUUID()
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
   const siteUrl = new URL(request.url).origin
@@ -63,9 +65,13 @@ async function createCheckout({ request, env }) {
     metadata: {
       order_ref: orderId,
       buyer_name: buyer.name,
+      amount_usd: `$${subtotalUsd.toFixed(2)}`,
+      exchange_rate: exchangeRate,
       cart_description: checkoutDescription(items),
       custom_fields: [
         { display_name: 'Order', variable_name: 'order_ref', value: orderId },
+        { display_name: 'Total USD', variable_name: 'total_usd', value: `$${subtotalUsd.toFixed(2)}` },
+        { display_name: 'Exchange Rate', variable_name: 'exchange_rate', value: `1 USD = ${exchangeRate} GHS` },
         { display_name: 'Items', variable_name: 'item_count', value: `${itemCount} item${itemCount === 1 ? '' : 's'}` },
       ],
     },
@@ -119,6 +125,7 @@ function validateItems(items) {
       size: { id: size.id, name: size.name },
       vase: { id: vase.id, name: vase.name },
       quantity,
+      unit_price_usd: size.price + vase.price,
       unit_price_cents: Math.round((size.price + vase.price) * 100),
     }
   })

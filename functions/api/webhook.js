@@ -19,9 +19,9 @@ export async function onRequestPost({ request, env }) {
     const psReference = event.data?.reference || null
     await env.DB.prepare(
       `UPDATE orders
-       SET status = 'paid', ps_reference = ?, paid_at = datetime('now')
-       WHERE id = ? AND status = 'pending'`,
-    ).bind(psReference, orderRef).run()
+       SET status = 'paid', ps_reference = coalesce(?, ps_reference), paid_at = datetime('now')
+       WHERE (id = ? OR ps_reference = ?) AND status = 'pending'`,
+    ).bind(psReference, orderRef, psReference).run()
   }
 
   return new Response('OK', { status: 200 })

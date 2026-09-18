@@ -100,6 +100,12 @@ async function createCheckout({ request, env }) {
   const accessCode = paystackData?.data?.access_code
   const reference = paystackData?.data?.reference
 
+  if (reference) {
+    await env.DB.prepare(
+      `UPDATE orders SET ps_reference = ? WHERE id = ?`
+    ).bind(reference, orderId).run()
+  }
+
   return json({
     url,
     access_code: accessCode,

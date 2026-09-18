@@ -304,6 +304,14 @@ export function renderContactPage() {
               <p>Studio Desk: <a href="tel:+17805557382">+1 (780) 555-PETAL</a></p>
             </div>
           </div>
+
+          <div class="contact-card">
+            <div class="contact-card-icon">${ICONS.sparkles}</div>
+            <div>
+              <h4>International Sister Boutiques</h4>
+              <p>• <strong>London Studio (UK):</strong> <a href="mailto:london@petalandbloom.com">london@petalandbloom.com</a><br>• <strong>Accra Atelier (Ghana):</strong> <a href="mailto:accra@petalandbloom.com">accra@petalandbloom.com</a></p>
+            </div>
+          </div>
         </div>
 
         <!-- Right: Interactive Contact Form -->

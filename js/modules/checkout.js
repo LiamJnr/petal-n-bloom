@@ -469,7 +469,15 @@ function bindCheckoutEvents() {
     };
 
     const submitButton = document.getElementById("btn-submit-order-details");
-    const originalLabel = submitButton?.innerHTML;
+    const originalLabel = submitButton?.innerHTML || "Proceed to Checkout &rarr;";
+
+    const resetSubmitBtn = () => {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalLabel;
+      }
+    };
+
     if (submitButton) {
       submitButton.disabled = true;
       submitButton.textContent = "Preparing secure checkout…";
@@ -483,13 +491,18 @@ function bindCheckoutEvents() {
           vase_id: item.vase.id,
           quantity: item.quantity
         })),
-        buyer
+        buyer,
+        onCancel: () => {
+          resetSubmitBtn();
+          showToast({
+            title: "Checkout closed",
+            message: "You can resume checkout whenever you're ready.",
+            duration: 4000
+          });
+        }
       });
     } catch (error) {
-      if (submitButton) {
-        submitButton.disabled = false;
-        submitButton.innerHTML = originalLabel;
-      }
+      resetSubmitBtn();
       showToast({
         title: "Unable to start checkout",
         message: error.message || "Please try again in a moment.",

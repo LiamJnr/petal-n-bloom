@@ -97,7 +97,15 @@ async function createCheckout({ request, env }) {
     }, 502)
   }
 
-  return json({ url })
+  const accessCode = paystackData?.data?.access_code
+  const reference = paystackData?.data?.reference
+
+  return json({
+    url,
+    access_code: accessCode,
+    reference,
+    orderId,
+  })
 }
 
 function validateItems(items) {

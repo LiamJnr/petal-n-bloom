@@ -157,7 +157,7 @@ function checkoutDescription(items) {
   const itemText = items
     .map((item) => `${item.name} — ${item.size.name}, ${item.vase.name} × ${item.quantity}`)
     .join('; ')
-  return `Digital order: ${itemText}`.slice(0, 1000)
+  return `Order: ${itemText}`.slice(0, 1000)
 }
 
 function json(data, status = 200) {

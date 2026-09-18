@@ -50,8 +50,8 @@ async function pollOrderStatus(view, orderId) {
         clearCart()
         renderMessage(view, {
           eyebrow: 'Payment confirmed',
-          title: 'Your digital order is confirmed',
-          message: 'Thank you for your order. Check your email receipt for order details.',
+          title: 'Your order is confirmed',
+          message: 'Thank you for your order. Order details have been sent to the recipient email.',
           action: 'Continue shopping',
           reference: orderId,
         })

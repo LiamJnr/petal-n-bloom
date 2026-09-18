@@ -53,26 +53,11 @@
         <a href="#" class="nav-link active" id="nav-home-link">Home</a>
         <a href="#shop" class="nav-link" id="nav-shop-link">Shop</a>
         <a href="#faq" class="nav-link" id="nav-faq-link">Care &amp; FAQs</a>
-        <a href="#about" class="nav-link" id="nav-about-link">About Us</a>
         <a href="#contact" class="nav-link" id="nav-contact-link">Contact</a>
       </div>
 
       <!-- Action Controls -->
       <div class="header-actions">
-        <!-- Search Toggle -->
-        <div class="search-container">
-          <button class="icon-btn search-toggle-btn" aria-label="Search flower arrangements" title="Search">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-            </svg>
-          </button>
-          
-          <div class="search-input-wrapper">
-            <input type="search" class="search-input" placeholder="Search roses, bouquets, gifts..." aria-label="Search catalog" />
-            <button type="button" class="search-clear-btn" aria-label="Clear search">&times;</button>
-          </div>
-        </div>
-
         <!-- Wishlist Button -->
         <button class="icon-btn" id="wishlist-trigger" aria-label="View Wishlist" title="Wishlist">
           <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
@@ -88,13 +73,6 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
           </svg>
           <span class="cart-count-badge" id="cart-badge">0</span>
-        </button>
-
-        <!-- User Profile Icon -->
-        <button class="icon-btn" aria-label="User Account" title="Account">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-          </svg>
         </button>
 
         <!-- Mobile Menu Toggle -->
@@ -178,20 +156,8 @@
               <span class="eyebrow">CURATED BOTANICAL SHOWCASE</span>
               <h2>Featured &amp; Bestselling Blooms</h2>
             </div>
-            <span id="catalog-count" class="badge badge-rose">Curated Highlights</span>
-          </div>
-
-          <!-- Filter Pills for Featured Highlights -->
-          <div class="catalog-toolbar">
-            <div class="filter-pills" role="tablist" aria-label="Filter featured products">
-              <button class="filter-pill featured-filter-pill active" data-filter="all">All Highlights</button>
-              <button class="filter-pill featured-filter-pill" data-filter="bouquet">Bouquets</button>
-              <button class="filter-pill featured-filter-pill" data-filter="luxury">Luxury Stems</button>
-              <button class="filter-pill featured-filter-pill" data-filter="celebration">Celebrations</button>
-            </div>
-
-            <div class="catalog-sort">
-              <a href="#shop" class="btn-explore-full-shop btn-explore-header" id="btn-header-go-shop" style="padding: 8px 20px; font-size: 0.82rem;">
+            <div class="catalog-header-actions">
+              <a href="#shop" class="btn-explore-full-shop btn-explore-header" id="btn-header-go-shop" style="padding: 10px 22px; font-size: 0.85rem;">
                 Browse Full Catalog (12+) &rarr;
               </a>
             </div>
@@ -360,7 +326,7 @@
         </div>
 
         <!-- International Sister Studios Showcase -->
-        <div class="about-studios-wrapper">
+        <div class="container about-studios-wrapper">
           <div class="about-studios-header">
             <span class="eyebrow">OUR GLOBAL BOTANICAL PRESENCE</span>
             <h3>International Sister Studios</h3>

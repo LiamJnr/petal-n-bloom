@@ -332,68 +332,38 @@ export function renderPDP(slug) {
           <div class="pdp-review-list-section">
             <div class="pdp-review-list-header">
               <div class="pdp-review-list-title">
-                <h3>Review List</h3>
-                <span>Showing 1-4 of ${totalRev} results</span>
+                <h3>Customer Reviews</h3>
+                <span>Showing ${reviews.length > 0 ? reviews.length : 2} verified review${(reviews.length > 0 ? reviews.length : 2) === 1 ? '' : 's'}</span>
               </div>
 
               <div class="pdp-review-sort">
-                <label>Sort by :</label>
-                <select id="pdp-review-sort-select">
-                  <option value="newest">Newest ⌵</option>
-                  <option value="highest">Highest Rating</option>
-                  <option value="lowest">Lowest Rating</option>
-                </select>
+                <label>Verified Deliveries</label>
               </div>
             </div>
 
             <!-- Review Items -->
             <div class="pdp-reviews-items-container">
-              
-              <!-- Review 1 -->
-              <article class="pdp-review-item">
-                <div class="pdp-review-user-row">
-                  <div class="pdp-review-user-info">
-                    <div class="pdp-review-avatar">K</div>
-                    <div class="pdp-review-user-name">
-                      Kristin Watson <span>(Verified)</span>
+              ${(reviews.length > 0 ? reviews : getReviewsForProduct("all").slice(0, 2)).map(rev => `
+                <article class="pdp-review-item">
+                  <div class="pdp-review-user-row">
+                    <div class="pdp-review-user-info">
+                      <div class="pdp-review-avatar">${rev.author.charAt(0)}</div>
+                      <div class="pdp-review-user-name">
+                        ${rev.author} <span>(Verified Recipient)</span>
+                      </div>
                     </div>
+                    <span class="pdp-review-date">${rev.date}</span>
                   </div>
-                  <span class="pdp-review-date">1 month ago</span>
-                </div>
-                <h4 class="pdp-review-item-title">Perfect for Birthdays and Anniversaries!</h4>
-                <p class="pdp-review-item-comment">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                </p>
-                <div class="pdp-review-item-stars">
-                  ${renderStars(5)} <span>5.0</span>
-                </div>
-                <div class="pdp-review-photos">
-                  <div class="pdp-review-photo"><img src="images/roses.webp" alt="Review photo 1" /></div>
-                  <div class="pdp-review-photo"><img src="images/tulips.webp" alt="Review photo 2" /></div>
-                  <div class="pdp-review-photo"><img src="images/peonies.webp" alt="Review photo 3" /></div>
-                </div>
-              </article>
-
-              <!-- Review 2 -->
-              <article class="pdp-review-item">
-                <div class="pdp-review-user-row">
-                  <div class="pdp-review-user-info">
-                    <div class="pdp-review-avatar">J</div>
-                    <div class="pdp-review-user-name">
-                      Jenny Wilson <span>(Verified)</span>
-                    </div>
+                  <h4 class="pdp-review-item-title">${rev.title}</h4>
+                  <p class="pdp-review-item-comment">
+                    "${rev.comment}"
+                  </p>
+                  <div class="pdp-review-item-stars">
+                    ${renderStars(rev.rating)} <span>${rev.rating}.0</span>
                   </div>
-                  <span class="pdp-review-date">2 months ago</span>
-                </div>
-                <h4 class="pdp-review-item-title">The Most Stunning Bouquet Ever!</h4>
-                <p class="pdp-review-item-comment">
-                  The blooms arrived in perfect condition and lasted well over a week. The fragrance filled the whole room!
-                </p>
-                <div class="pdp-review-item-stars">
-                  ${renderStars(5)} <span>5.0</span>
-                </div>
-              </article>
-
+                  ${rev.variant ? `<div class="pdp-review-variant-tag" style="margin-top: 8px; font-size: 0.78rem; color: var(--muted);">${rev.variant}</div>` : ""}
+                </article>
+              `).join("")}
             </div>
           </div>
 

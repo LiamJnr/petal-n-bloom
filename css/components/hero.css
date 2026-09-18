@@ -14,6 +14,16 @@
   border-bottom: 1px solid var(--border);
 }
 
+/* Dark purple overlay for contrast */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 8, 42, 0.52);
+  z-index: 1;
+  pointer-events: none;
+}
+
 .hero-container {
   width: min(980px, calc(100% - 48px));
   max-width: 980px;
@@ -38,7 +48,7 @@
   font-weight: 600;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--ink);
+  color: rgba(255, 240, 255, 0.75);
   margin-bottom: 18px;
 }
 
@@ -46,7 +56,7 @@
   font-family: var(--serif);
   font-size: clamp(2.5rem, 5.2vw, 3.85rem);
   font-weight: 400;
-  color: #121214;
+  color: #f5f0f7;
   margin-bottom: 18px;
   line-height: 1.15;
   letter-spacing: -0.01em;
@@ -55,7 +65,7 @@
 .hero-copy {
   max-width: 480px;
   margin: 0 0 32px 0;
-  color: #63676e;
+  color: rgba(235, 225, 240, 0.88);
   font-family: var(--sans);
   font-size: 1.05rem;
   line-height: 1.6;

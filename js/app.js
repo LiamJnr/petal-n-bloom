@@ -25,6 +25,7 @@ import { initWishlist, openWishlist } from "./modules/wishlist.js";
 import { renderCheckoutPage } from "./modules/checkout.js";
 import { renderOrderConfirmationPage } from "./modules/order-confirmation.js";
 import { renderFAQPage, renderContactPage, renderPolicyPage } from "./modules/info-pages.js";
+import { initAnnouncementModal } from "./modules/announcement-modal.js";
 import { showToast } from "./modules/toast.js";
 import { getProductBySlug } from "./data/products.js";
 import { ICONS } from "./lib/icons.js";
@@ -253,6 +254,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const slug = e.currentTarget.dataset.slug || "birthday-bloom-box";
       navigateToProduct(slug);
     });
+  });
+
+  // 9. West Africa Expansion & Paystack Partnership Modal (5.5s delay on first visit)
+  initAnnouncementModal({
+    onExploreShop: () => {
+      navigateToShop();
+    }
   });
 });
 

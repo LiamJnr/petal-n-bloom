@@ -5,6 +5,7 @@
 import { showToast } from "./toast.js";
 import { getProductBySlug } from "../data/products.js";
 import { ICONS } from "../lib/icons.js";
+import { getInternationalEstimates } from "../lib/currency.js";
 
 const CART_STORAGE_KEY = "petal_bloom_cart";
 const FREE_SHIPPING_THRESHOLD = 75;
@@ -237,17 +238,17 @@ function renderCartDrawerMarkup() {
 
       <!-- Cart Footer & Checkout -->
       <div class="cart-footer" id="cart-footer">
-        <div class="cart-summary-row">
-          <span>Subtotal</span>
-          <span id="cart-subtotal-val">$0.00</span>
-        </div>
-        <div class="cart-summary-row">
-          <span>Local Florist Delivery</span>
-          <span class="badge-included-cart" id="cart-delivery-val">Complimentary</span>
-        </div>
         <div class="cart-total-row">
-          <span>Total:</span>
+          <div class="cart-total-label-wrap">
+            <span>Estimated Total:</span>
+            <small class="cart-delivery-note">Complimentary delivery included</small>
+          </div>
           <strong id="cart-total-val">$0.00</strong>
+        </div>
+
+        <!-- Sleek Single-Line International Store Estimates -->
+        <div class="cart-intl-estimates" id="cart-intl-estimates">
+          <!-- Populated dynamically via updateCartUI() -->
         </div>
 
         <button
@@ -408,8 +409,7 @@ export function updateCartUI() {
           </div>
 
           <div class="cart-item-meta">
-            <span>Tier: <strong>${item.size.name}</strong></span>
-            <span>Wrap: <strong>${item.vase.name}</strong></span>
+            <span><strong>${item.size.name}</strong> • ${item.vase.name}</span>
             ${item.giftMessage ? `<span class="cart-item-note"><span style="display:inline-flex;align-items:center;gap:3px;vertical-align:middle;">${ICONS.envelope}</span> Note: "${item.giftMessage.slice(0, 24)}${item.giftMessage.length > 24 ? "..." : ""}"</span>` : ""}
           </div>
 
@@ -432,4 +432,21 @@ export function updateCartUI() {
   // 5. Update Totals
   if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
   if (totalEl) totalEl.textContent = `$${subtotal.toFixed(2)}`;
+
+  // 6. Update International Estimates (Sleek Inline Strip)
+  const intlEstimatesEl = document.getElementById("cart-intl-estimates");
+  if (intlEstimatesEl) {
+    const estimates = getInternationalEstimates(subtotal);
+    intlEstimatesEl.innerHTML = `
+      <span class="cart-intl-prefix">Est:</span>
+      <div class="cart-intl-strip-items">
+        ${estimates.map(est => `
+          <span class="cart-intl-item">
+            <span class="cart-intl-code">${est.code}</span>
+            <span class="cart-intl-val">${est.formatted}</span>
+          </span>
+        `).join('<span class="cart-intl-sep">•</span>')}
+      </div>
+    `;
+  }
 }

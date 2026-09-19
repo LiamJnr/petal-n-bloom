@@ -367,8 +367,7 @@ export function renderCheckoutPage() {
                     <div class="checkout-item-info">
                       <h4>${item.name}</h4>
                       <div class="checkout-item-meta">
-                        <span>${item.size.name} • ${item.quantity}x</span>
-                        <span>${item.vase.name}</span>
+                        <span><strong>${item.size.name}</strong> • ${item.vase.name} • Qty: ${item.quantity}</span>
                       </div>
                     </div>
                     <div class="checkout-item-price">
@@ -381,30 +380,25 @@ export function renderCheckoutPage() {
 
             <!-- Totals & Calculations -->
             <div class="checkout-calc-rows">
-              <div class="checkout-calc-row">
-                <span>Subtotal</span>
-                <span>$${subtotal.toFixed(2)}</span>
-              </div>
-              <div class="checkout-calc-row">
-                <span>Local Florist Delivery</span>
-                <span class="badge-included">Complimentary</span>
-              </div>
-              <div class="checkout-calc-row">
-                <span>Letterpress Card Note</span>
-                <span class="badge-included">Included</span>
-              </div>
               <div class="checkout-total-row">
-                <span>Total Due:</span>
+                <div class="checkout-total-label-wrap">
+                  <span>Total Due:</span>
+                  <small class="checkout-delivery-note">Complimentary delivery &amp; card included</small>
+                </div>
                 <strong>$${subtotal.toFixed(2)}</strong>
               </div>
-              <div class="checkout-intl-prices" style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border, #e5e7eb); font-size: 0.84rem; color: var(--muted, #6b7280);">
-                <div style="font-weight: 600; color: var(--ink, #1e1e24); margin-bottom: 6px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em;">International Store Estimates</div>
-                ${getInternationalEstimates(subtotal).map(est => `
-                  <div class="checkout-calc-row" style="padding: 2px 0; font-size: 0.82rem;">
-                    <span>${est.label}:</span>
-                    <span style="font-weight: 600; color: var(--ink, #1e1e24);">${est.formatted}</span>
-                  </div>
-                `).join("")}
+
+              <!-- International Store Estimates -->
+              <div class="checkout-intl-prices">
+                <div class="checkout-intl-header">International Store Estimates</div>
+                <div class="checkout-intl-strip-items">
+                  ${getInternationalEstimates(subtotal).map(est => `
+                    <span class="checkout-intl-item">
+                      <span class="checkout-intl-code">${est.code}</span>
+                      <span class="checkout-intl-val">${est.formatted}</span>
+                    </span>
+                  `).join('<span class="checkout-intl-sep">•</span>')}
+                </div>
               </div>
             </div>
 

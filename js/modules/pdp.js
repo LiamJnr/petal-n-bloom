@@ -197,12 +197,17 @@ export function renderPDP(slug) {
 
           <!-- Card Message Textarea -->
           <div class="pdp-card-message-group">
-            <div class="pdp-section-label">Card Message</div>
+            <div class="pdp-section-label">Complimentary Letterpress Card Message</div>
             <textarea 
               id="pdp-card-message" 
               class="pdp-card-message-textarea" 
-              placeholder="Enter Message"
+              maxlength="250"
+              placeholder="Write your heartfelt note for the recipient (e.g. Happy Anniversary!)..."
             ></textarea>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); margin-top: 4px;">
+              <span>Handwritten &amp; included free</span>
+              <span id="pdp-card-char-count">0 / 250</span>
+            </div>
           </div>
 
           <!-- Real-Time Same-Day Delivery Guarantee Card -->
@@ -475,8 +480,12 @@ function bindPDPEvents(product) {
 
   // Card message
   const cardMsg = document.getElementById("pdp-card-message");
+  const pdpCharCount = document.getElementById("pdp-card-char-count");
   cardMsg?.addEventListener("input", (e) => {
     giftMessage = e.target.value;
+    if (pdpCharCount) {
+      pdpCharCount.textContent = `${e.target.value.length} / 250`;
+    }
   });
 
   // Add To Cart

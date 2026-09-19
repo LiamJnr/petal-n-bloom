@@ -319,7 +319,14 @@ export function renderCheckoutPage() {
                 </legend>
 
                 <div class="form-group">
-                  <label for="rec-card-msg">Personal Gift Note (Printed on luxury cardstock)</label>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <label for="rec-card-msg" style="margin-bottom: 0;">Personal Gift Note (Printed on luxury cardstock)</label>
+                    ${cart[0]?.giftMessage ? `
+                      <span class="badge-transferred" style="font-size: 0.72rem; font-weight: 600; color: #047857; background: rgba(16, 185, 129, 0.12); padding: 2px 8px; border-radius: 9999px;">
+                        ✓ Transferred from bouquet
+                      </span>
+                    ` : ""}
+                  </div>
                   <textarea 
                     id="rec-card-msg" 
                     class="form-control" 
@@ -447,12 +454,26 @@ function bindCheckoutEvents() {
     });
   });
 
-  // Card note character counter
+  // Card note character counter & sync to storage
   const cardMsgTextarea = document.getElementById("rec-card-msg");
   const charCount = document.getElementById("checkout-char-count");
   cardMsgTextarea?.addEventListener("input", (e) => {
+    const text = e.target.value;
     if (charCount) {
-      charCount.textContent = `${e.target.value.length} / 250`;
+      charCount.textContent = `${text.length} / 250`;
+    }
+    // Sync back to cart in localStorage
+    try {
+      const raw = localStorage.getItem("petal_bloom_cart");
+      if (raw) {
+        const storedCart = JSON.parse(raw);
+        if (storedCart.length > 0) {
+          storedCart[0].giftMessage = text;
+          localStorage.setItem("petal_bloom_cart", JSON.stringify(storedCart));
+        }
+      }
+    } catch (err) {
+      console.warn("Could not sync gift note to storage:", err);
     }
   });
 
@@ -461,11 +482,34 @@ function bindCheckoutEvents() {
   form?.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    // Only the buyer contact details are used for digital checkout. The visual
-    // delivery-preference fields are deliberately never read, stored, or sent.
+    const name = document.getElementById("rec-name")?.value.trim() || "";
+    const email = document.getElementById("rec-email")?.value.trim() || "";
+    const phone = document.getElementById("rec-phone")?.value.trim() || "";
+    const street = document.getElementById("rec-street")?.value.trim() || "";
+    const city = document.getElementById("rec-city")?.value.trim() || "";
+    const state = document.getElementById("rec-state")?.value.trim() || "";
+    const zip = document.getElementById("rec-zip")?.value.trim() || "";
+    const courierNotes = document.getElementById("rec-notes")?.value.trim() || "";
+    const deliveryDate = document.getElementById("rec-delivery-date")?.value.trim() || "";
+    const cardNote = document.getElementById("rec-card-msg")?.value.trim() || "";
+
     const buyer = {
-      name: document.getElementById("rec-name").value.trim(),
-      email: document.getElementById("rec-email").value.trim()
+      name,
+      email,
+      phone
+    };
+
+    const delivery = {
+      recipient_name: name,
+      recipient_phone: phone,
+      street,
+      city,
+      state,
+      zip,
+      location_type: selectedLocationType,
+      delivery_date: deliveryDate,
+      time_window: selectedTimeWindow,
+      courier_notes: courierNotes
     };
 
     const submitButton = document.getElementById("btn-submit-order-details");
@@ -489,9 +533,12 @@ function bindCheckoutEvents() {
           slug: item.slug,
           size_id: item.size.id,
           vase_id: item.vase.id,
-          quantity: item.quantity
+          quantity: item.quantity,
+          giftMessage: item.giftMessage || ""
         })),
         buyer,
+        delivery,
+        card_note: cardNote,
         onCancel: () => {
           resetSubmitBtn();
           showToast({

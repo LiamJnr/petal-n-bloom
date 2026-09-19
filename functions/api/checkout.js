@@ -29,9 +29,11 @@ async function createCheckout({ request, env }) {
 
   let items
   let buyer
+  let delivery
   try {
     items = validateItems(body.items)
     buyer = validateBuyer(body.buyer)
+    delivery = validateDelivery(body.delivery, body.card_note)
   } catch (error) {
     return json({ error: error.message }, 400)
   }
@@ -47,16 +49,49 @@ async function createCheckout({ request, env }) {
 
   await env.DB.prepare(
     `INSERT INTO orders (id, status, purchaser_email, cart_json, buyer_json, delivery_json, total_cents)
-     VALUES (?, 'pending', ?, ?, ?, '{}', ?)`
+     VALUES (?, 'pending', ?, ?, ?, ?, ?)`
   ).bind(
     orderId,
     buyer.email,
     JSON.stringify(items),
     JSON.stringify(buyer),
+    JSON.stringify(delivery),
     totalPesewas,
   ).run()
 
   const currency = String(env.PAYSTACK_CURRENCY || 'GHS').trim().toUpperCase()
+
+  const customFields = [
+    { display_name: 'Order', variable_name: 'order_ref', value: orderId },
+    { display_name: 'Total USD', variable_name: 'total_usd', value: `$${subtotalUsd.toFixed(2)}` },
+    { display_name: 'Exchange Rate', variable_name: 'exchange_rate', value: `1 USD = ${exchangeRate} GHS` },
+    { display_name: 'Items', variable_name: 'item_count', value: `${itemCount} item${itemCount === 1 ? '' : 's'}` },
+  ]
+
+  if (delivery.card_note) {
+    customFields.push({
+      display_name: 'Gift Card Note',
+      variable_name: 'card_note',
+      value: delivery.card_note,
+    })
+  }
+
+  if (delivery.delivery_date) {
+    customFields.push({
+      display_name: 'Delivery Schedule',
+      variable_name: 'delivery_schedule',
+      value: `${delivery.delivery_date} (${delivery.time_window || 'Standard'})`,
+    })
+  }
+
+  if (delivery.recipient_phone) {
+    customFields.push({
+      display_name: 'Recipient Phone',
+      variable_name: 'recipient_phone',
+      value: delivery.recipient_phone,
+    })
+  }
+
   const payload = {
     email: buyer.email,
     amount: totalPesewas,
@@ -68,12 +103,12 @@ async function createCheckout({ request, env }) {
       amount_usd: `$${subtotalUsd.toFixed(2)}`,
       exchange_rate: exchangeRate,
       cart_description: checkoutDescription(items),
-      custom_fields: [
-        { display_name: 'Order', variable_name: 'order_ref', value: orderId },
-        { display_name: 'Total USD', variable_name: 'total_usd', value: `$${subtotalUsd.toFixed(2)}` },
-        { display_name: 'Exchange Rate', variable_name: 'exchange_rate', value: `1 USD = ${exchangeRate} GHS` },
-        { display_name: 'Items', variable_name: 'item_count', value: `${itemCount} item${itemCount === 1 ? '' : 's'}` },
-      ],
+      card_note: delivery.card_note || '',
+      delivery_date: delivery.delivery_date || '',
+      time_window: delivery.time_window || '',
+      recipient_name: delivery.recipient_name || buyer.name,
+      recipient_phone: delivery.recipient_phone || buyer.phone || '',
+      custom_fields: customFields,
     },
   }
 
@@ -123,6 +158,8 @@ function validateItems(items) {
     const sizeId = String(item?.size_id || '').trim()
     const vaseId = String(item?.vase_id || '').trim()
     const quantity = Number(item?.quantity)
+    const giftMessage = String(item?.giftMessage || item?.gift_message || '').trim().slice(0, 250)
+
     if (!product) throw new Error('One of the arrangements in your bag is no longer available.')
     if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_QUANTITY_PER_LINE) {
       throw new Error('Please choose a valid quantity for every arrangement.')
@@ -139,6 +176,7 @@ function validateItems(items) {
       size: { id: size.id, name: size.name },
       vase: { id: vase.id, name: vase.name },
       quantity,
+      gift_message: giftMessage,
       unit_price_usd: size.price + vase.price,
       unit_price_cents: Math.round((size.price + vase.price) * 100),
     }
@@ -147,10 +185,33 @@ function validateItems(items) {
 
 function validateBuyer(value) {
   const clean = (field, max) => String(value?.[field] || '').trim().slice(0, max)
-  const buyer = { name: clean('name', 100), email: clean('email', 254).toLowerCase() }
+  const buyer = {
+    name: clean('name', 100),
+    email: clean('email', 254).toLowerCase(),
+    phone: clean('phone', 30),
+  }
   if (!buyer.name || !buyer.email) throw new Error('Please enter your name and email address.')
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(buyer.email)) throw new Error('Please enter a valid email address.')
   return buyer
+}
+
+function validateDelivery(delivery, cardNote) {
+  const clean = (field, max) => String(delivery?.[field] || '').trim().slice(0, max)
+  const note = String(cardNote || delivery?.card_note || '').trim().slice(0, 250)
+
+  return {
+    recipient_name: clean('recipient_name', 100),
+    recipient_phone: clean('recipient_phone', 30),
+    street: clean('street', 200),
+    city: clean('city', 100),
+    state: clean('state', 50),
+    zip: clean('zip', 20),
+    location_type: clean('location_type', 30),
+    delivery_date: clean('delivery_date', 20),
+    time_window: clean('time_window', 30),
+    courier_notes: clean('courier_notes', 300),
+    card_note: note,
+  }
 }
 
 function checkoutDescription(items) {

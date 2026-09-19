@@ -1,8 +1,8 @@
-export async function startCheckout({ items, buyer, onCancel }) {
+export async function startCheckout({ items, buyer, delivery, card_note, onCancel }) {
   const response = await fetch('/api/checkout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ items, buyer }),
+    body: JSON.stringify({ items, buyer, delivery, card_note }),
   })
 
   if (!response.ok) {

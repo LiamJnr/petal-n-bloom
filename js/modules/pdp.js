@@ -7,12 +7,15 @@ import { navigateToHome } from "./router.js";
 import { showToast } from "./toast.js";
 import { isInWishlist, toggleWishlist } from "./wishlist.js";
 import { ICONS, renderStars } from "../lib/icons.js";
+import { getInternationalEstimates } from "../lib/currency.js";
+import { getDeliveryCountdownState, subscribeDeliveryTimer } from "../lib/delivery-timer.js";
 
 let currentProduct = null;
 let selectedSizeIndex = 0;
 let quantity = 1;
 let giftMessage = "";
 let activeTab = "review"; // default to review or description
+let deliveryTimerUnsubscribe = null;
 
 let addToCartHandler = null;
 
@@ -58,6 +61,7 @@ export function renderPDP(slug) {
   const isProductWishlisted = isInWishlist(product.slug);
   const metrics = getReviewMetrics(product.slug);
   const reviews = getReviewsForProduct(product.slug);
+  const initialDeliveryState = getDeliveryCountdownState();
 
   // Distribution percentages
   const totalRev = metrics.count || 245;
@@ -155,6 +159,19 @@ export function renderPDP(slug) {
             <span class="pdp-price-old" id="pdp-old-price">$${oldPrice}</span>
           </div>
 
+          <!-- International Store Estimates -->
+          <div class="pdp-intl-estimates" id="pdp-intl-estimates" aria-label="International Store Estimates">
+            <span class="pdp-intl-estimates-label">Store Estimates:</span>
+            <div class="pdp-intl-estimates-list">
+              ${getInternationalEstimates(initialSizePrice).map(est => `
+                <span class="pdp-intl-estimate-item" data-currency="${est.code}">
+                  <span class="pdp-intl-currency-code">${est.code}</span>
+                  <span class="pdp-intl-currency-val">${est.formatted}</span>
+                </span>
+              `).join("")}
+            </div>
+          </div>
+
           <p class="pdp-desc-text">
             ${product.description}
           </p>
@@ -186,6 +203,20 @@ export function renderPDP(slug) {
               class="pdp-card-message-textarea" 
               placeholder="Enter Message"
             ></textarea>
+          </div>
+
+          <!-- Real-Time Same-Day Delivery Guarantee Card -->
+          <div class="pdp-delivery-card" id="pdp-delivery-card">
+            <div class="pdp-delivery-header">
+              <div class="pdp-delivery-title-wrap">
+                <span class="pdp-status-dot ${initialDeliveryState.isSameDayAvailable ? "active" : "next-day"}" id="pdp-delivery-dot"></span>
+                <strong class="pdp-delivery-headline" id="pdp-delivery-headline">${initialDeliveryState.headline}</strong>
+              </div>
+              <span class="pdp-delivery-badge" id="pdp-delivery-badge">${initialDeliveryState.badgeText}</span>
+            </div>
+            <p class="pdp-delivery-copy" id="pdp-delivery-copy">
+              ${initialDeliveryState.subtext}
+            </p>
           </div>
 
           <!-- Actions Row: Stepper + Add To Cart + Buy Now + Wishlist -->
@@ -414,6 +445,16 @@ function bindPDPEvents(product) {
       if (selectedSize) {
         if (priceEl) priceEl.textContent = `$${selectedSize.price.toFixed(2)}`;
         if (oldPriceEl) oldPriceEl.textContent = `$${getOriginalPrice(selectedSize.price)}`;
+
+        // Dynamically update international currency estimates
+        const estimatesEl = document.getElementById("pdp-intl-estimates");
+        if (estimatesEl) {
+          const estimates = getInternationalEstimates(selectedSize.price);
+          estimates.forEach(est => {
+            const valEl = estimatesEl.querySelector(`.pdp-intl-estimate-item[data-currency="${est.code}"] .pdp-intl-currency-val`);
+            if (valEl) valEl.textContent = est.formatted;
+          });
+        }
       }
     });
   });
@@ -497,5 +538,25 @@ function bindPDPEvents(product) {
         targetContent.classList.add("active");
       }
     });
+  });
+
+  // Subscribe to live delivery countdown ticking
+  if (deliveryTimerUnsubscribe) {
+    deliveryTimerUnsubscribe();
+    deliveryTimerUnsubscribe = null;
+  }
+
+  deliveryTimerUnsubscribe = subscribeDeliveryTimer((state) => {
+    const headlineEl = document.getElementById("pdp-delivery-headline");
+    const copyEl = document.getElementById("pdp-delivery-copy");
+    const badgeEl = document.getElementById("pdp-delivery-badge");
+    const dotEl = document.getElementById("pdp-delivery-dot");
+
+    if (headlineEl) headlineEl.textContent = state.headline;
+    if (copyEl) copyEl.innerHTML = state.subtext;
+    if (badgeEl) badgeEl.textContent = state.badgeText;
+    if (dotEl) {
+      dotEl.className = `pdp-status-dot ${state.isSameDayAvailable ? "active" : "next-day"}`;
+    }
   });
 }

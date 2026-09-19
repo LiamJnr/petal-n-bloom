@@ -9,6 +9,8 @@ import { showToast } from "./toast.js";
 import { getProductBySlug } from "../data/products.js";
 import { startCheckout } from "../lib/checkout.js";
 import { ICONS } from "../lib/icons.js";
+import { getInternationalEstimates } from "../lib/currency.js";
+import { getDeliveryCountdownState } from "../lib/delivery-timer.js";
 
 let selectedTimeWindow = "morning";
 let selectedLocationType = "residential";
@@ -172,9 +174,8 @@ export function renderCheckoutPage() {
   }
 
   const subtotal = getCartSubtotal();
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const minDateStr = tomorrow.toISOString().split("T")[0];
+  const deliveryState = getDeliveryCountdownState();
+  const minDateStr = deliveryState.earliestDateStr;
 
   checkoutView.innerHTML = `
     <!-- Top PDP-Style Page Header & Breadcrumbs Banner -->
@@ -272,7 +273,12 @@ export function renderCheckoutPage() {
                 </legend>
 
                 <div class="form-group">
-                  <label for="rec-delivery-date">Requested Delivery Date *</label>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <label for="rec-delivery-date" style="margin-bottom: 0;">Requested Delivery Date *</label>
+                    <span style="font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: 9999px; background: ${deliveryState.isSameDayAvailable ? "rgba(16, 185, 129, 0.12)" : "rgba(245, 158, 11, 0.12)"}; color: ${deliveryState.isSameDayAvailable ? "#047857" : "#b45309"};">
+                      ${deliveryState.badgeText}
+                    </span>
+                  </div>
                   <input 
                     type="date" 
                     id="rec-delivery-date" 
@@ -386,18 +392,12 @@ export function renderCheckoutPage() {
               </div>
               <div class="checkout-intl-prices" style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border, #e5e7eb); font-size: 0.84rem; color: var(--muted, #6b7280);">
                 <div style="font-weight: 600; color: var(--ink, #1e1e24); margin-bottom: 6px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em;">International Store Estimates</div>
-                <div class="checkout-calc-row" style="padding: 2px 0; font-size: 0.82rem;">
-                  <span>Canadian Dollars (CAD):</span>
-                  <span style="font-weight: 600; color: var(--ink, #1e1e24);">CA$ ${(subtotal * 1.36).toFixed(2)}</span>
-                </div>
-                <div class="checkout-calc-row" style="padding: 2px 0; font-size: 0.82rem;">
-                  <span>British Pounds (GBP):</span>
-                  <span style="font-weight: 600; color: var(--ink, #1e1e24);">£${(subtotal * 0.79).toFixed(2)}</span>
-                </div>
-                <div class="checkout-calc-row" style="padding: 2px 0; font-size: 0.82rem;">
-                  <span>Ghanaian Cedis (GHS):</span>
-                  <span style="font-weight: 600; color: var(--ink, #1e1e24);">GH₵ ${(subtotal * 11.17).toFixed(2)}</span>
-                </div>
+                ${getInternationalEstimates(subtotal).map(est => `
+                  <div class="checkout-calc-row" style="padding: 2px 0; font-size: 0.82rem;">
+                    <span>${est.label}:</span>
+                    <span style="font-weight: 600; color: var(--ink, #1e1e24);">${est.formatted}</span>
+                  </div>
+                `).join("")}
               </div>
             </div>
 

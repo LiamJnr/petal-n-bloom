@@ -183,7 +183,7 @@
   display: flex;
   align-items: baseline;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .pdp-price-current {
@@ -196,6 +196,58 @@
   font-size: 1.15rem;
   color: var(--muted-light);
   text-decoration: line-through;
+}
+
+/* International Store Estimates Block */
+.pdp-intl-estimates {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 8px 12px;
+  margin-bottom: 18px;
+  background: var(--bg-subtle, #fcfaf8);
+  border: 1px solid var(--border-light, #ede8e3);
+  border-radius: 8px;
+  font-size: 0.82rem;
+}
+
+.pdp-intl-estimates-label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted, #6b7280);
+}
+
+.pdp-intl-estimates-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+}
+
+.pdp-intl-estimate-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 0.8rem;
+  color: var(--ink, #1e1e24);
+}
+
+.pdp-intl-currency-code {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--muted, #7c7c8a);
+  background: rgba(0, 0, 0, 0.04);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.pdp-intl-currency-val {
+  font-weight: 600;
+  color: var(--ink, #1e1e24);
 }
 
 .pdp-desc-text {
@@ -293,6 +345,94 @@
 .pdp-card-message-textarea:focus {
   border-color: var(--primary);
   background-color: #ffffff;
+}
+
+/* Same-Day & Next-Day Delivery Guarantee Card */
+.pdp-delivery-card {
+  background: linear-gradient(135deg, rgba(247, 243, 238, 0.7) 0%, rgba(253, 250, 247, 0.9) 100%);
+  border: 1px solid var(--border-light, #ede8e3);
+  border-radius: var(--radius-md, 10px);
+  padding: 12px 16px;
+  margin-bottom: 22px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.pdp-delivery-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.pdp-delivery-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pdp-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.pdp-status-dot.active {
+  background-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  animation: pdpPulseGreen 2s infinite ease-in-out;
+}
+
+.pdp-status-dot.next-day {
+  background-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+}
+
+@keyframes pdpPulseGreen {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+.pdp-delivery-headline {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.pdp-delivery-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+  white-space: nowrap;
+}
+
+.pdp-delivery-copy {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.pdp-delivery-copy .timer-digits {
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--ink);
+  background: rgba(0, 0, 0, 0.05);
+  padding: 1px 5px;
+  border-radius: 4px;
 }
 
 /* Quantity & Action Buttons Row */

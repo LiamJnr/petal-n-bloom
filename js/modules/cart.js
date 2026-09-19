@@ -3,7 +3,7 @@
  * Includes persistent localStorage, free shipping meter, and auto-syncing catalog data.
  */
 import { showToast } from "./toast.js";
-import { getProductBySlug } from "../data/products.js";
+import { getProductBySlug, GIFT_ADDONS } from "../data/products.js";
 import { ICONS } from "../lib/icons.js";
 import { getInternationalEstimates } from "../lib/currency.js";
 
@@ -232,8 +232,15 @@ function renderCartDrawerMarkup() {
       </div>
 
       <!-- Cart Items List Container -->
-      <div class="cart-body" id="cart-items-container">
-        <!-- Populated dynamically -->
+      <div class="cart-body">
+        <div id="cart-items-container">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- Ultra-Compact Add-Ons Upsell Section -->
+        <div class="cart-addons-section" id="cart-addons-container">
+          <!-- Populated dynamically -->
+        </div>
       </div>
 
       <!-- Cart Footer & Checkout -->
@@ -314,6 +321,29 @@ function bindCartEvents() {
     }
   });
 
+  // Add-on quick add clicks
+  const addonsSection = document.getElementById("cart-addons-container");
+  addonsSection?.addEventListener("click", (e) => {
+    const addBtn = e.target.closest(".btn-quick-addon");
+    if (!addBtn) return;
+    const slug = addBtn.dataset.slug;
+    const addon = (GIFT_ADDONS || []).find(a => a.slug === slug);
+    if (addon) {
+      addToCart({
+        product: addon,
+        size: addon.sizes[0],
+        vase: addon.vases[0],
+        giftMessage: "",
+        quantity: 1
+      });
+      showToast({
+        title: "Added to Bag",
+        message: `${addon.name} added to your order.`,
+        duration: 3000
+      });
+    }
+  });
+
   // Global custom events
   document.addEventListener("open-cart", openCart);
   document.addEventListener("add-to-cart", (e) => {
@@ -386,6 +416,8 @@ export function updateCartUI() {
     });
 
     if (footer) footer.style.display = "none";
+    const addonsSection = document.getElementById("cart-addons-container");
+    if (addonsSection) addonsSection.style.display = "none";
     return;
   }
 
@@ -448,5 +480,39 @@ export function updateCartUI() {
         `).join('<span class="cart-intl-sep">•</span>')}
       </div>
     `;
+  }
+
+  // 7. Render Boutique Gift Add-Ons as Compact Horizontal Chips
+  const addonsContainer = document.getElementById("cart-addons-container");
+  if (addonsContainer) {
+    if (cartItems.length > 0 && GIFT_ADDONS && GIFT_ADDONS.length > 0) {
+      addonsContainer.style.display = "block";
+      addonsContainer.innerHTML = `
+        <div class="cart-addons-header">
+          <span>Add a Little Extra</span>
+        </div>
+        <div class="cart-addons-row">
+          ${GIFT_ADDONS.map(addon => {
+            const inCart = cartItems.find(i => i.slug === addon.slug);
+            return `
+              <div class="cart-addon-chip">
+                <div class="cart-addon-thumb">
+                  <img src="${addon.images.primary}" alt="${addon.name}" loading="lazy" />
+                </div>
+                <div class="cart-addon-info">
+                  <span class="cart-addon-title">${addon.name.replace("Artisanal ", "").replace("Botanical ", "")}</span>
+                  <span class="cart-addon-price">$${addon.sizes[0].price}</span>
+                </div>
+                <button type="button" class="btn-quick-addon" data-slug="${addon.slug}">
+                  ${inCart ? "✓" : "+ Add"}
+                </button>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+    } else {
+      addonsContainer.style.display = "none";
+    }
   }
 }

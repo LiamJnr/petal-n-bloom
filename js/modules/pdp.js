@@ -12,6 +12,7 @@ import { getDeliveryCountdownState, subscribeDeliveryTimer } from "../lib/delive
 
 let currentProduct = null;
 let selectedSizeIndex = 0;
+let selectedVaseIndex = 0;
 let quantity = 1;
 let giftMessage = "";
 let activeTab = "review"; // default to review or description
@@ -46,6 +47,7 @@ export function renderPDP(slug) {
 
   currentProduct = product;
   selectedSizeIndex = 0;
+  selectedVaseIndex = 0;
   quantity = 1;
   giftMessage = "";
 
@@ -56,7 +58,8 @@ export function renderPDP(slug) {
   document.title = `${product.name} — Petal & Bloom`;
 
   // Pricing calculations
-  const initialSizePrice = product.sizes[selectedSizeIndex].price;
+  const initialVasePrice = product.vases?.[selectedVaseIndex]?.price || 0;
+  const initialSizePrice = (product.sizes[selectedSizeIndex]?.price || 45) + initialVasePrice;
   const oldPrice = getOriginalPrice(initialSizePrice);
   const isProductWishlisted = isInWishlist(product.slug);
   const metrics = getReviewMetrics(product.slug);
@@ -195,6 +198,30 @@ export function renderPDP(slug) {
             </div>
           </div>
 
+          ${product.vases && product.vases.length > 1 ? `
+            <!-- Vessel / Presentation Selector (Column Radio Group) -->
+            <div class="pdp-vase-selector">
+              <div class="pdp-section-label">Vase &amp; Presentation</div>
+              <div class="pdp-vase-radio-list" role="radiogroup" aria-label="Vase and presentation selection">
+                ${product.vases.map((vase, idx) => `
+                  <div 
+                    class="pdp-vase-radio-item ${idx === selectedVaseIndex ? "active" : ""}" 
+                    data-index="${idx}"
+                    role="radio"
+                    aria-checked="${idx === selectedVaseIndex ? "true" : "false"}"
+                    tabindex="0"
+                  >
+                    <div class="pdp-vase-radio-left">
+                      <span class="pdp-radio-indicator" aria-hidden="true"></span>
+                      <span class="pdp-vase-name">${vase.name}</span>
+                    </div>
+                    <span class="pdp-vase-addon ${vase.price === 0 ? "included" : ""}">${vase.price === 0 ? "Included" : `+ $${vase.price.toFixed(2)}`}</span>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          ` : ""}
+
           <!-- Card Message Textarea -->
           <div class="pdp-card-message-group">
             <div class="pdp-section-label">Complimentary Letterpress Card Message</div>
@@ -224,7 +251,7 @@ export function renderPDP(slug) {
             </p>
           </div>
 
-          <!-- Actions Row: Stepper + Add To Cart + Buy Now + Wishlist -->
+          <!-- Actions Row: Stepper + Add To Cart + Wishlist -->
           <div class="pdp-action-row">
             <div class="pdp-qty-stepper">
               <button type="button" class="pdp-stepper-btn" id="pdp-qty-minus">−</button>
@@ -234,10 +261,6 @@ export function renderPDP(slug) {
 
             <button type="button" class="btn-add-to-cart" id="btn-pdp-add-to-cart">
               Add To Cart
-            </button>
-
-            <button type="button" class="btn-buy-now" id="btn-pdp-buy-now">
-              Buy Now
             </button>
 
             <button 
@@ -438,28 +461,56 @@ function bindPDPEvents(product) {
     });
   });
 
+  // Dynamic price calculation & update helper
+  function updatePDPPricing() {
+    const selectedSize = product.sizes[selectedSizeIndex] || product.sizes[0];
+    const selectedVase = product.vases?.[selectedVaseIndex] || product.vases?.[0] || { price: 0 };
+    const unitPrice = (selectedSize?.price || 0) + (selectedVase?.price || 0);
+
+    const priceEl = document.getElementById("pdp-current-price");
+    const oldPriceEl = document.getElementById("pdp-old-price");
+    if (priceEl) priceEl.textContent = `$${unitPrice.toFixed(2)}`;
+    if (oldPriceEl) oldPriceEl.textContent = `$${getOriginalPrice(unitPrice)}`;
+
+    // Dynamically update international currency estimates
+    const estimatesEl = document.getElementById("pdp-intl-estimates");
+    if (estimatesEl) {
+      const estimates = getInternationalEstimates(unitPrice);
+      estimates.forEach(est => {
+        const valEl = estimatesEl.querySelector(`.pdp-intl-estimate-item[data-currency="${est.code}"] .pdp-intl-currency-val`);
+        if (valEl) valEl.textContent = est.formatted;
+      });
+    }
+  }
+
   // Size cards
   pdpContainer.querySelectorAll(".pdp-size-box").forEach(box => {
     box.addEventListener("click", () => {
       pdpContainer.querySelectorAll(".pdp-size-box").forEach(b => b.classList.remove("active"));
       box.classList.add("active");
       selectedSizeIndex = parseInt(box.dataset.index, 10) || 0;
-      const selectedSize = product.sizes[selectedSizeIndex];
-      const priceEl = document.getElementById("pdp-current-price");
-      const oldPriceEl = document.getElementById("pdp-old-price");
-      if (selectedSize) {
-        if (priceEl) priceEl.textContent = `$${selectedSize.price.toFixed(2)}`;
-        if (oldPriceEl) oldPriceEl.textContent = `$${getOriginalPrice(selectedSize.price)}`;
+      updatePDPPricing();
+    });
+  });
 
-        // Dynamically update international currency estimates
-        const estimatesEl = document.getElementById("pdp-intl-estimates");
-        if (estimatesEl) {
-          const estimates = getInternationalEstimates(selectedSize.price);
-          estimates.forEach(est => {
-            const valEl = estimatesEl.querySelector(`.pdp-intl-estimate-item[data-currency="${est.code}"] .pdp-intl-currency-val`);
-            if (valEl) valEl.textContent = est.formatted;
-          });
-        }
+  // Vase / Vessel Column Radio selection
+  pdpContainer.querySelectorAll(".pdp-vase-radio-item").forEach(item => {
+    const handleSelect = () => {
+      pdpContainer.querySelectorAll(".pdp-vase-radio-item").forEach(b => {
+        b.classList.remove("active");
+        b.setAttribute("aria-checked", "false");
+      });
+      item.classList.add("active");
+      item.setAttribute("aria-checked", "true");
+      selectedVaseIndex = parseInt(item.dataset.index, 10) || 0;
+      updatePDPPricing();
+    };
+
+    item.addEventListener("click", handleSelect);
+    item.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        handleSelect();
       }
     });
   });
@@ -491,42 +542,22 @@ function bindPDPEvents(product) {
   // Add To Cart
   document.getElementById("btn-pdp-add-to-cart")?.addEventListener("click", () => {
     const size = product.sizes[selectedSizeIndex] || product.sizes[0];
-    const defaultVase = product.vases?.[0] || { id: "none", name: "Signature Wrap", price: 0 };
+    const vase = product.vases?.[selectedVaseIndex] || product.vases?.[0] || { id: "none", name: "Signature Wrap", price: 0 };
+    const unitPrice = (size?.price || 0) + (vase?.price || 0);
+
     const itemData = {
       product,
       size,
-      vase: { id: defaultVase.id, name: defaultVase.name, price: 0 },
+      vase: { id: vase.id, name: vase.name, price: vase.price },
       giftMessage: giftMessage.trim(),
       deliveryDate: "",
-      unitPrice: size.price,
+      unitPrice,
       quantity
     };
 
     if (typeof addToCartHandler === "function") {
       addToCartHandler(itemData);
     }
-  });
-
-  // Buy Now -> Direct add and route to checkout
-  document.getElementById("btn-pdp-buy-now")?.addEventListener("click", () => {
-    const size = product.sizes[selectedSizeIndex] || product.sizes[0];
-    const defaultVase = product.vases?.[0] || { id: "none", name: "Signature Wrap", price: 0 };
-    const itemData = {
-      product,
-      size,
-      vase: { id: defaultVase.id, name: defaultVase.name, price: 0 },
-      giftMessage: giftMessage.trim(),
-      deliveryDate: "",
-      unitPrice: size.price,
-      quantity
-    };
-
-    if (typeof addToCartHandler === "function") {
-      addToCartHandler(itemData);
-    }
-
-    const event = new CustomEvent("navigate-to-checkout");
-    document.dispatchEvent(event);
   });
 
   // Wishlist

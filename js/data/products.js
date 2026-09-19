@@ -549,10 +549,88 @@ export const PRODUCTS = [
 ];
 
 /**
- * Get product by slug identifier
+ * Boutique Gift Add-Ons & Standalone Pairing Products
+ */
+export const GIFT_ADDONS = [
+  {
+    id: "champagne-truffles",
+    slug: "champagne-truffles",
+    name: "Artisanal Champagne Truffles",
+    subtitle: "Belgian Dark Chocolate & Marc de Champagne",
+    category: "gift",
+    occasion: "Celebrations",
+    tag: "Add-On",
+    rating: 4.9,
+    reviewCount: 94,
+    images: {
+      primary: "images/truffles.webp",
+      gallery: ["images/truffles.webp"]
+    },
+    shortDescription: "8-piece artisan Belgian dark chocolate truffles with champagne ganache.",
+    description: "Handcrafted Belgian dark chocolate truffles infused with authentic French Marc de Champagne and dusted with fine cocoa powder. The ultimate sweet complement to any fresh bouquet.",
+    sizes: [
+      { id: "standard", name: "8-Piece Keepsake Box", stems: "8 Confections", price: 12, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Luxury Gift Box & Ribbon", price: 0 }
+    ],
+    stems: []
+  },
+  {
+    id: "botanical-candle",
+    slug: "botanical-candle",
+    name: "Rose & Santal Botanical Candle",
+    subtitle: "Hand-Poured Coconut Soy Wax (50-hr Burn)",
+    category: "gift",
+    occasion: "Everyday",
+    tag: "Add-On",
+    rating: 5.0,
+    reviewCount: 62,
+    images: {
+      primary: "images/candle.webp",
+      gallery: ["images/candle.webp"]
+    },
+    shortDescription: "Hand-poured coconut soy candle with Bulgarian rose and warm Australian sandalwood.",
+    description: "An artisanal hand-poured botanical candle blending Damascus rose petals, velvet santal, and cedarwood notes in a luxury amber glass vessel. Clean 50-hour burn.",
+    sizes: [
+      { id: "standard", name: "8 oz Amber Glass Jar", stems: "50-Hour Burn", price: 16, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Signature Kraft Box", price: 0 }
+    ],
+    stems: []
+  },
+  {
+    id: "brass-shears",
+    slug: "brass-shears",
+    name: "Florist Brass Pruning Shears",
+    subtitle: "Heavy-Gauge Botanical Conditioning Shears",
+    category: "gift",
+    occasion: "Care",
+    tag: "Essential",
+    rating: 4.9,
+    reviewCount: 48,
+    images: {
+      primary: "images/shears.webp",
+      gallery: ["images/shears.webp"]
+    },
+    shortDescription: "Precision brass-plated shears for clean 45-degree floral stem conditioning.",
+    description: "Designed for floral care enthusiasts. Heavy-gauge brass alloy construction with razor-sharp carbon steel blades, ensuring clean 45-degree angle cuts for optimal stem hydration.",
+    sizes: [
+      { id: "standard", name: "Classic 7-Inch Shears", stems: "Carbon Steel Blade", price: 18, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Cotton Storage Pouch", price: 0 }
+    ],
+    stems: []
+  }
+];
+
+/**
+ * Get product by slug identifier (checks main catalog and gift add-ons)
  */
 export function getProductBySlug(slug) {
-  return PRODUCTS.find(p => p.slug === slug) || null;
+  return PRODUCTS.find(p => p.slug === slug) || GIFT_ADDONS.find(p => p.slug === slug) || null;
 }
 
 /**

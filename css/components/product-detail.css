@@ -323,6 +323,110 @@
   color: var(--primary);
 }
 
+/* Vase & Vessel Presentation Selector — Neatly Styled Column Radio */
+.pdp-vase-selector {
+  margin-bottom: 22px;
+}
+
+.pdp-vase-radio-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pdp-vase-radio-item {
+  border: 1.5px solid var(--border);
+  background-color: #ffffff;
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  user-select: none;
+}
+
+.pdp-vase-radio-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.pdp-radio-indicator {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.pdp-radio-indicator::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all var(--transition-fast);
+}
+
+.pdp-vase-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.3;
+}
+
+.pdp-vase-addon {
+  font-size: 0.78rem;
+  color: var(--primary);
+  font-weight: 700;
+  background: var(--primary-light, #f5f3ff);
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.pdp-vase-addon.included {
+  color: #059669;
+  background: #ecfdf5;
+}
+
+.pdp-vase-radio-item:hover {
+  border-color: var(--primary-border, #d8b4fe);
+  background-color: var(--bg-subtle, #faf7f5);
+}
+
+.pdp-vase-radio-item.active {
+  border-color: var(--primary);
+  background-color: var(--primary-light, #faf5ff);
+}
+
+.pdp-vase-radio-item.active .pdp-radio-indicator {
+  border-color: var(--primary);
+}
+
+.pdp-vase-radio-item.active .pdp-radio-indicator::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.pdp-vase-radio-item.active .pdp-vase-name {
+  color: var(--primary);
+  font-weight: 700;
+}
+
 /* Card Message */
 .pdp-card-message-group {
   margin-bottom: 26px;
@@ -478,33 +582,27 @@
 }
 
 .btn-add-to-cart {
+  flex: 1;
+  min-width: 180px;
   background-color: var(--primary);
   color: #ffffff;
-  padding: 13px 30px;
+  padding: 13px 32px;
   border-radius: var(--radius-full);
-  font-size: 0.88rem;
-  font-weight: 600;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: background-color var(--transition-fast);
+  box-shadow: 0 4px 14px rgba(94, 17, 115, 0.22);
+  transition: all var(--transition-fast);
 }
 
 .btn-add-to-cart:hover {
   background-color: var(--primary-hover);
-}
-
-.btn-buy-now {
-  background-color: var(--pink);
-  color: #ffffff;
-  padding: 13px 30px;
-  border-radius: var(--radius-full);
-  font-size: 0.88rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color var(--transition-fast);
-}
-
-.btn-buy-now:hover {
-  background-color: var(--pink-hover);
+  box-shadow: 0 6px 20px rgba(94, 17, 115, 0.32);
+  transform: translateY(-1px);
 }
 
 .btn-wishlist {
@@ -944,9 +1042,9 @@
     align-items: stretch;
   }
 
-  .btn-add-to-cart,
-  .btn-buy-now {
+  .btn-add-to-cart {
     text-align: center;
+    width: 100%;
   }
 
   .pdp-tabs-nav {

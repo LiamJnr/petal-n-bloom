@@ -1,8 +1,9 @@
-import { PRODUCTS } from '../../js/data/products.js'
+import { PRODUCTS, GIFT_ADDONS } from '../../js/data/products.js'
 
 const MAX_LINE_ITEMS = 25
 const MAX_QUANTITY_PER_LINE = 20
-const productBySlug = new Map(PRODUCTS.map((product) => [product.slug, product]))
+const allProducts = [...PRODUCTS, ...(GIFT_ADDONS || [])]
+const productBySlug = new Map(allProducts.map((product) => [product.slug, product]))
 
 export async function onRequestPost(context) {
   try {

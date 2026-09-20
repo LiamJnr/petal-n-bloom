@@ -5,3 +5,7 @@
 .dev.vars
 .wrangler/
 node_modules/
+
+# Generated invoices
+invoice-*.html
+invoice*.html

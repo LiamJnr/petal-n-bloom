@@ -60,3 +60,11 @@
 @keyframes confirmation-pulse {
   50% { transform: scale(0.88); opacity: 0.62; }
 }
+
+.order-confirmation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 28px;
+}

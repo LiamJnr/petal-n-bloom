@@ -1,6 +1,7 @@
 import { clearCart } from './cart.js'
 import { navigateToHome } from './router.js'
 import { ICONS } from '../lib/icons.js'
+import { printReceipt } from '../lib/receipt.js'
 
 const POLL_INTERVAL_MS = 2000
 const MAX_POLLS = 15
@@ -54,6 +55,7 @@ async function pollOrderStatus(view, orderId) {
           message: 'Thank you for your order. Order details have been sent to the recipient email.',
           action: 'Continue shopping',
           reference: orderId,
+          order: payload.order,
         })
         return
       }
@@ -91,8 +93,9 @@ async function pollOrderStatus(view, orderId) {
   })
 }
 
-function renderMessage(view, { eyebrow, title, message, action, loading = false, reference = '' }) {
+function renderMessage(view, { eyebrow, title, message, action, loading = false, reference = '', order = null }) {
   const safeReference = reference ? `Order reference: ${reference.slice(0, 8).toUpperCase()}` : ''
+  const showReceipt = !loading && order && order.status === 'paid'
   view.innerHTML = `
     <section class="order-confirmation">
       <div class="order-confirmation-card">
@@ -101,11 +104,17 @@ function renderMessage(view, { eyebrow, title, message, action, loading = false,
         <h1>${title}</h1>
         <p class="order-confirmation-message">${message}</p>
         ${safeReference ? `<p class="order-confirmation-reference">${safeReference}</p>` : ''}
-        ${action ? '<button type="button" class="button button-dark" id="btn-order-confirmation-home">' + action + '</button>' : ''}
+        <div class="order-confirmation-actions">
+          ${action ? '<button type="button" class="button button-dark" id="btn-order-confirmation-home">' + action + '</button>' : ''}
+          ${showReceipt ? '<button type="button" class="button button-outline" id="btn-order-receipt">📄 Download Receipt</button>' : ''}
+        </div>
       </div>
     </section>
   `
   document.getElementById('btn-order-confirmation-home')?.addEventListener('click', () => navigateToHome())
+  if (showReceipt) {
+    document.getElementById('btn-order-receipt')?.addEventListener('click', () => printReceipt(order))
+  }
 }
 
 function isOrderId(value) {

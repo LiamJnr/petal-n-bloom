@@ -5,7 +5,7 @@ export async function onRequestGet({ params, env }) {
   }
 
   let order = await env.DB.prepare(
-    'SELECT id, status, ps_reference, total_cents, created_at, paid_at FROM orders WHERE id = ?',
+    'SELECT id, status, purchaser_email, ps_reference, total_cents, cart_json, buyer_json, delivery_json, created_at, paid_at FROM orders WHERE id = ?',
   ).bind(id).first()
 
   if (!order) return json({ error: 'Order not found.' }, 404)

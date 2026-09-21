@@ -71,7 +71,9 @@ async function createCheckout({ request, env }) {
 
   const customFields = [
     { display_name: 'Order', variable_name: 'order_ref', value: orderId },
-    { display_name: 'Total USD', variable_name: 'total_usd', value: `$${subtotalUsd.toFixed(2)}` },
+    { display_name: 'Subtotal USD', variable_name: 'subtotal_usd', value: `$${subtotalUsd.toFixed(2)}` },
+    { display_name: 'Delivery Fee', variable_name: 'delivery_fee', value: deliveryFeeUsd === 0 ? 'FREE (Over $75)' : `$${deliveryFeeUsd.toFixed(2)}` },
+    { display_name: 'Total USD', variable_name: 'total_usd', value: `$${totalUsd.toFixed(2)}` },
     { display_name: 'Exchange Rate', variable_name: 'exchange_rate', value: `1 USD = ${exchangeRate} GHS` },
     { display_name: 'Items', variable_name: 'item_count', value: `${itemCount} item${itemCount === 1 ? '' : 's'}` },
   ]
@@ -100,14 +102,15 @@ async function createCheckout({ request, env }) {
     metadata: {
       order_ref: orderId,
       buyer_name: buyer.name,
-      amount_usd: `$${subtotalUsd.toFixed(2)}`,
+      amount_usd: `$${totalUsd.toFixed(2)}`,
+      subtotal_usd: `$${subtotalUsd.toFixed(2)}`,
+      delivery_fee_usd: deliveryFeeUsd === 0 ? 'FREE' : `$${deliveryFeeUsd.toFixed(2)}`,
       exchange_rate: exchangeRate,
       cart_description: checkoutDescription(items),
       card_note: delivery.card_note || '',
       delivery_date: delivery.delivery_date || '',
       time_window: delivery.time_window || '',
       recipient_name: delivery.recipient_name || buyer.name,
-      recipient_phone: delivery.recipient_phone || buyer.phone || '',
       custom_fields: customFields,
     },
   }

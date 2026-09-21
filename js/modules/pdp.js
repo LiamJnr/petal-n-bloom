@@ -231,9 +231,9 @@ export function renderPDP(slug) {
               maxlength="250"
               placeholder="Write your heartfelt note for the recipient (e.g. Happy Anniversary!)..."
             ></textarea>
-            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); margin-top: 4px;">
-              <span>Handwritten &amp; included free</span>
-              <span id="pdp-card-char-count">0 / 250</span>
+            <div class="pdp-card-message-footer">
+              <span class="pdp-card-message-hint">Handwritten &amp; included free</span>
+              <span id="pdp-card-char-count" class="pdp-card-char-count">0 / 250</span>
             </div>
           </div>
 

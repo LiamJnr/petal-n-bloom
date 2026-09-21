@@ -326,24 +326,20 @@ function buildReceiptHtml(order) {
 
 /**
  * Open the print receipt for a paid order in a new browser tab.
- * Falls back to a Blob URL if popups are blocked.
+ * Uses a Blob URL for reliable cross-browser and CSP-safe rendering.
  * @param {object} order - Full order object from /api/orders/:id
  */
 export function printReceipt(order) {
   const html = buildReceiptHtml(order)
-  const win = window.open('', '_blank', 'noopener')
-  if (!win) {
-    // Popup blocked — fallback to blob URL
-    const blob = new Blob([html], { type: 'text/html' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.target = '_blank'
-    a.rel = 'noopener'
-    a.click()
-    setTimeout(() => URL.revokeObjectURL(url), 10000)
-    return
-  }
-  win.document.write(html)
-  win.document.close()
+  const blob = new Blob([html], { type: 'text/html' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.target = '_blank'
+  a.rel = 'noopener'
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  // Clean up the object URL after 30s to free memory
+  setTimeout(() => URL.revokeObjectURL(url), 30000)
 }

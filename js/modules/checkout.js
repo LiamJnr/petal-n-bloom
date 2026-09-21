@@ -176,6 +176,9 @@ export function renderCheckoutPage() {
   const subtotal = getCartSubtotal();
   const deliveryState = getDeliveryCountdownState();
   const minDateStr = deliveryState.earliestDateStr;
+  const ghsEstimate = getInternationalEstimates(subtotal).find(e => e.code === "GHS");
+  const ghsFormatted = ghsEstimate ? ghsEstimate.formatted : `GH₵ ${(subtotal * 11.17).toFixed(2)}`;
+  const usdFormatted = `$${subtotal.toFixed(2)}`;
 
   checkoutView.innerHTML = `
     <!-- Top PDP-Style Page Header & Breadcrumbs Banner -->
@@ -200,18 +203,49 @@ export function renderCheckoutPage() {
           <div class="checkout-form-card">
             
             <div class="checkout-header-intro">
-              <h2>Recipient &amp; Delivery Logistics</h2>
-              <p class="checkout-subtitle">Please provide the delivery destination and flower recipient details below.</p>
+              <h2>Customer &amp; Delivery Logistics</h2>
+              <p class="checkout-subtitle">Please provide your contact details for receipt delivery, followed by the recipient and destination details.</p>
             </div>
 
             <form id="recipient-order-form">
               
-              <!-- 1. Recipient Information -->
+              <!-- 1. Customer / Purchaser Information -->
               <fieldset class="checkout-fieldset">
                 <legend class="checkout-legend">
                   <span class="legend-num">1</span>
+                  <span>Customer Information</span>
+                </legend>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="cust-name">Your Full Name *</label>
+                    <input type="text" id="cust-name" class="form-control" placeholder="e.g. Eleanor Vance" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="cust-email">Your Email Address (For order receipt) *</label>
+                    <input type="email" id="cust-email" class="form-control" placeholder="e.g. eleanor@example.com" required />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="cust-phone">Your Phone Number (Optional)</label>
+                  <input type="tel" id="cust-phone" class="form-control" placeholder="e.g. +1 555-0199" />
+                </div>
+              </fieldset>
+
+              <!-- 2. Recipient & Hand-Delivery Destination -->
+              <fieldset class="checkout-fieldset">
+                <legend class="checkout-legend">
+                  <span class="legend-num">2</span>
                   <span>Recipient Information</span>
                 </legend>
+
+                <div class="checkout-same-as-buyer-wrap">
+                  <label class="checkout-checkbox-label" for="same-as-buyer">
+                    <input type="checkbox" id="same-as-buyer" class="checkout-checkbox" />
+                    <span>I am the recipient (Deliver to myself)</span>
+                  </label>
+                </div>
 
                 <div class="form-row">
                   <div class="form-group">
@@ -219,18 +253,10 @@ export function renderCheckoutPage() {
                     <input type="text" id="rec-name" class="form-control" placeholder="e.g. Clara Harrington" required />
                   </div>
                   <div class="form-group">
-                    <label for="rec-email">Recipient Email *</label>
-                    <input type="email" id="rec-email" class="form-control" placeholder="e.g. clara@example.com" required />
+                    <label for="rec-phone">Recipient Phone (For courier contact)</label>
+                    <input type="tel" id="rec-phone" class="form-control" placeholder="e.g. +1 555-0144" />
                   </div>
                 </div>
-              </fieldset>
-
-              <!-- 2. Hand-Delivery Address & Location -->
-              <fieldset class="checkout-fieldset">
-                <legend class="checkout-legend">
-                  <span class="legend-num">2</span>
-                  <span>Hand-Delivery Destination</span>
-                </legend>
 
                 <div class="form-group">
                   <label for="rec-address">Street Address *</label>
@@ -315,7 +341,7 @@ export function renderCheckoutPage() {
               <fieldset class="checkout-fieldset">
                 <legend class="checkout-legend">
                   <span class="legend-num">4</span>
-                  <span>Complimentary Letterpress Card Note</span>
+                  <span>Letterpress Card Note</span>
                 </legend>
 
                 <div class="form-group">
@@ -340,6 +366,56 @@ export function renderCheckoutPage() {
                   </div>
                 </div>
               </fieldset>
+
+              <!-- International Currency & Billing Disclaimer -->
+              <div class="checkout-billing-disclaimer" id="checkout-billing-disclaimer">
+                <div class="billing-disclaimer-inner">
+                  <div class="billing-disclaimer-header">
+                    <svg class="billing-disclaimer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="2" y1="12" x2="22" y2="12"></line>
+                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                    <span>International Billing &amp; Currency Notice</span>
+                  </div>
+                  <p class="billing-disclaimer-text">
+                    All orders are securely processed in USD. Sister store estimates (GHS, CAD, and Pounds/GBP) are shown for reference. <strong>When you enter your payment details, the final charge will convert to USD and your card provider will handle the standard conversion to your native currency</strong>.
+                  </p>
+
+                  <!-- Dynamic Payment Currency Conversion Micro-Animation -->
+                  <div class="disclaimer-sim-card" aria-hidden="true">
+                    <div class="sim-card-input-row">
+                      <span class="sim-card-label">Card Number</span>
+                      <div class="sim-card-input">
+                        <span class="sim-card-icon">💳</span>
+                        <div class="sim-card-digits">
+                          <span class="sim-dots">•••• •••• •••• </span>
+                          <span class="sim-typed-digits">4242</span>
+                          <span class="sim-cursor"></span>
+                        </div>
+                        <span class="sim-check-badge">✓</span>
+                      </div>
+                    </div>
+                    <div class="sim-action-row">
+                      <div class="sim-pay-btn">
+                        <span class="sim-btn-content sim-btn-ghs">
+                          <svg class="sim-lock-svg" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                            <path d="M0 0h24v24H0z" fill="none" />
+                            <path fill="currentColor" d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7c0-2.757-2.243-5-5-5M9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9zm4 10.723V20h-2v-2.277a1.993 1.993 0 0 1 .567-3.677A2 2 0 0 1 14 16a1.99 1.99 0 0 1-1 1.723" />
+                          </svg> Pay ${ghsFormatted}
+                        </span>
+                        <span class="sim-btn-content sim-btn-usd">
+                          <svg class="sim-lock-svg" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                            <path d="M0 0h24v24H0z" fill="none" />
+                            <path fill="currentColor" d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7c0-2.757-2.243-5-5-5M9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9zm4 10.723V20h-2v-2.277a1.993 1.993 0 0 1 .567-3.677A2 2 0 0 1 14 16a1.99 1.99 0 0 1-1 1.723" />
+                          </svg> Pay ${usdFormatted} USD
+                        </span>
+                      </div>
+                      <span class="sim-conversion-pill">Auto-converts to USD</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               <button type="submit" class="btn-proceed-payment" id="btn-submit-order-details">
                 Proceed to Checkout &rarr;
@@ -448,6 +524,42 @@ function bindCheckoutEvents() {
     });
   });
 
+  // "Same as customer" checkbox handler
+  const sameAsBuyerCheckbox = document.getElementById("same-as-buyer");
+  const custNameInput = document.getElementById("cust-name");
+  const custPhoneInput = document.getElementById("cust-phone");
+  const recNameInput = document.getElementById("rec-name");
+  const recPhoneInput = document.getElementById("rec-phone");
+
+  const syncRecipientWithBuyer = () => {
+    if (sameAsBuyerCheckbox?.checked) {
+      if (recNameInput && custNameInput) {
+        recNameInput.value = custNameInput.value;
+      }
+      if (recPhoneInput && custPhoneInput) {
+        recPhoneInput.value = custPhoneInput.value;
+      }
+    }
+  };
+
+  sameAsBuyerCheckbox?.addEventListener("change", () => {
+    if (sameAsBuyerCheckbox.checked) {
+      syncRecipientWithBuyer();
+    }
+  });
+
+  custNameInput?.addEventListener("input", () => {
+    if (sameAsBuyerCheckbox?.checked && recNameInput) {
+      recNameInput.value = custNameInput.value;
+    }
+  });
+
+  custPhoneInput?.addEventListener("input", () => {
+    if (sameAsBuyerCheckbox?.checked && recPhoneInput) {
+      recPhoneInput.value = custPhoneInput.value;
+    }
+  });
+
   // Card note character counter & sync to storage
   const cardMsgTextarea = document.getElementById("rec-card-msg");
   const charCount = document.getElementById("checkout-char-count");
@@ -476,10 +588,16 @@ function bindCheckoutEvents() {
   form?.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const name = document.getElementById("rec-name")?.value.trim() || "";
-    const email = document.getElementById("rec-email")?.value.trim() || "";
-    const phone = document.getElementById("rec-phone")?.value.trim() || "";
-    const street = document.getElementById("rec-street")?.value.trim() || "";
+    // Customer (Purchaser / Billing) details
+    const custName = document.getElementById("cust-name")?.value.trim() || "";
+    const custEmail = document.getElementById("cust-email")?.value.trim() || "";
+    const custPhone = document.getElementById("cust-phone")?.value.trim() || "";
+
+    // Flower Recipient & Delivery Destination details
+    const recName = document.getElementById("rec-name")?.value.trim() || "";
+    const recPhone = document.getElementById("rec-phone")?.value.trim() || "";
+    const address = document.getElementById("rec-address")?.value.trim() || "";
+    const suite = document.getElementById("rec-suite")?.value.trim() || "";
     const city = document.getElementById("rec-city")?.value.trim() || "";
     const state = document.getElementById("rec-state")?.value.trim() || "";
     const zip = document.getElementById("rec-zip")?.value.trim() || "";
@@ -488,15 +606,15 @@ function bindCheckoutEvents() {
     const cardNote = document.getElementById("rec-card-msg")?.value.trim() || "";
 
     const buyer = {
-      name,
-      email,
-      phone
+      name: custName,
+      email: custEmail,
+      phone: custPhone
     };
 
     const delivery = {
-      recipient_name: name,
-      recipient_phone: phone,
-      street,
+      recipient_name: recName,
+      recipient_phone: recPhone,
+      street: suite ? `${address}, ${suite}` : address,
       city,
       state,
       zip,
@@ -552,4 +670,23 @@ function bindCheckoutEvents() {
       });
     }
   });
+
+  // Observe disclaimer for scroll in-view rotating border animation
+  const disclaimerEl = document.getElementById("checkout-billing-disclaimer");
+  if (disclaimerEl) {
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            disclaimerEl.classList.add("is-in-view");
+          } else {
+            disclaimerEl.classList.remove("is-in-view");
+          }
+        });
+      }, { threshold: 0.2 });
+      observer.observe(disclaimerEl);
+    } else {
+      disclaimerEl.classList.add("is-in-view");
+    }
+  }
 }

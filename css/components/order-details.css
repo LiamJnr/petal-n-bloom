@@ -108,6 +108,37 @@
   gap: 6px;
 }
 
+/* Same As Customer Checkbox */
+.checkout-same-as-buyer-wrap {
+  padding: 8px 12px;
+  background: #faf7fd;
+  border-radius: 8px;
+  border: 1px solid #f0e6f7;
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+}
+
+.checkout-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: #3b284c;
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: 0;
+}
+
+.checkout-checkbox {
+  accent-color: var(--primary);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
 .form-control {
   width: 100%;
   padding: 12px 16px;
@@ -488,6 +519,330 @@
 .trust-badge-icon svg {
   width: 100%;
   height: 100%;
+}
+
+/* International Billing Disclaimer with GPU-Accelerated Rotating Beam */
+.checkout-billing-disclaimer {
+  position: relative;
+  border-radius: 12px;
+  padding: 2px;
+  margin-bottom: 22px;
+  margin-top: 8px;
+  background: #e8ddf5;
+  overflow: hidden;
+  box-shadow: 0 4px 16px -2px rgba(126, 74, 165, 0.08);
+}
+
+.checkout-billing-disclaimer::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 280deg,
+    #7e4aa5 315deg,
+    #c084fc 340deg,
+    #f472b6 355deg,
+    transparent 360deg
+  );
+  opacity: 0;
+  transform: rotate(0deg);
+  transform-origin: center center;
+  will-change: transform, opacity;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.checkout-billing-disclaimer.is-in-view::before {
+  opacity: 1;
+  animation: rotate-disclaimer-border 4s linear infinite;
+}
+
+@keyframes rotate-disclaimer-border {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.billing-disclaimer-inner {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(135deg, #faf6fd 0%, #fdf9ff 100%);
+  border-radius: 10px;
+  padding: 14px 18px;
+}
+
+.billing-disclaimer-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 6px;
+  letter-spacing: 0.2px;
+}
+
+.billing-disclaimer-icon {
+  width: 16px;
+  height: 16px;
+  stroke: var(--primary);
+  flex-shrink: 0;
+}
+
+.billing-disclaimer-text {
+  font-size: 0.81rem;
+  color: #4b3d54;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.billing-disclaimer-text strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* Payment Currency Conversion Micro-Animation Card */
+.disclaimer-sim-card {
+  background: #ffffff;
+  border: 1px solid #ecdff8;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 12px;
+  box-shadow: 0 2px 8px -1px rgba(91, 43, 130, 0.05);
+}
+
+.sim-card-input-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 9px;
+}
+
+.sim-card-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #7c6888;
+}
+
+.sim-card-input {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #faf7fd;
+  border: 1px solid #e5daf0;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: #2d1f3b;
+  min-width: 175px;
+}
+
+.sim-card-icon {
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.sim-card-digits {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.sim-dots {
+  color: #a894b5;
+}
+
+.sim-typed-digits {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  animation: sim-type-anim 5s steps(4, end) infinite;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.sim-cursor {
+  display: inline-block;
+  width: 1.5px;
+  height: 11px;
+  background: var(--primary);
+  animation: sim-cursor-blink 0.7s infinite;
+  margin-left: 2px;
+}
+
+.sim-check-badge {
+  margin-left: auto;
+  color: #10b981;
+  font-weight: 800;
+  font-size: 0.75rem;
+  animation: sim-check-anim 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.sim-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sim-pay-btn {
+  position: relative;
+  overflow: hidden;
+  height: 28px;
+  width: 148px;
+  border-radius: 6px;
+  background: #059669;
+  color: #ffffff;
+  font-size: 0.73rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.28);
+}
+
+.sim-lock-svg {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  fill: currentColor;
+}
+
+.sim-btn-content {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  white-space: nowrap;
+  padding: 0 6px;
+}
+
+.sim-btn-ghs {
+  animation: sim-ghs-flip 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.sim-btn-usd {
+  animation: sim-usd-flip 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.sim-conversion-pill {
+  font-size: 0.69rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  animation: sim-pill-pulse 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Micro-Animation Keyframes */
+@keyframes sim-type-anim {
+  0%, 15% {
+    max-width: 0;
+    opacity: 0;
+  }
+  30%, 88% {
+    max-width: 32px;
+    opacity: 1;
+  }
+  95%, 100% {
+    max-width: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes sim-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes sim-check-anim {
+  0%, 26% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  34%, 88% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  95%, 100% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+@keyframes sim-ghs-flip {
+  0%, 35% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  44%, 90% {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  96%, 100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sim-usd-flip {
+  0%, 35% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  44%, 88% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  94%, 100% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@keyframes sim-pill-pulse {
+  0%, 35% {
+    background: rgba(126, 74, 165, 0.08);
+    color: #7e4aa5;
+    transform: scale(1);
+  }
+  44%, 88% {
+    background: rgba(16, 185, 129, 0.12);
+    color: #047857;
+    transform: scale(1.02);
+  }
+  94%, 100% {
+    background: rgba(126, 74, 165, 0.08);
+    color: #7e4aa5;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .sim-card-input-row,
+  .sim-action-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .sim-card-input,
+  .sim-pay-btn {
+    width: 100%;
+  }
 }
 
 /* Proceed Button */

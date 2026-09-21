@@ -248,7 +248,7 @@ function renderCartDrawerMarkup() {
         <div class="cart-total-row">
           <div class="cart-total-label-wrap">
             <span>Estimated Total:</span>
-            <small class="cart-delivery-note">Complimentary delivery included</small>
+            <small class="cart-delivery-note" id="cart-delivery-note">Complimentary delivery on orders $75+</small>
           </div>
           <strong id="cart-total-val">$0.00</strong>
         </div>
@@ -461,14 +461,29 @@ export function updateCartUI() {
     `;
   }).join("");
 
-  // 5. Update Totals
+  // 5. Update Totals & Delivery Note
+  const isFreeDelivery = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0;
+  const deliveryFee = (subtotal === 0 || isFreeDelivery) ? 0 : 14;
+  const total = subtotal + deliveryFee;
+
+  const deliveryNoteEl = document.getElementById("cart-delivery-note");
+  if (deliveryNoteEl) {
+    if (subtotal === 0) {
+      deliveryNoteEl.textContent = "Complimentary delivery on orders $75+";
+    } else if (isFreeDelivery) {
+      deliveryNoteEl.textContent = "Complimentary delivery applied";
+    } else {
+      deliveryNoteEl.textContent = "+$14 delivery fee";
+    }
+  }
+
   if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
-  if (totalEl) totalEl.textContent = `$${subtotal.toFixed(2)}`;
+  if (totalEl) totalEl.textContent = `$${total.toFixed(2)}`;
 
   // 6. Update International Estimates (Sleek Inline Strip)
   const intlEstimatesEl = document.getElementById("cart-intl-estimates");
   if (intlEstimatesEl) {
-    const estimates = getInternationalEstimates(subtotal);
+    const estimates = getInternationalEstimates(total);
     intlEstimatesEl.innerHTML = `
       <span class="cart-intl-prefix">Est:</span>
       <div class="cart-intl-strip-items">

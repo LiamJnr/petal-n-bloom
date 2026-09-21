@@ -176,9 +176,12 @@ export function renderCheckoutPage() {
   const subtotal = getCartSubtotal();
   const deliveryState = getDeliveryCountdownState();
   const minDateStr = deliveryState.earliestDateStr;
-  const ghsEstimate = getInternationalEstimates(subtotal).find(e => e.code === "GHS");
-  const ghsFormatted = ghsEstimate ? ghsEstimate.formatted : `GH₵ ${(subtotal * 11.17).toFixed(2)}`;
-  const usdFormatted = `$${subtotal.toFixed(2)}`;
+  const isFreeDelivery = subtotal >= 75;
+  const deliveryFee = isFreeDelivery ? 0 : 14;
+  const totalDue = subtotal + deliveryFee;
+  const ghsEstimate = getInternationalEstimates(totalDue).find(e => e.code === "GHS");
+  const ghsFormatted = ghsEstimate ? ghsEstimate.formatted : `GH₵ ${(totalDue * 11.17).toFixed(2)}`;
+  const usdFormatted = `$${totalDue.toFixed(2)}`;
 
   checkoutView.innerHTML = `
     <!-- Top PDP-Style Page Header & Breadcrumbs Banner -->
@@ -247,15 +250,9 @@ export function renderCheckoutPage() {
                   </label>
                 </div>
 
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="rec-name">Recipient Full Name *</label>
-                    <input type="text" id="rec-name" class="form-control" placeholder="e.g. Clara Harrington" required />
-                  </div>
-                  <div class="form-group">
-                    <label for="rec-phone">Recipient Phone (For courier contact)</label>
-                    <input type="tel" id="rec-phone" class="form-control" placeholder="e.g. +1 555-0144" />
-                  </div>
+                <div class="form-group">
+                  <label for="rec-name">Recipient Full Name *</label>
+                  <input type="text" id="rec-name" class="form-control" placeholder="e.g. Clara Harrington" required />
                 </div>
 
                 <div class="form-group">
@@ -299,7 +296,7 @@ export function renderCheckoutPage() {
                 </legend>
 
                 <div class="form-group">
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px 12px; margin-bottom: 6px;">
                     <label for="rec-delivery-date" style="margin-bottom: 0;">Requested Delivery Date *</label>
                     <span style="font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: 9999px; background: ${deliveryState.isSameDayAvailable ? "rgba(16, 185, 129, 0.12)" : "rgba(245, 158, 11, 0.12)"}; color: ${deliveryState.isSameDayAvailable ? "#047857" : "#b45309"};">
                       ${deliveryState.badgeText}
@@ -345,7 +342,7 @@ export function renderCheckoutPage() {
                 </legend>
 
                 <div class="form-group">
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px 12px; margin-bottom: 6px;">
                     <label for="rec-card-msg" style="margin-bottom: 0;">Personal Gift Note (Printed on luxury cardstock)</label>
                     ${cart[0]?.giftMessage ? `
                       <span class="badge-transferred" style="font-size: 0.72rem; font-weight: 600; color: #047857; background: rgba(16, 185, 129, 0.12); padding: 2px 8px; border-radius: 9999px;">
@@ -456,19 +453,27 @@ export function renderCheckoutPage() {
 
             <!-- Totals & Calculations -->
             <div class="checkout-calc-rows">
+              <div class="checkout-breakdown-row" style="display:flex; justify-content:space-between; font-size:0.88rem; color:var(--muted); margin-bottom:6px;">
+                <span>Subtotal:</span>
+                <span>$${subtotal.toFixed(2)}</span>
+              </div>
+              <div class="checkout-breakdown-row" style="display:flex; justify-content:space-between; font-size:0.88rem; color:var(--muted); margin-bottom:10px;">
+                <span>Delivery:</span>
+                <span>${isFreeDelivery ? '<strong style="color:#059669;">FREE</strong>' : '<strong>$14.00</strong>'}</span>
+              </div>
               <div class="checkout-total-row">
                 <div class="checkout-total-label-wrap">
                   <span>Total Due:</span>
-                  <small class="checkout-delivery-note">Complimentary delivery &amp; card included</small>
+                  <small class="checkout-delivery-note">${isFreeDelivery ? 'Complimentary delivery applied (Orders over $75)' : 'Standard delivery ($14.00) applied'}</small>
                 </div>
-                <strong>$${subtotal.toFixed(2)}</strong>
+                <strong>$${totalDue.toFixed(2)}</strong>
               </div>
 
               <!-- International Store Estimates -->
               <div class="checkout-intl-prices">
                 <div class="checkout-intl-header">International Store Estimates</div>
                 <div class="checkout-intl-strip-items">
-                  ${getInternationalEstimates(subtotal).map(est => `
+                  ${getInternationalEstimates(totalDue).map(est => `
                     <span class="checkout-intl-item">
                       <span class="checkout-intl-code">${est.code}</span>
                       <span class="checkout-intl-val">${est.formatted}</span>
@@ -527,18 +532,11 @@ function bindCheckoutEvents() {
   // "Same as customer" checkbox handler
   const sameAsBuyerCheckbox = document.getElementById("same-as-buyer");
   const custNameInput = document.getElementById("cust-name");
-  const custPhoneInput = document.getElementById("cust-phone");
   const recNameInput = document.getElementById("rec-name");
-  const recPhoneInput = document.getElementById("rec-phone");
 
   const syncRecipientWithBuyer = () => {
-    if (sameAsBuyerCheckbox?.checked) {
-      if (recNameInput && custNameInput) {
-        recNameInput.value = custNameInput.value;
-      }
-      if (recPhoneInput && custPhoneInput) {
-        recPhoneInput.value = custPhoneInput.value;
-      }
+    if (sameAsBuyerCheckbox?.checked && recNameInput && custNameInput) {
+      recNameInput.value = custNameInput.value;
     }
   };
 
@@ -551,12 +549,6 @@ function bindCheckoutEvents() {
   custNameInput?.addEventListener("input", () => {
     if (sameAsBuyerCheckbox?.checked && recNameInput) {
       recNameInput.value = custNameInput.value;
-    }
-  });
-
-  custPhoneInput?.addEventListener("input", () => {
-    if (sameAsBuyerCheckbox?.checked && recPhoneInput) {
-      recPhoneInput.value = custPhoneInput.value;
     }
   });
 
@@ -595,7 +587,6 @@ function bindCheckoutEvents() {
 
     // Flower Recipient & Delivery Destination details
     const recName = document.getElementById("rec-name")?.value.trim() || "";
-    const recPhone = document.getElementById("rec-phone")?.value.trim() || "";
     const address = document.getElementById("rec-address")?.value.trim() || "";
     const suite = document.getElementById("rec-suite")?.value.trim() || "";
     const city = document.getElementById("rec-city")?.value.trim() || "";
@@ -613,7 +604,6 @@ function bindCheckoutEvents() {
 
     const delivery = {
       recipient_name: recName,
-      recipient_phone: recPhone,
       street: suite ? `${address}, ${suite}` : address,
       city,
       state,

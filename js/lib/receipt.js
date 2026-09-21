@@ -116,12 +116,18 @@ function buildReceiptHtml(order) {
   }, 0)
   const subtotalCents = Math.round(subtotalUsd * 100)
 
+  // Delivery fee ($14.00 for orders under $75, Free for $75+)
+  const deliveryFeeUsd = (typeof delivery.delivery_fee_usd === 'number')
+    ? delivery.delivery_fee_usd
+    : (subtotalUsd >= 75 ? 0 : 14)
+  const deliveryFeeCents = Math.round(deliveryFeeUsd * 100)
+  const totalUsdCents = subtotalCents + deliveryFeeCents
+
   // GHS settled amount (DB total_cents is in pesewas)
   const ghsSettled = ((order.total_cents || 0) / 100).toFixed(2)
 
   // Recipient & delivery details
   const recipientName = delivery.recipient_name || buyer.name || ''
-  const recipientPhone = delivery.recipient_phone || buyer.phone || ''
   const deliveryAddress = [
     delivery.address_line1,
     delivery.address_line2,
@@ -159,7 +165,6 @@ function buildReceiptHtml(order) {
   // Delivery section rows
   const deliveryRows = [
     recipientName ? `<p><strong>Recipient:</strong> ${esc(recipientName)}</p>` : '',
-    recipientPhone ? `<p><strong>Phone:</strong> ${esc(recipientPhone)}</p>` : '',
     deliveryAddress ? `<p><strong>Delivery Address:</strong> ${esc(deliveryAddress)}</p>` : '',
     deliveryDate ? `<p><strong>Scheduled Date:</strong> ${esc(deliveryDate)}</p>` : '',
     timeWindow ? `<p><strong>Time Window:</strong> ${esc(timeWindow)}</p>` : '',
@@ -311,8 +316,8 @@ function buildReceiptHtml(order) {
       <div class="totals">
         <div class="totals-inner">
           <div class="row"><span>Subtotal</span><span>${usd(subtotalCents)}</span></div>
-          <div class="row"><span>Delivery &amp; Handling</span><span class="free-tag">Free</span></div>
-          <div class="row total"><span>Total Paid</span><span class="amount">${usd(subtotalCents)}</span></div>
+          <div class="row"><span>Delivery &amp; Handling</span>${deliveryFeeUsd === 0 ? '<span class="free-tag">Free</span>' : `<span>${usd(deliveryFeeCents)}</span>`}</div>
+          <div class="row total"><span>Total Paid</span><span class="amount">${usd(totalUsdCents)}</span></div>
           <div class="settled">Settled via Paystack: GHS ${ghsSettled}</div>
         </div>
       </div>

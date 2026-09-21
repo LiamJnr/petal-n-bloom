@@ -41,12 +41,19 @@ async function createCheckout({ request, env }) {
 
   const exchangeRate = Number(env.PAYSTACK_EXCHANGE_RATE || 11.17)
   const subtotalUsd = items.reduce((sum, item) => sum + item.unit_price_usd * item.quantity, 0)
-  const totalGhs = Number((subtotalUsd * exchangeRate).toFixed(2))
+  const deliveryFeeUsd = subtotalUsd >= 75 ? 0 : 14
+  const totalUsd = subtotalUsd + deliveryFeeUsd
+  const totalGhs = Number((totalUsd * exchangeRate).toFixed(2))
   const totalPesewas = Math.round(totalGhs * 100)
   const orderId = crypto.randomUUID()
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
   const siteUrl = new URL(request.url).origin
   const callbackUrl = `${siteUrl}/?view=order-confirmed&order=${encodeURIComponent(orderId)}`
+
+  const deliveryWithFee = {
+    ...delivery,
+    delivery_fee_usd: deliveryFeeUsd,
+  }
 
   await env.DB.prepare(
     `INSERT INTO orders (id, status, purchaser_email, cart_json, buyer_json, delivery_json, total_cents)
@@ -56,7 +63,7 @@ async function createCheckout({ request, env }) {
     buyer.email,
     JSON.stringify(items),
     JSON.stringify(buyer),
-    JSON.stringify(delivery),
+    JSON.stringify(deliveryWithFee),
     totalPesewas,
   ).run()
 
@@ -82,14 +89,6 @@ async function createCheckout({ request, env }) {
       display_name: 'Delivery Schedule',
       variable_name: 'delivery_schedule',
       value: `${delivery.delivery_date} (${delivery.time_window || 'Standard'})`,
-    })
-  }
-
-  if (delivery.recipient_phone) {
-    customFields.push({
-      display_name: 'Recipient Phone',
-      variable_name: 'recipient_phone',
-      value: delivery.recipient_phone,
     })
   }
 
@@ -202,7 +201,6 @@ function validateDelivery(delivery, cardNote) {
 
   return {
     recipient_name: clean('recipient_name', 100),
-    recipient_phone: clean('recipient_phone', 30),
     street: clean('street', 200),
     city: clean('city', 100),
     state: clean('state', 50),

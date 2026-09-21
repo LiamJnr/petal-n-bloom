@@ -188,7 +188,7 @@ function buildReceiptHtml(order) {
       padding: 28px 40px 24px; border-bottom: 1px solid #e8e1f5;
       display: flex; align-items: center; justify-content: space-between; gap: 20px;
     }
-    .brand-logo { width: 120px; height: auto; }
+    .brand-logo { height: 64px; width: auto; }
     .receipt-meta { text-align: right; }
     .badge-paid {
       display: inline-block; background: #ecfdf5; color: #065f46;

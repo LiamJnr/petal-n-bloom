@@ -601,23 +601,31 @@
 .payment-readiness-checklist {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 12px;
-  background: rgba(255, 255, 255, 0.7);
+  gap: 12px;
+  margin: 12px 0 14px;
+  background: #ffffff;
   border: 1px solid #ebdff8;
-  border-radius: 8px;
-  padding: 10px 12px;
+  border-radius: 10px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 4px rgba(91, 43, 130, 0.04);
 }
 
 .readiness-item {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f6effc;
+}
+
+.readiness-item:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
 .readiness-icon-wrap {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: #f1e6fc;
   color: var(--primary);
@@ -625,27 +633,34 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 .readiness-icon-wrap svg {
-  width: 13px;
-  height: 13px;
+  width: 14px;
+  height: 14px;
   stroke: var(--primary);
 }
 
 .readiness-content {
   display: flex;
   flex-direction: column;
-  font-size: 0.78rem;
-  line-height: 1.4;
+  gap: 3px;
+  font-size: 0.79rem;
+  line-height: 1.48;
   color: #554460;
 }
 
 .readiness-content strong {
-  font-size: 0.80rem;
+  font-size: 0.83rem;
   font-weight: 700;
   color: #2b1d36;
+  line-height: 1.35;
+}
+
+.readiness-content span {
+  color: #5e4e69;
+  line-height: 1.48;
 }
 
 .billing-disclaimer-text {
@@ -717,6 +732,24 @@
 .sim-card-input-box.active-focus {
   border-color: #0d9488;
   box-shadow: 0 0 0 1px #0d9488;
+}
+
+.sim-card-split-row .sim-card-label {
+  color: #64748b;
+}
+
+.sim-card-split-row .sim-card-input-box {
+  color: #94a3b8;
+  border-color: #e2e8f0;
+}
+
+.sim-card-split-row .sim-card-val,
+.sim-card-split-row .sim-card-hashed {
+  color: #94a3b8;
+}
+
+.sim-card-split-row .sim-card-icon-end {
+  color: #94a3b8;
 }
 
 .sim-card-number-val {
@@ -858,11 +891,86 @@
 }
 
 .sim-conversion-pill {
-  font-size: 0.69rem;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 0;
+  background: transparent;
   animation: sim-pill-pulse 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.sim-pill-icon-slot {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sim-pill-spinner {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  animation: sim-spinner-rot 0.9s linear infinite, sim-fade-ghs 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.sim-pill-check {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  animation: sim-fade-usd 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.sim-pill-label {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+@keyframes sim-spinner-rot {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sim-fade-ghs {
+  0%, 35% {
+    opacity: 1;
+    visibility: visible;
+  }
+  44%, 90% {
+    opacity: 0;
+    visibility: hidden;
+  }
+  96%, 100% {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+@keyframes sim-fade-usd {
+  0%, 35% {
+    opacity: 0;
+    visibility: hidden;
+  }
+  44%, 88% {
+    opacity: 1;
+    visibility: visible;
+  }
+  94%, 100% {
+    opacity: 0;
+    visibility: hidden;
+  }
 }
 
 /* Micro-Animation Keyframes */
@@ -933,19 +1041,13 @@
 
 @keyframes sim-pill-pulse {
   0%, 35% {
-    background: rgba(126, 74, 165, 0.08);
-    color: #7e4aa5;
-    transform: scale(1);
+    color: #94a3b8;
   }
   44%, 88% {
-    background: rgba(16, 185, 129, 0.12);
-    color: #047857;
-    transform: scale(1.02);
+    color: #334155;
   }
   94%, 100% {
-    background: rgba(126, 74, 165, 0.08);
-    color: #7e4aa5;
-    transform: scale(1);
+    color: #94a3b8;
   }
 }
 

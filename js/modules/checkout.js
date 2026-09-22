@@ -372,7 +372,7 @@ export function renderCheckoutPage() {
                       <rect width="20" height="14" x="2" y="5" rx="2"/>
                       <line x1="2" y1="10" x2="22" y2="10"/>
                     </svg>
-                    <span>Card &amp; International Payment Readiness</span>
+                    <span>Billing &amp; Checkout Process</span>
                   </div>
 
                   <!-- 3-Pillar Pre-Screening Checklist -->
@@ -418,7 +418,7 @@ export function renderCheckoutPage() {
                   </div>
 
                   <p class="billing-disclaimer-text">
-                    All orders are securely processed in USD. Sister store estimates (${ghsFormatted}, CAD, and GBP) are shown for reference. <strong>The final charge is converted to USD when you start putting in your card info and your card provider will handle the standard conversion to your native currency.</strong>
+                    All orders are billed in USD. International amounts (${ghsFormatted}, CAD, GBP etc) <strong>automatically convert when you enter your card details</strong>.
                   </p>
 
                   <!-- Dynamic Payment Currency Conversion Micro-Animation -->
@@ -456,16 +456,16 @@ export function renderCheckoutPage() {
                           <div class="sim-card-input-box">
                             <span class="sim-card-val">02 / 24</span>
                             <div class="sim-card-icon-end">
-                              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                             </div>
                           </div>
                         </div>
 
                         <div class="sim-card-field-group">
                           <span class="sim-card-label">Security Code</span>
-                          <div class="sim-card-input-box active-focus">
+                          <div class="sim-card-input-box">
                             <span class="sim-card-hashed">•••</span>
-                            <div class="sim-card-icon-end text-teal">
+                            <div class="sim-card-icon-end">
                               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                             </div>
                           </div>
@@ -482,7 +482,20 @@ export function renderCheckoutPage() {
                           Pay ${usdFormatted} USD
                         </span>
                       </div>
-                      <span class="sim-conversion-pill">Auto-converts to USD</span>
+                      <span class="sim-conversion-pill">
+                        <span class="sim-pill-icon-slot">
+                          <svg class="sim-pill-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity="0.25" stroke-width="2.5"/>
+                            <path d="M12 3a9 9 0 0 1 9 9" stroke="currentColor" stroke-width="2.5"/>
+                          </svg>
+                          <svg class="sim-pill-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+                            <path d="M0 0h32v32H0z" fill="none" />
+                            <path fill="currentColor" d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2m-2 19.59l-5-5L10.59 15L14 18.41L21.41 11l1.596 1.586Z" />
+                            <path fill="none" d="m14 21.591l-5-5L10.591 15L14 18.409L21.41 11l1.595 1.585z" />
+                          </svg>
+                        </span>
+                        <span class="sim-pill-label">Auto-converts to USD</span>
+                      </span>
                     </div>
                   </div>
                 </div>

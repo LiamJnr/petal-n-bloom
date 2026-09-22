@@ -797,39 +797,39 @@ export function showPaymentTroubleshootingModal() {
               <line x1="2" y1="10" x2="22" y2="10"/>
             </svg>
           </div>
-          <h3 id="troubleshoot-modal-title">Card Payment Assistance</h3>
-          <p>If your card was declined or verification did not complete, these 3 quick checks usually solve it:</p>
+          <h3 id="troubleshoot-modal-title">Payment Didn't Go Through?</h3>
+          <p>These 3 quick checks usually fix it:</p>
         </div>
 
         <div class="troubleshoot-steps">
           <div class="troubleshoot-step-item">
             <span class="step-badge">1</span>
             <div class="step-text">
-              <strong>Online &amp; International Transactions</strong>
-              <p>Verify in your banking app that online spending and foreign/cross-border transactions are enabled on your card.</p>
+              <strong>Enable Online &amp; International</strong>
+              <p>Turn on online and foreign transactions in your banking app.</p>
             </div>
           </div>
 
           <div class="troubleshoot-step-item">
             <span class="step-badge">2</span>
             <div class="step-text">
-              <strong>3D Secure Authentication</strong>
-              <p>Keep your phone nearby to authorize the one-time SMS security passcode or bank mobile app approval promptly.</p>
+              <strong>Approve the OTP / 3D Secure</strong>
+              <p>Keep your phone nearby to enter the SMS code or tap approve.</p>
             </div>
           </div>
 
           <div class="troubleshoot-step-item">
             <span class="step-badge">3</span>
             <div class="step-text">
-              <strong>Bank Security &amp; Cross-Border Filter</strong>
-              <p>If your issuer sends an instant fraud verification text, tap "Yes / Approve", or try an alternate debit/credit card.</p>
+              <strong>Check Bank Alerts</strong>
+              <p>If flagged, approve the fraud alert or try a different card.</p>
             </div>
           </div>
         </div>
 
         <div class="troubleshoot-actions">
           <button type="button" class="btn-troubleshoot-retry" id="btn-troubleshoot-retry">
-            Ready to Retry Checkout &rarr;
+            Retry Checkout &rarr;
           </button>
           <button type="button" class="btn-troubleshoot-dismiss" id="btn-troubleshoot-dismiss">
             Review Order Details

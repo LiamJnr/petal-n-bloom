@@ -1153,14 +1153,18 @@
 .payment-troubleshoot-dialog {
   position: relative;
   width: 100%;
-  max-width: 480px;
+  max-width: 440px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
   background: #ffffff;
   border: 1px solid #ebdff8;
   border-radius: 16px;
-  padding: 28px 24px;
+  padding: 24px 22px;
   box-shadow: 0 20px 48px -8px rgba(91, 43, 130, 0.25);
   transform: translateY(16px) scale(0.97);
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
 }
 
 .payment-troubleshoot-backdrop.active .payment-troubleshoot-dialog {
@@ -1230,18 +1234,20 @@
 .troubleshoot-steps {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .troubleshoot-step-item {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: 10px;
   background: #faf6fd;
   border: 1px solid #ebdff8;
   border-radius: 10px;
-  padding: 12px 14px;
+  padding: 10px 12px;
 }
 
 .step-badge {
@@ -1277,7 +1283,9 @@
 .troubleshoot-actions {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+  flex-shrink: 0;
+  padding-top: 4px;
 }
 
 .btn-troubleshoot-retry {

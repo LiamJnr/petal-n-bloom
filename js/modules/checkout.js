@@ -372,7 +372,7 @@ export function renderCheckoutPage() {
                       <rect width="20" height="14" x="2" y="5" rx="2"/>
                       <line x1="2" y1="10" x2="22" y2="10"/>
                     </svg>
-                    <span>Our Billing &amp; Checkout Process</span>
+                    <span>Billing &amp; Checkout Process</span>
                   </div>
 
                   <!-- 3-Pillar Pre-Screening Checklist -->

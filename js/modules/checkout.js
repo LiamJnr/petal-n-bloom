@@ -822,7 +822,7 @@ export function showPaymentTroubleshootingModal() {
             <span class="step-badge">3</span>
             <div class="step-text">
               <strong>Check Bank Alerts</strong>
-              <p>If flagged, approve the fraud alert or try a different card.</p>
+              <p>If flagged, try a different card approved for international ecommerce.</p>
             </div>
           </div>
         </div>

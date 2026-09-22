@@ -364,19 +364,61 @@ export function renderCheckoutPage() {
                 </div>
               </fieldset>
 
-              <!-- International Currency & Billing Disclaimer -->
+              <!-- International Payment Readiness & Billing Guidance -->
               <div class="checkout-billing-disclaimer" id="checkout-billing-disclaimer">
                 <div class="billing-disclaimer-inner">
                   <div class="billing-disclaimer-header">
                     <svg class="billing-disclaimer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <line x1="2" y1="12" x2="22" y2="12"></line>
-                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                      <rect width="20" height="14" x="2" y="5" rx="2"/>
+                      <line x1="2" y1="10" x2="22" y2="10"/>
                     </svg>
-                    <span>Billing &amp; Currency Notice</span>
+                    <span>Card &amp; International Payment Readiness</span>
                   </div>
+
+                  <!-- 3-Pillar Pre-Screening Checklist -->
+                  <div class="payment-readiness-checklist">
+                    <div class="readiness-item">
+                      <div class="readiness-icon-wrap" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="2" y1="12" x2="22" y2="12"></line>
+                          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                        </svg>
+                      </div>
+                      <div class="readiness-content">
+                        <strong>Online &amp; International Enabled</strong>
+                        <span>Ensure your card permits foreign e-commerce in your mobile banking app.</span>
+                      </div>
+                    </div>
+
+                    <div class="readiness-item">
+                      <div class="readiness-icon-wrap" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <rect width="14" height="20" x="5" y="2" rx="2" ry="2"/>
+                          <path d="M12 18h.01"/>
+                        </svg>
+                      </div>
+                      <div class="readiness-content">
+                        <strong>3D Secure / OTP Authentication</strong>
+                        <span>Have your device ready to approve your bank's SMS OTP or mobile app confirmation.</span>
+                      </div>
+                    </div>
+
+                    <div class="readiness-item">
+                      <div class="readiness-icon-wrap" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                      </div>
+                      <div class="readiness-content">
+                        <strong>Cross-Border Clearance</strong>
+                        <span>If an initial attempt is flagged by bank security filters, approving the bank SMS alert or trying an alternate card resolves it immediately.</span>
+                      </div>
+                    </div>
+                  </div>
+
                   <p class="billing-disclaimer-text">
-                    All orders are securely processed in USD. Sister store estimates (GHS, CAD, and Pounds/GBP) are shown for reference. <strong>When you enter your payment details, the final charge will convert to USD and your card provider will handle the standard conversion to your native currency</strong>.
+                    All orders are securely processed in USD. Sister store estimates (${ghsFormatted}, CAD, and GBP) are shown for reference; your card provider will handle the standard conversion to your native currency.
                   </p>
 
                   <!-- Dynamic Payment Currency Conversion Micro-Animation -->
@@ -644,10 +686,15 @@ function bindCheckoutEvents() {
         onCancel: () => {
           resetSubmitBtn();
           showToast({
-            title: "Checkout closed",
-            message: "You can resume checkout whenever you're ready.",
-            duration: 4000
+            title: "Checkout Closed",
+            message: "Need help completing payment? Check your card readiness.",
+            icon: ICONS.warning,
+            duration: 5000
           });
+          // Show subtle diagnostic modal after a brief pause so user can resolve bank blocks
+          setTimeout(() => {
+            showPaymentTroubleshootingModal();
+          }, 600);
         }
       });
     } catch (error) {
@@ -679,4 +726,94 @@ function bindCheckoutEvents() {
       disclaimerEl.classList.add("is-in-view");
     }
   }
+}
+
+/**
+ * Show Card Payment Diagnostic / Troubleshooting Modal
+ * Guides customers on the 3 true failure modes (online/intl enabled, 3D secure, issuer security filter)
+ */
+export function showPaymentTroubleshootingModal() {
+  let modal = document.getElementById("payment-troubleshoot-modal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "payment-troubleshoot-modal";
+    modal.className = "payment-troubleshoot-backdrop";
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.setAttribute("aria-labelledby", "troubleshoot-modal-title");
+    modal.innerHTML = `
+      <div class="payment-troubleshoot-dialog">
+        <button type="button" class="troubleshoot-close-btn" id="btn-close-troubleshoot" aria-label="Close guidance">&times;</button>
+        
+        <div class="troubleshoot-header">
+          <div class="troubleshoot-icon-badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="20" height="14" x="2" y="5" rx="2"/>
+              <line x1="2" y1="10" x2="22" y2="10"/>
+            </svg>
+          </div>
+          <h3 id="troubleshoot-modal-title">Card Payment Assistance</h3>
+          <p>If your card was declined or verification did not complete, these 3 quick checks usually solve it:</p>
+        </div>
+
+        <div class="troubleshoot-steps">
+          <div class="troubleshoot-step-item">
+            <span class="step-badge">1</span>
+            <div class="step-text">
+              <strong>Online &amp; International Transactions</strong>
+              <p>Verify in your banking app that online spending and foreign/cross-border transactions are enabled on your card.</p>
+            </div>
+          </div>
+
+          <div class="troubleshoot-step-item">
+            <span class="step-badge">2</span>
+            <div class="step-text">
+              <strong>3D Secure Authentication</strong>
+              <p>Keep your phone nearby to authorize the one-time SMS security passcode or bank mobile app approval promptly.</p>
+            </div>
+          </div>
+
+          <div class="troubleshoot-step-item">
+            <span class="step-badge">3</span>
+            <div class="step-text">
+              <strong>Bank Security &amp; Cross-Border Filter</strong>
+              <p>If your issuer sends an instant fraud verification text, tap "Yes / Approve", or try an alternate debit/credit card.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="troubleshoot-actions">
+          <button type="button" class="btn-troubleshoot-retry" id="btn-troubleshoot-retry">
+            Ready to Retry Checkout &rarr;
+          </button>
+          <button type="button" class="btn-troubleshoot-dismiss" id="btn-troubleshoot-dismiss">
+            Review Order Details
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    modal.querySelector("#btn-close-troubleshoot")?.addEventListener("click", () => {
+      modal.classList.remove("active");
+    });
+    modal.querySelector("#btn-troubleshoot-dismiss")?.addEventListener("click", () => {
+      modal.classList.remove("active");
+    });
+    modal.querySelector("#btn-troubleshoot-retry")?.addEventListener("click", () => {
+      modal.classList.remove("active");
+      const submitBtn = document.getElementById("btn-submit-order-details");
+      if (submitBtn) {
+        submitBtn.scrollIntoView({ behavior: "smooth", block: "center" });
+        submitBtn.focus();
+      }
+    });
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.classList.remove("active");
+    });
+  }
+
+  requestAnimationFrame(() => {
+    modal.classList.add("active");
+  });
 }

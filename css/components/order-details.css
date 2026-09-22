@@ -583,24 +583,75 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   font-weight: 700;
   color: var(--primary);
-  margin-bottom: 6px;
+  margin-bottom: 10px;
   letter-spacing: 0.2px;
 }
 
 .billing-disclaimer-icon {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   stroke: var(--primary);
   flex-shrink: 0;
 }
 
+/* 3-Pillar Card Screening Checklist */
+.payment-readiness-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid #ebdff8;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.readiness-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.readiness-icon-wrap {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #f1e6fc;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.readiness-icon-wrap svg {
+  width: 13px;
+  height: 13px;
+  stroke: var(--primary);
+}
+
+.readiness-content {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: #554460;
+}
+
+.readiness-content strong {
+  font-size: 0.80rem;
+  font-weight: 700;
+  color: #2b1d36;
+}
+
 .billing-disclaimer-text {
-  font-size: 0.81rem;
-  color: #4b3d54;
-  line-height: 1.55;
+  font-size: 0.80rem;
+  color: #635270;
+  line-height: 1.5;
   margin: 0;
 }
 
@@ -615,7 +666,7 @@
   border: 1px solid #ecdff8;
   border-radius: 8px;
   padding: 10px 14px;
-  margin-top: 12px;
+  margin-top: 10px;
   box-shadow: 0 2px 8px -1px rgba(91, 43, 130, 0.05);
 }
 
@@ -907,4 +958,193 @@
   .checkout-item-info {
     min-width: 0;
   }
+}
+
+/* ==========================================================================
+   Payment Troubleshooting / Card Assistance Modal
+   ========================================================================== */
+.payment-troubleshoot-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 14, 38, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.payment-troubleshoot-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.payment-troubleshoot-dialog {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  background: #ffffff;
+  border: 1px solid #ebdff8;
+  border-radius: 16px;
+  padding: 28px 24px;
+  box-shadow: 0 20px 48px -8px rgba(91, 43, 130, 0.25);
+  transform: translateY(16px) scale(0.97);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.payment-troubleshoot-backdrop.active .payment-troubleshoot-dialog {
+  transform: translateY(0) scale(1);
+}
+
+.troubleshoot-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #f4edf9;
+  color: #554460;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.troubleshoot-close-btn:hover {
+  background: #e8d7f5;
+  color: var(--primary);
+}
+
+.troubleshoot-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.troubleshoot-icon-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #f4ebfb;
+  color: var(--primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.troubleshoot-icon-badge svg {
+  width: 22px;
+  height: 22px;
+}
+
+.troubleshoot-header h3 {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  color: var(--primary);
+  margin-bottom: 6px;
+}
+
+.troubleshoot-header p {
+  font-size: 0.84rem;
+  color: #635270;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.troubleshoot-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.troubleshoot-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #faf6fd;
+  border: 1px solid #ebdff8;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.step-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.step-text strong {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #2b1d36;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.step-text p {
+  font-size: 0.79rem;
+  color: #554460;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.troubleshoot-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-troubleshoot-retry {
+  width: 100%;
+  padding: 13px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  background-color: var(--primary);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-troubleshoot-retry:hover {
+  background-color: var(--primary-hover);
+  box-shadow: 0 4px 14px rgba(94, 17, 115, 0.22);
+}
+
+.btn-troubleshoot-dismiss {
+  width: 100%;
+  padding: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: #726080;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.btn-troubleshoot-dismiss:hover {
+  color: var(--ink);
 }

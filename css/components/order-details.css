@@ -663,55 +663,128 @@
 /* Payment Currency Conversion Micro-Animation Card */
 .disclaimer-sim-card {
   background: #ffffff;
-  border: 1px solid #ecdff8;
-  border-radius: 8px;
-  padding: 10px 14px;
-  margin-top: 10px;
-  box-shadow: 0 2px 8px -1px rgba(91, 43, 130, 0.05);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-top: 12px;
+  box-shadow: 0 2px 10px -2px rgba(0, 0, 0, 0.04);
 }
 
-.sim-card-input-row {
+.sim-card-form-grid {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 10px;
-  margin-bottom: 9px;
+  margin-bottom: 12px;
+}
+
+.sim-card-split-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.sim-card-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
 }
 
 .sim-card-label {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: #7c6888;
+  font-size: 0.73rem;
+  font-weight: 500;
+  color: #64748b;
+  letter-spacing: 0.1px;
 }
 
-.sim-card-input {
+.sim-card-input-box {
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: #faf7fd;
-  border: 1px solid #e5daf0;
-  border-radius: 6px;
-  padding: 4px 10px;
-  font-family: monospace;
-  font-size: 0.75rem;
-  color: #2d1f3b;
-  min-width: 175px;
+  justify-content: space-between;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #0f172a;
+  min-height: 42px;
+  box-sizing: border-box;
 }
 
-.sim-card-icon {
-  font-size: 0.8rem;
-  line-height: 1;
+.sim-card-input-box.active-focus {
+  border-color: #0d9488;
+  box-shadow: 0 0 0 1px #0d9488;
+}
+
+.sim-card-number-val {
+  color: #0f172a;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+}
+
+.sim-card-hashed {
+  color: #64748b;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin-right: 4px;
+}
+
+.sim-card-val {
+  color: #0f172a;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+
+.sim-card-brand-logos {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.sim-card-brand-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sim-card-brand-logo.brand-visa {
+  width: 38px;
+  height: 24px;
+}
+
+.sim-card-brand-logo.brand-mastercard {
+  width: 32px;
+  height: 22px;
+}
+
+.sim-card-brand-logo svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.sim-card-icon-end {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sim-card-icon-end.text-teal {
+  color: #0d9488;
 }
 
 .sim-card-digits {
   display: inline-flex;
   align-items: center;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-}
-
-.sim-dots {
-  color: #a894b5;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  font-size: 0.82rem;
 }
 
 .sim-typed-digits {
@@ -726,46 +799,39 @@
 .sim-cursor {
   display: inline-block;
   width: 1.5px;
-  height: 11px;
+  height: 12px;
   background: var(--primary);
   animation: sim-cursor-blink 0.7s infinite;
-  margin-left: 2px;
-}
-
-.sim-check-badge {
-  margin-left: auto;
-  color: #10b981;
-  font-weight: 800;
-  font-size: 0.75rem;
-  animation: sim-check-anim 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  margin-left: 1px;
 }
 
 .sim-action-row {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 2px;
 }
 
 .sim-pay-btn {
   position: relative;
   overflow: hidden;
-  height: 28px;
-  width: 148px;
-  border-radius: 6px;
+  height: 38px;
+  width: 164px;
+  border-radius: 8px;
   background: #059669;
   color: #ffffff;
-  font-size: 0.73rem;
+  font-size: 0.78rem;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.28);
+  box-shadow: none;
 }
 
 .sim-lock-svg {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   display: inline-block;
   vertical-align: middle;
   flex-shrink: 0;
@@ -777,10 +843,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 5px;
   width: 100%;
   white-space: nowrap;
-  padding: 0 6px;
+  padding: 0 8px;
 }
 
 .sim-btn-ghs {
@@ -884,13 +950,11 @@
 }
 
 @media (max-width: 480px) {
-  .sim-card-input-row,
   .sim-action-row {
     flex-direction: column;
     align-items: flex-start;
-    gap: 6px;
+    gap: 8px;
   }
-  .sim-card-input,
   .sim-pay-btn {
     width: 100%;
   }

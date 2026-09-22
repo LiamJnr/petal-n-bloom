@@ -418,36 +418,68 @@ export function renderCheckoutPage() {
                   </div>
 
                   <p class="billing-disclaimer-text">
-                    All orders are securely processed in USD. Sister store estimates (${ghsFormatted}, CAD, and GBP) are shown for reference; your card provider will handle the standard conversion to your native currency.
+                    All orders are securely processed in USD. Sister store estimates (${ghsFormatted}, CAD, and GBP) are shown for reference. <strong>The final charge is converted to USD when you start putting in your card info and your card provider will handle the standard conversion to your native currency.</strong>
                   </p>
 
                   <!-- Dynamic Payment Currency Conversion Micro-Animation -->
                   <div class="disclaimer-sim-card" aria-hidden="true">
-                    <div class="sim-card-input-row">
-                      <span class="sim-card-label">Card Number</span>
-                      <div class="sim-card-input">
-                        <span class="sim-card-icon">💳</span>
-                        <div class="sim-card-digits">
-                          <span class="sim-dots">•••• •••• •••• </span>
-                          <span class="sim-typed-digits">4242</span>
-                          <span class="sim-cursor"></span>
+                    <div class="sim-card-form-grid">
+                      <!-- Card Number Row -->
+                      <div class="sim-card-field-group">
+                        <span class="sim-card-label">Card Number</span>
+                        <div class="sim-card-input-box">
+                          <div class="sim-card-digits">
+                            <span class="sim-card-hashed">•••• •••• •••• </span>
+                            <span class="sim-typed-digits">2204</span>
+                            <span class="sim-cursor"></span>
+                          </div>
+                          <div class="sim-card-brand-logos">
+                            <div class="sim-card-brand-logo brand-visa">
+                              <svg fill="#1A1F71" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Visa</title><path d="M9.112 8.262L5.97 15.758H3.92L2.374 9.775c-.094-.368-.175-.503-.461-.658C1.447 8.864.677 8.627 0 8.479l.046-.217h3.3a.904.904 0 01.894.764l.817 4.338 2.018-5.102zm8.033 5.049c.008-1.979-2.736-2.088-2.717-2.972.006-.269.262-.555.822-.628a3.66 3.66 0 011.913.336l.34-1.59a5.207 5.207 0 00-1.814-.333c-1.917 0-3.266 1.02-3.278 2.479-.012 1.079.963 1.68 1.698 2.04.756.367 1.01.603 1.006.931-.005.504-.602.725-1.16.734-.975.015-1.54-.263-1.992-.473l-.351 1.642c.453.208 1.289.39 2.156.398 2.037 0 3.37-1.006 3.377-2.564m5.061 2.447H24l-1.565-7.496h-1.656a.883.883 0 00-.826.55l-2.909 6.946h2.036l.405-1.12h2.488zm-2.163-2.656l1.02-2.815.588 2.815zm-8.16-4.84l-1.603 7.496H8.34l1.605-7.496z"/></svg>
+                            </div>
+                            <div class="sim-card-brand-logo brand-mastercard">
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 18" width="100%" height="100%" role="img">
+                                <title>Mastercard</title>
+                                <circle cx="7.5" cy="9" r="6.5" fill="#EB001B" />
+                                <circle cx="16.5" cy="9" r="6.5" fill="#F79E1B" />
+                                <path d="M 12 3.895 A 6.5 6.5 0 0 0 10 9 A 6.5 6.5 0 0 0 12 14.105 A 6.5 6.5 0 0 0 14 9 A 6.5 6.5 0 0 0 12 3.895 Z" fill="#FF5F00" />
+                              </svg>
+                            </div>
+                          </div>
                         </div>
-                        <span class="sim-check-badge">✓</span>
+                      </div>
+
+                      <!-- 2-Column Row: Expiry Date & Security Code -->
+                      <div class="sim-card-split-row">
+                        <div class="sim-card-field-group">
+                          <span class="sim-card-label">Expiry Date</span>
+                          <div class="sim-card-input-box">
+                            <span class="sim-card-val">02 / 24</span>
+                            <div class="sim-card-icon-end">
+                              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="sim-card-field-group">
+                          <span class="sim-card-label">Security Code</span>
+                          <div class="sim-card-input-box active-focus">
+                            <span class="sim-card-hashed">•••</span>
+                            <div class="sim-card-icon-end text-teal">
+                              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
+
                     <div class="sim-action-row">
                       <div class="sim-pay-btn">
                         <span class="sim-btn-content sim-btn-ghs">
-                          <svg class="sim-lock-svg" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                            <path d="M0 0h24v24H0z" fill="none" />
-                            <path fill="currentColor" d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7c0-2.757-2.243-5-5-5M9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9zm4 10.723V20h-2v-2.277a1.993 1.993 0 0 1 .567-3.677A2 2 0 0 1 14 16a1.99 1.99 0 0 1-1 1.723" />
-                          </svg> Pay ${ghsFormatted}
+                          Pay ${ghsFormatted}
                         </span>
                         <span class="sim-btn-content sim-btn-usd">
-                          <svg class="sim-lock-svg" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                            <path d="M0 0h24v24H0z" fill="none" />
-                            <path fill="currentColor" d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7c0-2.757-2.243-5-5-5M9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9zm4 10.723V20h-2v-2.277a1.993 1.993 0 0 1 .567-3.677A2 2 0 0 1 14 16a1.99 1.99 0 0 1-1 1.723" />
-                          </svg> Pay ${usdFormatted} USD
+                          Pay ${usdFormatted} USD
                         </span>
                       </div>
                       <span class="sim-conversion-pill">Auto-converts to USD</span>

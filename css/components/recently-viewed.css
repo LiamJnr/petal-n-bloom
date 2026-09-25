@@ -1,0 +1,153 @@
+/* ==========================================================================
+   RECENTLY VIEWED PRODUCTS STRIP COMPONENT
+   ========================================================================== */
+
+.recently-viewed-section {
+  padding: 64px 0 80px;
+  border-top: 1px solid var(--border);
+  background-color: #ffffff;
+}
+
+.recently-viewed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 28px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.recently-viewed-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.recently-viewed-tag {
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--primary);
+}
+
+.recently-viewed-title {
+  font-family: var(--serif);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.recently-viewed-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn-clear-recently-viewed {
+  background: transparent;
+  border: none;
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.btn-clear-recently-viewed:hover {
+  color: #e11d48;
+  background-color: #fff1f2;
+}
+
+.recently-viewed-arrows {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recently-viewed-arrow {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background-color: #ffffff;
+  color: var(--ink);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.recently-viewed-arrow:hover {
+  background-color: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+  transform: scale(1.05);
+}
+
+/* Horizontal Scrolling Track */
+.recently-viewed-track-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.recently-viewed-track {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 16px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-border) transparent;
+}
+
+.recently-viewed-track::-webkit-scrollbar {
+  height: 4px;
+}
+
+.recently-viewed-track::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.recently-viewed-track::-webkit-scrollbar-thumb {
+  background: var(--primary-border);
+  border-radius: 4px;
+}
+
+.recently-viewed-card {
+  flex: 0 0 280px;
+  scroll-snap-align: start;
+}
+
+.recently-viewed-card .product-card-media {
+  min-height: 280px;
+  aspect-ratio: 4 / 5;
+}
+
+@media (max-width: 768px) {
+  .recently-viewed-section {
+    padding: 48px 0 60px;
+  }
+
+  .recently-viewed-card {
+    flex: 0 0 240px;
+  }
+
+  .recently-viewed-card .product-card-media {
+    min-height: 240px;
+  }
+
+  .recently-viewed-arrows {
+    display: none;
+  }
+}

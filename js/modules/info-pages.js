@@ -3,7 +3,7 @@
  * Handles Customer Care & FAQs, Flower Care Guide, Freshness Guarantee, Contact Us, Privacy Policy, Terms of Service, and Shipping Policies.
  */
 
-import { navigateToHome, navigateToShop, navigateToFAQ, navigateToContact, navigateToPrivacy, navigateToTerms, navigateToShipping } from "./router.js";
+import { navigateToHome, navigateToShop, navigateToFAQ, navigateToContact, navigateToPrivacy, navigateToTerms, navigateToShipping, scrollToTop } from "./router.js";
 import { showToast } from "./toast.js";
 import { ICONS } from "../lib/icons.js";
 
@@ -15,6 +15,7 @@ export function renderFAQPage(tab = "care") {
   if (!container) return;
 
   document.title = "Customer Care & FAQs — Petal & Bloom";
+  scrollToTop();
 
   const activeTab = ["care", "guarantee", "delivery"].includes(tab) ? tab : "care";
 
@@ -254,6 +255,7 @@ export function renderContactPage() {
   if (!container) return;
 
   document.title = "Contact Our Florists — Petal & Bloom";
+  scrollToTop();
 
   container.innerHTML = `
     <!-- Page Header -->
@@ -396,6 +398,8 @@ function bindContactEvents() {
 export function renderPolicyPage(type = "privacy") {
   const container = document.getElementById("info-view");
   if (!container) return;
+
+  scrollToTop();
 
   if (type === "privacy") {
     document.title = "Privacy Policy — Petal & Bloom";

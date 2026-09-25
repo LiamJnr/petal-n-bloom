@@ -3,12 +3,13 @@
  */
 import { getProductBySlug, GIFT_ADDONS } from "../data/products.js";
 import { getReviewsForProduct, getReviewMetrics } from "../data/reviews.js";
-import { navigateToHome } from "./router.js";
+import { navigateToHome, scrollToTop } from "./router.js";
 import { showToast } from "./toast.js";
 import { isInWishlist, toggleWishlist } from "./wishlist.js";
 import { ICONS, renderStars } from "../lib/icons.js";
 import { getInternationalEstimates } from "../lib/currency.js";
 import { getDeliveryCountdownState, subscribeDeliveryTimer } from "../lib/delivery-timer.js";
+import { recordProductView, renderRecentlyViewed } from "./recently-viewed.js";
 
 let currentProduct = null;
 let selectedSizeIndex = 0;
@@ -19,9 +20,13 @@ let activeTab = "review"; // default to review or description
 let deliveryTimerUnsubscribe = null;
 
 let addToCartHandler = null;
+let quickAddHandler = null;
+let productClickHandler = null;
 
-export function initPDP({ onAddToCart }) {
+export function initPDP({ onAddToCart, onQuickAdd, onProductClick }) {
   addToCartHandler = onAddToCart;
+  quickAddHandler = onQuickAdd;
+  productClickHandler = onProductClick;
 }
 
 export function getOriginalPrice(price) {
@@ -93,6 +98,9 @@ export function renderPDP(slug) {
     return;
   }
 
+  // Record this visit in local browsing history
+  recordProductView(product.slug);
+
   currentProduct = product;
   selectedSizeIndex = 0;
   selectedVaseIndex = 0;
@@ -104,6 +112,7 @@ export function renderPDP(slug) {
   if (checkoutView) checkoutView.style.display = "none";
   pdpContainer.style.display = "block";
   document.title = `${product.name} — Petal & Bloom`;
+  scrollToTop();
 
   // Pricing calculations
   const initialVasePrice = product.vases?.[selectedVaseIndex]?.price || 0;
@@ -508,6 +517,9 @@ export function renderPDP(slug) {
         </div>
       </div>
     </div>
+
+    <!-- Recently Viewed Products Section -->
+    <div id="pdp-recently-viewed-container"></div>
   `;
 
   bindPDPEvents(product);
@@ -705,6 +717,24 @@ function bindPDPEvents(product) {
     if (badgeEl) badgeEl.textContent = state.badgeText;
     if (dotEl) {
       dotEl.className = `pdp-status-dot ${state.isSameDayAvailable ? "active" : "next-day"}`;
+    }
+  });
+
+  // Render Recently Viewed Products Carousel Strip
+  renderRecentlyViewed({
+    containerId: "pdp-recently-viewed-container",
+    excludeSlug: product.slug,
+    onProductClick: (targetSlug) => {
+      if (typeof productClickHandler === "function") {
+        productClickHandler(targetSlug);
+      } else {
+        renderPDP(targetSlug);
+      }
+    },
+    onQuickAdd: (targetSlug) => {
+      if (typeof quickAddHandler === "function") {
+        quickAddHandler(targetSlug);
+      }
     }
   });
 }

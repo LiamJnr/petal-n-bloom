@@ -12,6 +12,30 @@ let onRouteFAQCallback = null;
 let onRouteContactCallback = null;
 let onRoutePolicyCallback = null;
 
+/**
+ * Robust scroll-to-top handler that resets viewport instantly across all browsers
+ */
+export function scrollToTop() {
+  try {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  } catch {
+    window.scrollTo(0, 0);
+  }
+  if (document.documentElement) document.documentElement.scrollTop = 0;
+  if (document.body) document.body.scrollTop = 0;
+
+  // Double-check on next frame after DOM rendering
+  requestAnimationFrame(() => {
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    } catch {
+      window.scrollTo(0, 0);
+    }
+    if (document.documentElement) document.documentElement.scrollTop = 0;
+    if (document.body) document.body.scrollTop = 0;
+  });
+}
+
 export function initRouter({ 
   onRouteHome, 
   onRouteShop, 
@@ -22,6 +46,11 @@ export function initRouter({
   onRouteContact,
   onRoutePolicy
 }) {
+  // Prevent browser from restoring stale scroll positions on SPA transitions
+  if ("scrollRestoration" in window.history) {
+    window.history.scrollRestoration = "manual";
+  }
+
   onRouteHomeCallback = onRouteHome;
   onRouteShopCallback = onRouteShop;
   onRouteProductCallback = onRouteProduct;
@@ -54,6 +83,7 @@ export function initRouter({
  * Inspect the current URL to decide which view to render
  */
 function handleCurrentLocation() {
+  scrollToTop();
   const params = new URLSearchParams(window.location.search);
   const viewParam = params.get("view");
   const productParam = params.get("product");
@@ -160,7 +190,7 @@ export function navigateToShop(filters = {}, replace = false) {
     onRouteShopCallback(filters);
   }
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollToTop();
 }
 
 /**
@@ -183,7 +213,7 @@ export function navigateToProduct(slug, replace = false) {
     onRouteProductCallback(slug);
   }
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollToTop();
 }
 
 /**
@@ -206,7 +236,7 @@ export function navigateToCheckout(replace = false) {
     onRouteCheckoutCallback();
   }
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollToTop();
 }
 
 /**
@@ -233,7 +263,7 @@ export function navigateToHome(replace = false) {
     onRouteHomeCallback();
   }
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollToTop();
 }
 
 /**
@@ -258,7 +288,7 @@ export function navigateToFAQ(tab = "care", replace = false) {
     onRouteFAQCallback(tab);
   }
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollToTop();
 }
 
 /**
@@ -282,7 +312,7 @@ export function navigateToContact(replace = false) {
     onRouteContactCallback();
   }
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollToTop();
 }
 
 /**
@@ -306,7 +336,7 @@ export function navigateToPrivacy(replace = false) {
     onRoutePolicyCallback("privacy");
   }
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollToTop();
 }
 
 /**
@@ -330,7 +360,7 @@ export function navigateToTerms(replace = false) {
     onRoutePolicyCallback("terms");
   }
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollToTop();
 }
 
 /**
@@ -354,6 +384,6 @@ export function navigateToShipping(replace = false) {
     onRoutePolicyCallback("shipping");
   }
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollToTop();
 }
 

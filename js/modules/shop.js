@@ -6,6 +6,7 @@
 import { PRODUCTS, getAllOccasions } from "../data/products.js";
 import { isInWishlist, toggleWishlist } from "./wishlist.js";
 import { ICONS } from "../lib/icons.js";
+import { renderRecentlyViewed } from "./recently-viewed.js";
 
 let activeCategory = "all";
 let activeOccasion = "all";
@@ -429,6 +430,21 @@ export function renderShopGrid() {
       </article>
     `;
   }).join("");
+
+  // Render Recently Viewed Products Strip in Shop view
+  renderRecentlyViewed({
+    containerId: "shop-recently-viewed-container",
+    onProductClick: (slug) => {
+      if (typeof productClickHandler === "function") {
+        productClickHandler(slug);
+      }
+    },
+    onQuickAdd: (slug) => {
+      if (typeof quickAddHandler === "function") {
+        quickAddHandler(slug);
+      }
+    }
+  });
 }
 
 /**

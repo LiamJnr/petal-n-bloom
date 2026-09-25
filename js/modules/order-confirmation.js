@@ -1,5 +1,5 @@
 import { clearCart } from './cart.js'
-import { navigateToHome } from './router.js'
+import { navigateToHome, scrollToTop } from './router.js'
 import { ICONS } from '../lib/icons.js'
 import { printReceipt } from '../lib/receipt.js'
 
@@ -18,6 +18,7 @@ export function renderOrderConfirmationPage() {
   if (checkoutView) checkoutView.style.display = 'none'
   confirmationView.style.display = 'block'
   document.title = 'Order Confirmation — Petal & Bloom'
+  scrollToTop()
 
   const orderId = new URLSearchParams(window.location.search).get('order') || ''
   if (!isOrderId(orderId)) {

@@ -14,7 +14,8 @@ import {
   navigateToContact,
   navigateToPrivacy,
   navigateToTerms,
-  navigateToShipping
+  navigateToShipping,
+  scrollToTop
 } from "./modules/router.js";
 import { initCatalog } from "./modules/catalog.js";
 import { initShop, renderShop, setShopSearchQuery, setShopCategory } from "./modules/shop.js";
@@ -139,6 +140,12 @@ document.addEventListener("DOMContentLoaded", () => {
   initPDP({
     onAddToCart: (itemData) => {
       addToCart(itemData);
+    },
+    onQuickAdd: (slug) => {
+      handleQuickAdd(slug);
+    },
+    onProductClick: (slug) => {
+      navigateToProduct(slug);
     }
   });
 
@@ -155,6 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Helper to hide all views before switching
   const hideAllViews = () => {
+    scrollToTop();
     const homeView = document.getElementById("home-view");
     const shopView = document.getElementById("shop-view");
     const pdpView = document.getElementById("pdp-view");
@@ -179,6 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       setActiveNav("home");
       document.title = "Petal & Bloom — Artisan Florist & Botanical Boutique";
+      scrollToTop();
     },
     onRouteShop: (filters = {}) => {
       hideAllViews();
@@ -188,21 +197,25 @@ document.addEventListener("DOMContentLoaded", () => {
       setActiveNav("shop");
       renderShop(filters);
       document.title = "Shop All Blooms & Floral Gifts — Petal & Bloom";
+      scrollToTop();
     },
     onRouteProduct: (slug) => {
       hideAllViews();
       setActiveNav("");
       renderPDP(slug);
+      scrollToTop();
     },
     onRouteCheckout: () => {
       hideAllViews();
       setActiveNav("");
       renderCheckoutPage();
+      scrollToTop();
     },
     onRouteOrderConfirmation: () => {
       hideAllViews();
       setActiveNav("");
       renderOrderConfirmationPage();
+      scrollToTop();
     },
     onRouteFAQ: (tab = "care") => {
       hideAllViews();
@@ -210,6 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (infoView) infoView.style.display = "block";
       setActiveNav("faq");
       renderFAQPage(tab);
+      scrollToTop();
     },
     onRouteContact: () => {
       hideAllViews();
@@ -217,6 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (infoView) infoView.style.display = "block";
       setActiveNav("contact");
       renderContactPage();
+      scrollToTop();
     },
     onRoutePolicy: (type = "privacy") => {
       hideAllViews();
@@ -224,6 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (infoView) infoView.style.display = "block";
       setActiveNav("");
       renderPolicyPage(type);
+      scrollToTop();
     }
   });
 

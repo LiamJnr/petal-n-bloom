@@ -4,7 +4,7 @@
  * Styled to conform with the Product Detail Page (PDP) design system.
  */
 import { getCartItems, getCartSubtotal, getTotalItemCount, openCart } from "./cart.js";
-import { navigateToHome } from "./router.js";
+import { navigateToHome, scrollToTop } from "./router.js";
 import { showToast } from "./toast.js";
 import { getProductBySlug } from "../data/products.js";
 import { startCheckout } from "../lib/checkout.js";
@@ -132,6 +132,7 @@ export function renderCheckoutPage() {
   if (confirmationView) confirmationView.style.display = "none";
   checkoutView.style.display = "block";
   document.title = "Order Details & Recipient Information — Petal & Bloom";
+  scrollToTop();
 
   // Load items from local storage
   let cart = [];
@@ -182,6 +183,11 @@ export function renderCheckoutPage() {
   const ghsEstimate = getInternationalEstimates(totalDue).find(e => e.code === "GHS");
   const ghsFormatted = ghsEstimate ? ghsEstimate.formatted : `GH₵ ${(totalDue * 11.17).toFixed(2)}`;
   const usdFormatted = `$${totalDue.toFixed(2)}`;
+
+  // Free shipping progress meter calculations
+  const shippingThreshold = 100;
+  const shippingRemaining = shippingThreshold - subtotal;
+  const shippingProgressPct = Math.min(100, Math.round((subtotal / shippingThreshold) * 100));
 
   checkoutView.innerHTML = `
     <!-- Top PDP-Style Page Header & Breadcrumbs Banner -->
@@ -512,6 +518,19 @@ export function renderCheckoutPage() {
             <div class="checkout-summary-header">
               <h3>Order Summary</h3>
               <button type="button" class="btn-edit-bag" id="btn-edit-cart-bag">Edit Bag</button>
+            </div>
+
+            <!-- Free Shipping Progress Meter -->
+            <div class="checkout-shipping-meter ${isFreeDelivery ? 'unlocked' : ''}">
+              <p class="checkout-shipping-meter-text">
+                ${isFreeDelivery
+                  ? `<span class="checkout-meter-icon">${ICONS.sparkles || '✨'}</span> <span><strong>Congratulations!</strong> You unlocked <strong>FREE Local Delivery</strong>!</span>`
+                  : `<span class="checkout-meter-icon">🚚</span> <span>Add <strong>$${Math.max(0, shippingRemaining).toFixed(2)}</strong> more for <strong>FREE Local Delivery</strong></span>`
+                }
+              </p>
+              <div class="checkout-shipping-meter-track">
+                <div class="checkout-shipping-meter-fill ${isFreeDelivery ? 'unlocked' : ''}" style="width: ${shippingProgressPct}%"></div>
+              </div>
             </div>
 
             <!-- Itemized List -->

@@ -338,6 +338,70 @@
   opacity: 0.8;
 }
 
+/* Checkout Free Shipping Progress Meter */
+.checkout-shipping-meter {
+  background-color: #fbf9fb;
+  border: 1px solid #f0e6ee;
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  text-align: center;
+  transition: all var(--transition-normal);
+}
+
+.checkout-shipping-meter.unlocked {
+  background-color: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.checkout-shipping-meter-text {
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 8px;
+  line-height: 1.35;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.checkout-shipping-meter-text strong {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.checkout-meter-unlocked {
+  color: #047857;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.checkout-meter-unlocked svg {
+  color: #059669;
+}
+
+.checkout-shipping-meter-track {
+  height: 6px;
+  background-color: #e5e7eb;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.checkout-shipping-meter-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--pink));
+  border-radius: var(--radius-full);
+  transition: width 0.4s ease;
+}
+
+.checkout-shipping-meter-fill.unlocked {
+  background: linear-gradient(90deg, #10b981, #059669);
+}
+
 /* Itemized Items */
 .checkout-items-list {
   display: flex;

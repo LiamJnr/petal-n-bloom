@@ -41,7 +41,7 @@ async function createCheckout({ request, env }) {
 
   const exchangeRate = Number(env.PAYSTACK_EXCHANGE_RATE || 11.17)
   const subtotalUsd = items.reduce((sum, item) => sum + item.unit_price_usd * item.quantity, 0)
-  const deliveryFeeUsd = subtotalUsd >= 75 ? 0 : 14
+  const deliveryFeeUsd = subtotalUsd >= 100 ? 0 : 14
   const totalUsd = subtotalUsd + deliveryFeeUsd
   const totalGhs = Number((totalUsd * exchangeRate).toFixed(2))
   const totalPesewas = Math.round(totalGhs * 100)
@@ -72,7 +72,7 @@ async function createCheckout({ request, env }) {
   const customFields = [
     { display_name: 'Order', variable_name: 'order_ref', value: orderId },
     { display_name: 'Subtotal USD', variable_name: 'subtotal_usd', value: `$${subtotalUsd.toFixed(2)}` },
-    { display_name: 'Delivery Fee', variable_name: 'delivery_fee', value: deliveryFeeUsd === 0 ? 'FREE (Over $75)' : `$${deliveryFeeUsd.toFixed(2)}` },
+    { display_name: 'Delivery Fee', variable_name: 'delivery_fee', value: deliveryFeeUsd === 0 ? 'FREE (Over $100)' : `$${deliveryFeeUsd.toFixed(2)}` },
     { display_name: 'Total USD', variable_name: 'total_usd', value: `$${totalUsd.toFixed(2)}` },
     { display_name: 'Exchange Rate', variable_name: 'exchange_rate', value: `1 USD = ${exchangeRate} GHS` },
     { display_name: 'Items', variable_name: 'item_count', value: `${itemCount} item${itemCount === 1 ? '' : 's'}` },

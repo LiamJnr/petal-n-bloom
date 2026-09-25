@@ -549,8 +549,8 @@ function renderShippingContent(container) {
           <h2>1. Delivery Methods & Times</h2>
           <p>All arrangements are transported via specialized climate-controlled couriers with hydration stem wraps to prevent petal stress:</p>
           <ul>
-            <li><strong>Complimentary Local Delivery:</strong> Automatically applied on all orders of $75 or more.</li>
-            <li><strong>Standard Delivery ($14):</strong> Applicable on orders under $75.</li>
+            <li><strong>Complimentary Local Delivery:</strong> Automatically applied on all orders of $100 or more.</li>
+            <li><strong>Standard Delivery ($14):</strong> Applicable on orders under $100.</li>
             <li><strong>Morning Window:</strong> Delivered between 9:00 AM and 1:00 PM local time.</li>
             <li><strong>Afternoon Window:</strong> Delivered between 1:00 PM and 6:00 PM local time.</li>
           </ul>

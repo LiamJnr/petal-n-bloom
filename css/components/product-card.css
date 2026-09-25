@@ -199,6 +199,57 @@
   color: #e11d48;
 }
 
+/* Floating Quick Add Button */
+.product-card-quick-add-btn {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  right: 14px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  z-index: 4;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.product-card:hover .product-card-quick-add-btn,
+.product-card:focus-within .product-card-quick-add-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.product-card-quick-add-btn:hover {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+  box-shadow: 0 6px 20px rgba(157, 0, 126, 0.3);
+}
+
+@media (hover: none) or (max-width: 768px) {
+  .product-card-quick-add-btn {
+    opacity: 1;
+    transform: translateY(0);
+    background: rgba(255, 255, 255, 0.92);
+  }
+}
+
 /* Card Content Details */
 .product-card-body {
   padding: 16px 2px 8px 2px;

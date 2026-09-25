@@ -1,7 +1,7 @@
 /**
  * Dedicated Product Detail Page (PDP) Module — Matching Design Mockup
  */
-import { getProductBySlug } from "../data/products.js";
+import { getProductBySlug, GIFT_ADDONS } from "../data/products.js";
 import { getReviewsForProduct, getReviewMetrics } from "../data/reviews.js";
 import { navigateToHome } from "./router.js";
 import { showToast } from "./toast.js";
@@ -27,6 +27,54 @@ export function initPDP({ onAddToCart }) {
 export function getOriginalPrice(price) {
   // Proportional original boutique value (~25% discount display)
   return (price * 1.25).toFixed(2);
+}
+
+/**
+ * Inject or update Schema.org Product JSON-LD structured data for rich snippets
+ */
+function updateProductJsonLd(product, currentPrice, metrics) {
+  let scriptEl = document.getElementById("pdp-product-jsonld");
+  if (!scriptEl) {
+    scriptEl = document.createElement("script");
+    scriptEl.id = "pdp-product-jsonld";
+    scriptEl.type = "application/ld+json";
+    document.head.appendChild(scriptEl);
+  }
+
+  const jsonLd = {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": product.name,
+    "image": [
+      window.location.origin + "/" + product.images.primary,
+      ...(product.images.gallery || []).map(img => window.location.origin + "/" + img)
+    ],
+    "description": product.description,
+    "sku": `PB-${product.slug.toUpperCase()}`,
+    "brand": {
+      "@type": "Brand",
+      "name": "Petal & Bloom"
+    },
+    "offers": {
+      "@type": "AggregateOffer",
+      "priceCurrency": "USD",
+      "lowPrice": Math.min(...product.sizes.map(s => s.price)).toString(),
+      "highPrice": Math.max(...product.sizes.map(s => s.price)).toString(),
+      "offerCount": product.sizes.length.toString(),
+      "availability": "https://schema.org/InStock",
+      "seller": {
+        "@type": "Organization",
+        "name": "Petal & Bloom"
+      }
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": (product.rating || 4.9).toString(),
+      "reviewCount": (metrics?.count || 24).toString()
+    }
+  };
+
+  scriptEl.textContent = JSON.stringify(jsonLd);
 }
 
 /**
@@ -276,6 +324,37 @@ export function renderPDP(slug) {
               </svg>
             </button>
           </div>
+
+          <!-- Complete Your Gift Add-Ons Upsell Box -->
+          ${GIFT_ADDONS && GIFT_ADDONS.length > 0 ? `
+            <div class="pdp-gift-addons-box">
+              <div class="pdp-gift-addons-header">
+                <span class="pdp-gift-addons-title">Complete Your Gift</span>
+                <span class="pdp-gift-addons-badge">Boutique Pairing</span>
+              </div>
+              <div class="pdp-gift-addons-grid">
+                ${GIFT_ADDONS.map(addon => `
+                  <div class="pdp-gift-addon-item">
+                    <div class="pdp-gift-addon-thumb">
+                      <img src="${addon.images.primary}" alt="${addon.name}" loading="lazy" />
+                    </div>
+                    <div class="pdp-gift-addon-info">
+                      <span class="pdp-gift-addon-name">${addon.name.replace("Artisanal ", "").replace("Botanical ", "")}</span>
+                      <span class="pdp-gift-addon-price">$${addon.sizes[0].price}.00</span>
+                    </div>
+                    <button 
+                      type="button" 
+                      class="btn-pdp-addon-quick-add" 
+                      data-addon-slug="${addon.slug}"
+                      aria-label="Add ${addon.name} to bag"
+                    >
+                      + Add
+                    </button>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          ` : ""}
 
           <!-- Metadata -->
           <div class="pdp-meta-list">
@@ -564,6 +643,35 @@ function bindPDPEvents(product) {
   document.getElementById("btn-pdp-wishlist")?.addEventListener("click", () => {
     toggleWishlist(product);
   });
+
+  // PDP Complete Your Gift Add-On Quick Add Buttons
+  pdpContainer.querySelectorAll(".btn-pdp-addon-quick-add").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const addonSlug = btn.dataset.addonSlug;
+      const addon = GIFT_ADDONS.find(a => a.slug === addonSlug);
+      if (addon && typeof addToCartHandler === "function") {
+        addToCartHandler({
+          product: addon,
+          size: addon.sizes[0],
+          vase: { id: "none", name: "Standard", price: 0 },
+          giftMessage: "",
+          deliveryDate: "",
+          unitPrice: addon.sizes[0].price,
+          quantity: 1
+        });
+        btn.textContent = "✓ Added";
+        btn.classList.add("added");
+        setTimeout(() => {
+          btn.textContent = "+ Add";
+          btn.classList.remove("added");
+        }, 2000);
+      }
+    });
+  });
+
+  // Inject Product JSON-LD Structured Data
+  updateProductJsonLd(product, initialSizePrice, metrics);
 
   // Tabs switching (Description / Additional Information / Review)
   pdpContainer.querySelectorAll(".pdp-tab-btn").forEach(tabBtn => {

@@ -116,10 +116,10 @@ function buildReceiptHtml(order) {
   }, 0)
   const subtotalCents = Math.round(subtotalUsd * 100)
 
-  // Delivery fee ($14.00 for orders under $75, Free for $75+)
+  // Delivery fee ($14.00 for orders under $100, Free for $100+)
   const deliveryFeeUsd = (typeof delivery.delivery_fee_usd === 'number')
     ? delivery.delivery_fee_usd
-    : (subtotalUsd >= 75 ? 0 : 14)
+    : (subtotalUsd >= 100 ? 0 : 14)
   const deliveryFeeCents = Math.round(deliveryFeeUsd * 100)
   const totalUsdCents = subtotalCents + deliveryFeeCents
 

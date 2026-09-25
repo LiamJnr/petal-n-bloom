@@ -6,9 +6,10 @@ import { showToast } from "./toast.js";
 import { getProductBySlug, GIFT_ADDONS } from "../data/products.js";
 import { ICONS } from "../lib/icons.js";
 import { getInternationalEstimates } from "../lib/currency.js";
+import { navigateToCheckout } from "./router.js";
 
 const CART_STORAGE_KEY = "petal_bloom_cart";
-const FREE_SHIPPING_THRESHOLD = 75;
+const FREE_SHIPPING_THRESHOLD = 100;
 
 let cartItems = [];
 
@@ -165,6 +166,9 @@ export function openCart() {
 export function closeCart() {
   const backdrop = document.getElementById("cart-backdrop");
   const drawer = document.getElementById("cart-drawer-aside");
+  if (document.activeElement && backdrop && backdrop.contains(document.activeElement)) {
+    document.activeElement.blur();
+  }
   if (backdrop) {
     backdrop.classList.remove("open");
     backdrop.setAttribute("aria-hidden", "true");
@@ -224,7 +228,7 @@ function renderCartDrawerMarkup() {
       <!-- Free Delivery Progress Meter -->
       <div class="cart-shipping-meter">
         <p class="shipping-meter-text" id="shipping-meter-text">
-          <span>Add <strong>$75.00</strong> more for <strong>FREE Local Delivery</strong></span>
+          <span>Add <strong>$100.00</strong> more for <strong>FREE Local Delivery</strong></span>
         </p>
         <div class="shipping-meter-track">
           <div class="shipping-meter-fill" id="shipping-meter-fill" style="width: 0%"></div>
@@ -248,7 +252,7 @@ function renderCartDrawerMarkup() {
         <div class="cart-total-row">
           <div class="cart-total-label-wrap">
             <span>Estimated Total:</span>
-            <small class="cart-delivery-note" id="cart-delivery-note">Complimentary delivery on orders $75+</small>
+            <small class="cart-delivery-note" id="cart-delivery-note">Complimentary delivery on orders $100+</small>
           </div>
           <strong id="cart-total-val">$0.00</strong>
         </div>
@@ -298,9 +302,9 @@ function bindCartEvents() {
   const checkoutBtn = document.getElementById("btn-cart-checkout");
   checkoutBtn?.addEventListener("click", (e) => {
     e.preventDefault();
+    if (checkoutBtn) checkoutBtn.blur();
     closeCart();
-    const event = new CustomEvent("navigate-to-checkout");
-    document.dispatchEvent(event);
+    navigateToCheckout();
   });
 
   // Cart body delegation for steppers & remove buttons
@@ -469,7 +473,7 @@ export function updateCartUI() {
   const deliveryNoteEl = document.getElementById("cart-delivery-note");
   if (deliveryNoteEl) {
     if (subtotal === 0) {
-      deliveryNoteEl.textContent = "Complimentary delivery on orders $75+";
+      deliveryNoteEl.textContent = "Complimentary delivery on orders $100+";
     } else if (isFreeDelivery) {
       deliveryNoteEl.textContent = "Complimentary delivery applied";
     } else {

@@ -114,6 +114,17 @@ export function initShop({ onProductClick, onQuickAdd }) {
         return;
       }
 
+      // Quick Add button click
+      const quickAddBtn = e.target.closest(".product-card-quick-add-btn");
+      if (quickAddBtn) {
+        e.stopPropagation();
+        e.preventDefault();
+        if (typeof quickAddHandler === "function") {
+          quickAddHandler(slug);
+        }
+        return;
+      }
+
       // Default card click or "VIEW OPTIONS" -> Open PDP
       if (typeof productClickHandler === "function") {
         e.preventDefault();
@@ -145,10 +156,10 @@ export function getFilteredShopProducts() {
   if (activePriceRange !== "all") {
     list = list.filter(p => {
       const minPrice = Math.min(...p.sizes.map(s => s.price));
-      if (activePriceRange === "under-50") return minPrice < 50;
-      if (activePriceRange === "50-75") return minPrice >= 50 && minPrice <= 75;
-      if (activePriceRange === "75-100") return minPrice > 75 && minPrice <= 100;
-      if (activePriceRange === "over-100") return minPrice > 100;
+      if (activePriceRange === "under-65") return minPrice < 65;
+      if (activePriceRange === "65-90") return minPrice >= 65 && minPrice <= 90;
+      if (activePriceRange === "90-120") return minPrice > 90 && minPrice <= 120;
+      if (activePriceRange === "over-120") return minPrice > 120;
       return true;
     });
   }
@@ -293,10 +304,10 @@ export function renderShopGrid() {
 
     if (activePriceRange !== "all") {
       const priceLabels = {
-        "under-50": "Under $50",
-        "50-75": "$50 – $75",
-        "75-100": "$75 – $100",
-        "over-100": "$100+"
+        "under-65": "Under $65",
+        "65-90": "$65 – $90",
+        "90-120": "$90 – $120",
+        "over-120": "$120+"
       };
       activeChips.push({
         type: "price",
@@ -390,6 +401,15 @@ export function renderShopGrid() {
               <path d="M0 0h24v24H0z" fill="none" />
               <path fill="currentColor" fill-rule="evenodd" d="M3.25 10.03c0-2.7 2.37-4.78 5.15-4.78c1.433 0 2.695.672 3.6 1.542c.905-.87 2.166-1.542 3.6-1.542c2.78 0 5.15 2.08 5.15 4.78c0 1.85-.789 3.476-1.882 4.852c-1.09 1.372-2.518 2.537-3.884 3.484c-.523.362-1.05.695-1.534.941c-.453.231-.975.443-1.45.443s-.996-.212-1.45-.443a14 14 0 0 1-1.533-.941c-1.367-.947-2.794-2.112-3.885-3.484C4.039 13.506 3.25 11.88 3.25 10.03M8.4 6.75c-2.08 0-3.65 1.53-3.65 3.28c0 1.403.596 2.71 1.556 3.918c.962 1.21 2.257 2.279 3.565 3.185c.495.343.96.634 1.36.838c.428.218.676.279.769.279s.341-.061.77-.28a12 12 0 0 0 1.36-.837c1.307-.906 2.602-1.974 3.564-3.185c.96-1.208 1.556-2.515 1.556-3.918c0-1.75-1.57-3.28-3.65-3.28c-1.194 0-2.31.713-3.005 1.619a.75.75 0 0 1-1.19 0C10.71 7.463 9.595 6.75 8.4 6.75" clip-rule="evenodd" />
             </svg>
+          </button>
+          <button 
+            class="product-card-quick-add-btn" 
+            type="button" 
+            data-slug="${product.slug}"
+            aria-label="Quick add ${product.name} to cart"
+            title="Quick add to bag"
+          >
+            <span>+ Quick Add</span>
           </button>
         </div>
 

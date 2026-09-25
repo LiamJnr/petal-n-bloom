@@ -68,6 +68,9 @@ function openModal(modal) {
 }
 
 function closeModal(modal) {
+  if (document.activeElement && modal && modal.contains(document.activeElement)) {
+    document.activeElement.blur();
+  }
   modal.classList.remove("is-open");
   modal.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";

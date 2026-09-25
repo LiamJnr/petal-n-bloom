@@ -36,9 +36,9 @@ export const PRODUCTS = [
       "Keep away from direct sunlight, drafts, and ripening fruit to maximize bloom lifespan."
     ],
     sizes: [
-      { id: "standard", name: "Standard", stems: "18-20 stems", price: 45, default: true },
-      { id: "deluxe", name: "Deluxe", stems: "28-30 stems", price: 60, default: false },
-      { id: "premium", name: "Premium", stems: "40-42 stems", price: 90, default: false }
+      { id: "standard", name: "Standard", stems: "18-20 stems", price: 65, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "28-30 stems", price: 85, default: false },
+      { id: "premium", name: "Premium", stems: "40-42 stems", price: 125, default: false }
     ],
     vases: [
       { id: "none", name: "Gingham Check Wrap", price: 0 },
@@ -79,9 +79,9 @@ export const PRODUCTS = [
       "Remove any guard petals gently for full opening."
     ],
     sizes: [
-      { id: "standard", name: "Standard", stems: "18-20 stems", price: 48, default: true },
-      { id: "deluxe", name: "Deluxe", stems: "28-30 stems", price: 68, default: false },
-      { id: "premium", name: "Premium", stems: "40-42 stems", price: 95, default: false }
+      { id: "standard", name: "Standard", stems: "18-20 stems", price: 72, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "28-30 stems", price: 98, default: false },
+      { id: "premium", name: "Premium", stems: "40-42 stems", price: 139, default: false }
     ],
     vases: [
       { id: "none", name: "Luxury Matte Taupe Wrap", price: 0 },
@@ -121,9 +121,9 @@ export const PRODUCTS = [
       "Keep in a cool room away from direct heaters and air conditioning."
     ],
     sizes: [
-      { id: "standard", name: "Standard", stems: "16-18 blooms", price: 65, default: true },
-      { id: "deluxe", name: "Deluxe", stems: "24-26 blooms", price: 85, default: false },
-      { id: "premium", name: "Premium", stems: "34-36 blooms", price: 120, default: false }
+      { id: "standard", name: "Standard", stems: "16-18 blooms", price: 95, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "24-26 blooms", price: 125, default: false },
+      { id: "premium", name: "Premium", stems: "34-36 blooms", price: 175, default: false }
     ],
     vases: [
       { id: "none", name: "Beige Kraft Wrap & Silk Ribbon", price: 0 },
@@ -162,9 +162,9 @@ export const PRODUCTS = [
       "Allow soil mix to dry slightly between waterings; avoid standing water in saucer."
     ],
     sizes: [
-      { id: "standard", name: "Classic Double Stem", stems: "12-14 blooms", price: 75, default: true },
-      { id: "deluxe", name: "Triple Cascade Stem", stems: "18-20 blooms", price: 95, default: false },
-      { id: "premium", name: "Grand Quadruple Stem", stems: "26-28 blooms", price: 135, default: false }
+      { id: "standard", name: "Classic Double Stem", stems: "12-14 blooms", price: 110, default: true },
+      { id: "deluxe", name: "Triple Cascade Stem", stems: "18-20 blooms", price: 145, default: false },
+      { id: "premium", name: "Grand Quadruple Stem", stems: "26-28 blooms", price: 195, default: false }
     ],
     vases: [
       { id: "ceramic", name: "Artisan Matte Cream Ceramic Pot (Included)", price: 0 },
@@ -203,9 +203,9 @@ export const PRODUCTS = [
       "Mist petals lightly with fresh water every morning."
     ],
     sizes: [
-      { id: "standard", name: "Standard", stems: "16-18 stems", price: 52, default: true },
-      { id: "deluxe", name: "Deluxe", stems: "24-26 stems", price: 72, default: false },
-      { id: "premium", name: "Premium", stems: "34-36 stems", price: 98, default: false }
+      { id: "standard", name: "Standard", stems: "16-18 stems", price: 78, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "24-26 stems", price: 105, default: false },
+      { id: "premium", name: "Premium", stems: "34-36 stems", price: 149, default: false }
     ],
     vases: [
       { id: "none", name: "Vellum Wrap & Lavender Ribbon", price: 0 },
@@ -245,9 +245,9 @@ export const PRODUCTS = [
       "Display in moderate temperatures to preserve dahlia petal firmness."
     ],
     sizes: [
-      { id: "standard", name: "Standard", stems: "18-20 stems", price: 46, default: true },
-      { id: "deluxe", name: "Deluxe", stems: "26-28 stems", price: 64, default: false },
-      { id: "premium", name: "Premium", stems: "38-40 stems", price: 88, default: false }
+      { id: "standard", name: "Standard", stems: "18-20 stems", price: 72, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "26-28 stems", price: 95, default: false },
+      { id: "premium", name: "Premium", stems: "38-40 stems", price: 135, default: false }
     ],
     vases: [
       { id: "none", name: "Terracotta Linen Ribbon Wrap", price: 0 },
@@ -287,9 +287,9 @@ export const PRODUCTS = [
       "Keep water fresh and cool for long-lasting fragrance."
     ],
     sizes: [
-      { id: "standard", name: "Standard", stems: "18-20 stems", price: 42, default: true },
-      { id: "deluxe", name: "Deluxe", stems: "26-28 stems", price: 58, default: false },
-      { id: "premium", name: "Premium", stems: "38-40 stems", price: 82, default: false }
+      { id: "standard", name: "Standard", stems: "18-20 stems", price: 62, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "26-28 stems", price: 82, default: false },
+      { id: "premium", name: "Premium", stems: "38-40 stems", price: 115, default: false }
     ],
     vases: [
       { id: "none", name: "Sage Cotton Ribbon Wrap", price: 0 },
@@ -330,9 +330,9 @@ export const PRODUCTS = [
       "Gently rinse any natural sweet sap from tight buds with lukewarm water."
     ],
     sizes: [
-      { id: "standard", name: "Standard", stems: "15-18 stems", price: 58, default: true },
-      { id: "deluxe", name: "Deluxe", stems: "22-25 stems", price: 78, default: false },
-      { id: "premium", name: "Premium", stems: "32-35 stems", price: 110, default: false }
+      { id: "standard", name: "Standard", stems: "15-18 stems", price: 89, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "22-25 stems", price: 119, default: false },
+      { id: "premium", name: "Premium", stems: "32-35 stems", price: 169, default: false }
     ],
     vases: [
       { id: "none", name: "Heavy Cream Wrap & Velvet Ribbon", price: 0 },
@@ -372,9 +372,9 @@ export const PRODUCTS = [
       "Avoid placing next to daffodils or fruit."
     ],
     sizes: [
-      { id: "standard", name: "Standard", stems: "20-22 stems", price: 38, default: true },
-      { id: "deluxe", name: "Deluxe", stems: "30-32 stems", price: 52, default: false },
-      { id: "premium", name: "Premium", stems: "44-46 stems", price: 74, default: false }
+      { id: "standard", name: "Standard", stems: "20-22 stems", price: 52, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "30-32 stems", price: 72, default: false },
+      { id: "premium", name: "Premium", stems: "44-46 stems", price: 98, default: false }
     ],
     vases: [
       { id: "none", name: "Parchment Craft Wrap", price: 0 },
@@ -414,9 +414,9 @@ export const PRODUCTS = [
       "Keep away from intense heat sources."
     ],
     sizes: [
-      { id: "standard", name: "Standard", stems: "18-20 stems", price: 50, default: true },
-      { id: "deluxe", name: "Deluxe", stems: "28-30 stems", price: 70, default: false },
-      { id: "premium", name: "Premium", stems: "40-42 stems", price: 96, default: false }
+      { id: "standard", name: "Standard", stems: "18-20 stems", price: 74, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "28-30 stems", price: 99, default: false },
+      { id: "premium", name: "Premium", stems: "40-42 stems", price: 139, default: false }
     ],
     vases: [
       { id: "none", name: "Textured Vellum Wrap & Mauve Ribbon", price: 0 },
@@ -456,9 +456,9 @@ export const PRODUCTS = [
       "Deadhead spent chamomile blossoms to encourage continued freshness."
     ],
     sizes: [
-      { id: "standard", name: "Standard", stems: "Petite 6-inch Basket", price: 40, default: true },
-      { id: "deluxe", name: "Deluxe", stems: "Classic 8-inch Basket", price: 55, default: false },
-      { id: "premium", name: "Grand Luxe Basket", stems: "Grand 10-inch Basket", price: 75, default: false }
+      { id: "standard", name: "Standard", stems: "Petite 6-inch Basket", price: 58, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "Classic 8-inch Basket", price: 78, default: false },
+      { id: "premium", name: "Grand Luxe Basket", stems: "Grand 10-inch Basket", price: 105, default: false }
     ],
     vases: [
       { id: "basket", name: "Hand-Woven Natural Rattan Basket (Included)", price: 0 }
@@ -496,9 +496,9 @@ export const PRODUCTS = [
       "Display in a cool room away from direct heaters."
     ],
     sizes: [
-      { id: "standard", name: "Standard", stems: "6-inch Hat Box", price: 54, default: true },
-      { id: "deluxe", name: "Deluxe", stems: "8-inch Hat Box", price: 74, default: false },
-      { id: "premium", name: "Grand Luxe Hat Box", stems: "10-inch Hat Box", price: 105, default: false }
+      { id: "standard", name: "Standard", stems: "6-inch Hat Box", price: 78, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "8-inch Hat Box", price: 105, default: false },
+      { id: "premium", name: "Grand Luxe Hat Box", stems: "10-inch Hat Box", price: 155, default: false }
     ],
     vases: [
       { id: "hatbox", name: "Matte Cream Keepsake Hat Box (Included)", price: 0 }
@@ -536,9 +536,9 @@ export const PRODUCTS = [
       "Keep away from direct heat and air drafts to maximize petal longevity."
     ],
     sizes: [
-      { id: "standard", name: "Standard", stems: "20-22 stems", price: 38, default: true },
-      { id: "deluxe", name: "Deluxe", stems: "30-32 stems", price: 54, default: false },
-      { id: "premium", name: "Premium", stems: "42-44 stems", price: 76, default: false }
+      { id: "standard", name: "Standard", stems: "20-22 stems", price: 52, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "30-32 stems", price: 72, default: false },
+      { id: "premium", name: "Premium", stems: "42-44 stems", price: 98, default: false }
     ],
     vases: [
       { id: "none", name: "Classic Kraft Wrap & Yellow Linen Ribbon", price: 0 },

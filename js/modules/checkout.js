@@ -176,7 +176,7 @@ export function renderCheckoutPage() {
   const subtotal = getCartSubtotal();
   const deliveryState = getDeliveryCountdownState();
   const minDateStr = deliveryState.earliestDateStr;
-  const isFreeDelivery = subtotal >= 75;
+  const isFreeDelivery = subtotal >= 100;
   const deliveryFee = isFreeDelivery ? 0 : 14;
   const totalDue = subtotal + deliveryFee;
   const ghsEstimate = getInternationalEstimates(totalDue).find(e => e.code === "GHS");
@@ -551,7 +551,7 @@ export function renderCheckoutPage() {
               <div class="checkout-total-row">
                 <div class="checkout-total-label-wrap">
                   <span>Total Due:</span>
-                  <small class="checkout-delivery-note">${isFreeDelivery ? 'Complimentary delivery applied (Orders over $75)' : 'Standard delivery ($14.00) applied'}</small>
+                  <small class="checkout-delivery-note">${isFreeDelivery ? 'Complimentary delivery applied (Orders over $100)' : 'Standard delivery ($14.00) applied'}</small>
                 </div>
                 <strong>$${totalDue.toFixed(2)}</strong>
               </div>

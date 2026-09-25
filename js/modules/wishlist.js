@@ -144,9 +144,13 @@ export function openWishlist() {
 export function closeWishlist() {
   const backdrop = document.getElementById("wishlist-backdrop");
   const drawer = document.getElementById("wishlist-drawer-aside");
+  if (document.activeElement && (backdrop?.contains(document.activeElement) || drawer?.contains(document.activeElement))) {
+    document.activeElement.blur();
+  }
   if (backdrop && drawer) {
     backdrop.classList.remove("open");
     drawer.classList.remove("open");
+    backdrop.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
   }
 }

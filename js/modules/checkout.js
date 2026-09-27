@@ -213,7 +213,7 @@ export function renderCheckoutPage() {
             
             <div class="checkout-header-intro">
               <h2>Customer &amp; Delivery Logistics</h2>
-              <p class="checkout-subtitle">Please provide your contact details for receipt delivery, followed by the recipient and destination details.</p>
+              <p class="checkout-subtitle">Please provide your contact details, followed by the recipient and destination details.</p>
             </div>
 
             <form id="recipient-order-form">
@@ -231,7 +231,7 @@ export function renderCheckoutPage() {
                     <input type="text" id="cust-name" class="form-control" placeholder="e.g. Eleanor Vance" required />
                   </div>
                   <div class="form-group">
-                    <label for="cust-email">Your Email Address (For order receipt) *</label>
+                    <label for="cust-email">Your Email Address (For order updates) *</label>
                     <input type="email" id="cust-email" class="form-control" placeholder="e.g. eleanor@example.com" required />
                   </div>
                 </div>

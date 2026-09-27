@@ -1,6 +1,7 @@
 import { clearCart } from './cart.js'
 import { navigateToHome, scrollToTop } from './router.js'
 import { ICONS } from '../lib/icons.js'
+import { downloadReceipt } from '../lib/receipt.js'
 
 const POLL_INTERVAL_MS = 2000
 const MAX_POLLS = 15
@@ -55,6 +56,7 @@ async function pollOrderStatus(view, orderId) {
           message: 'Thank you for your order. Our studio team will now prepare your arrangement.',
           action: 'Continue shopping',
           reference: orderId,
+          receiptAvailable: hasReceiptToken(orderId),
         })
         return
       }
@@ -92,7 +94,7 @@ async function pollOrderStatus(view, orderId) {
   })
 }
 
-function renderMessage(view, { eyebrow, title, message, action, loading = false, reference = '' }) {
+function renderMessage(view, { eyebrow, title, message, action, loading = false, reference = '', receiptAvailable = false }) {
   const safeReference = reference ? `Order reference: ${reference.slice(0, 8).toUpperCase()}` : ''
   view.innerHTML = `
     <section class="order-confirmation">
@@ -104,11 +106,56 @@ function renderMessage(view, { eyebrow, title, message, action, loading = false,
         ${safeReference ? `<p class="order-confirmation-reference">${safeReference}</p>` : ''}
         <div class="order-confirmation-actions">
           ${action ? '<button type="button" class="button button-dark" id="btn-order-confirmation-home">' + action + '</button>' : ''}
+          ${receiptAvailable ? '<button type="button" class="button button-outline" id="btn-download-receipt">Download receipt</button>' : ''}
         </div>
       </div>
     </section>
   `
   document.getElementById('btn-order-confirmation-home')?.addEventListener('click', () => navigateToHome())
+  document.getElementById('btn-download-receipt')?.addEventListener('click', () => downloadOrderReceipt(reference))
+}
+
+function hasReceiptToken(orderId) {
+  try {
+    return Boolean(sessionStorage.getItem(`petal_bloom_receipt_${orderId}`))
+  } catch {
+    return false
+  }
+}
+
+async function downloadOrderReceipt(orderId) {
+  const button = document.getElementById('btn-download-receipt')
+  let token
+  try {
+    token = sessionStorage.getItem(`petal_bloom_receipt_${orderId}`)
+  } catch {
+    token = null
+  }
+  if (!token) return
+
+  const originalLabel = button?.textContent || 'Download receipt'
+  if (button) {
+    button.disabled = true
+    button.textContent = 'Preparing receipt…'
+  }
+
+  try {
+    const response = await fetch(`/api/orders/${encodeURIComponent(orderId)}/receipt`, {
+      method: 'POST',
+      headers: { 'X-Receipt-Token': token },
+      cache: 'no-store',
+    })
+    const payload = await response.json()
+    if (!response.ok) throw new Error(payload.error || 'Receipt could not be downloaded.')
+    downloadReceipt(payload.order)
+  } catch (error) {
+    window.alert(error.message || 'Receipt could not be downloaded.')
+  } finally {
+    if (button) {
+      button.disabled = false
+      button.textContent = originalLabel
+    }
+  }
 }
 
 function isOrderId(value) {

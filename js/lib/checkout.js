@@ -11,8 +11,15 @@ export async function startCheckout({ items, buyer, delivery, card_note, onCance
   }
 
   const data = await response.json()
-  const { url, access_code: accessCode, orderId } = data
+  const { url, access_code: accessCode, orderId, receipt_token: receiptToken } = data
   if (!accessCode && !url) throw new Error('Checkout could not be started.')
+  if (!orderId || !receiptToken) throw new Error('Checkout could not be started.')
+
+  try {
+    sessionStorage.setItem(`petal_bloom_receipt_${orderId}`, receiptToken)
+  } catch {
+    throw new Error('Your browser could not securely save receipt access. Please allow session storage and try again.')
+  }
 
   const targetCallbackUrl = `/?view=order-confirmed&order=${encodeURIComponent(orderId || '')}`
 

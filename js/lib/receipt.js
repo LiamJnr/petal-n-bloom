@@ -1,6 +1,6 @@
 /**
  * Receipt Generator — Petal & Bloom
- * Opens a beautifully branded, print-ready receipt in a new tab.
+ * Downloads a beautifully branded, print-ready receipt HTML file.
  * All customer-facing prices are in USD. The GHS settlement amount
  * is shown as a small footnote for Paystack compliance reference.
  */
@@ -105,7 +105,7 @@ function formatTimeWindow(window) {
  * @param {object} order - Full order object from /api/orders/:id
  * @returns {string}
  */
-function buildReceiptHtml(order) {
+export function buildReceiptHtml(order) {
   const buyer = (() => { try { return JSON.parse(order.buyer_json || '{}') } catch { return {} } })()
   const delivery = (() => { try { return JSON.parse(order.delivery_json || '{}') } catch { return {} } })()
   const items = (() => { try { return JSON.parse(order.cart_json || '[]') } catch { return [] } })()
@@ -129,10 +129,11 @@ function buildReceiptHtml(order) {
   // Recipient & delivery details
   const recipientName = delivery.recipient_name || buyer.name || ''
   const deliveryAddress = [
-    delivery.address_line1,
+    delivery.street || delivery.address_line1,
     delivery.address_line2,
     delivery.city,
-    delivery.region,
+    delivery.state || delivery.region,
+    delivery.zip,
     delivery.country,
   ].filter(Boolean).join(', ')
   const deliveryDate = delivery.delivery_date ? formatDate(delivery.delivery_date) : ''
@@ -273,9 +274,7 @@ function buildReceiptHtml(order) {
   </style>
 </head>
 <body>
-  <div class="print-bar">
-    <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
-  </div>
+  <div class="print-bar"><span>Use your browser's Print command to save this receipt as a PDF.</span></div>
   <div class="receipt">
     <div class="receipt-header">
       <div class="brand-logo">${LOGO_SVG}</div>
@@ -343,18 +342,17 @@ function buildReceiptHtml(order) {
 }
 
 /**
- * Open the print receipt for a paid order in a new browser tab.
- * Uses a Blob URL for reliable cross-browser and CSP-safe rendering.
+ * Download a self-contained receipt. Customers can open it and save it as a PDF
+ * using their browser's print command.
  * @param {object} order - Full order object from /api/orders/:id
  */
-export function printReceipt(order) {
+export function downloadReceipt(order) {
   const html = buildReceiptHtml(order)
   const blob = new Blob([html], { type: 'text/html' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.target = '_blank'
-  a.rel = 'noopener'
+  a.download = `petal-bloom-receipt-${String(order.id || 'order').slice(0, 8)}.html`
   document.body.appendChild(a)
   a.click()
   document.body.removeChild(a)

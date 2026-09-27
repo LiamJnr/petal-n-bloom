@@ -12,6 +12,10 @@ const abuseProtectionMigration = await readFile(
   new URL('../../migrations/0005_add_abuse_protection.sql', import.meta.url),
   'utf8',
 )
+const receiptAccessMigration = await readFile(
+  new URL('../../migrations/0006_add_receipt_access.sql', import.meta.url),
+  'utf8',
+)
 
 function createDatabase() {
   const database = new DatabaseSync(':memory:')
@@ -19,7 +23,7 @@ function createDatabase() {
   return database
 }
 
-function insertOrder(database, overrides = {}) {
+function insertOrder(database, overrides = {}, includesReceiptAccessHash = true) {
   const order = {
     id: 'f0f113d6-7d5b-47a4-9e9b-2b130ffc5ef5',
     status: 'pending',
@@ -32,17 +36,22 @@ function insertOrder(database, overrides = {}) {
     ps_reference: null,
     created_at: '2026-09-27 12:00:00',
     paid_at: null,
+    receipt_access_hash: 'f0f113d67d5b47a49e9b2b130ffc5ef5'.padEnd(64, '0'),
     ...overrides,
   }
-  database.prepare(
-    `INSERT INTO orders
-     (id, status, purchaser_email, cart_json, buyer_json, delivery_json, total_cents, payment_currency, ps_reference, created_at, paid_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-  ).run(
+  const columns = ['id', 'status', 'purchaser_email', 'cart_json', 'buyer_json', 'delivery_json', 'total_cents', 'payment_currency', 'ps_reference', 'created_at', 'paid_at']
+  const values = [
     order.id, order.status, order.purchaser_email, order.cart_json, order.buyer_json,
     order.delivery_json, order.total_cents, order.payment_currency, order.ps_reference,
     order.created_at, order.paid_at,
-  )
+  ]
+  if (includesReceiptAccessHash) {
+    columns.push('receipt_access_hash')
+    values.push(order.receipt_access_hash)
+  }
+  database.prepare(
+    `INSERT INTO orders (${columns.join(', ')}) VALUES (${columns.map(() => '?').join(', ')})`,
+  ).run(...values)
 }
 
 test('accepts a valid pending and paid order', () => {
@@ -53,6 +62,7 @@ test('accepts a valid pending and paid order', () => {
     status: 'paid',
     ps_reference: 'paystack-reference',
     paid_at: '2026-09-27 12:01:00',
+    receipt_access_hash: '28be3494804849a2b543ef7b4f13a7e3'.padEnd(64, '0'),
   })
   assert.equal(database.prepare('SELECT COUNT(*) AS count FROM orders').get().count, 2)
 })
@@ -92,20 +102,22 @@ test('integrity migration preserves valid legacy orders and applies constraints'
     CREATE INDEX idx_orders_ps_reference ON orders(ps_reference);
     CREATE UNIQUE INDEX idx_orders_ps_reference_unique ON orders(ps_reference) WHERE ps_reference IS NOT NULL;
   `)
-  insertOrder(database)
+  insertOrder(database, {}, false)
   insertOrder(database, {
     id: '28be3494-8048-49a2-b543-ef7b4f13a7e3',
     status: 'paid',
     ps_reference: 'paystack-reference',
     paid_at: '2026-09-27 12:01:00',
-  })
+  }, false)
 
   database.exec(integrityMigration)
   database.exec(abuseProtectionMigration)
+  database.exec(receiptAccessMigration)
 
   assert.equal(database.prepare('SELECT COUNT(*) AS count FROM orders').get().count, 2)
   assert.equal(database.prepare("SELECT COUNT(*) AS count FROM pragma_table_info('orders') WHERE name = 'last_payment_check_at'").get().count, 1)
   assert.equal(database.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type = 'table' AND name = 'api_rate_limits'").get().count, 1)
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM pragma_table_info('orders') WHERE name = 'receipt_access_hash'").get().count, 1)
   assert.throws(() => insertOrder(database, {
     id: 'aec5fda8-4f20-4560-9ba7-dedcad0a9c15',
     status: 'invalid-status',

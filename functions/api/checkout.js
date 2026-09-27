@@ -2,6 +2,7 @@ import { PRODUCTS, GIFT_ADDONS } from '../../js/data/products.js'
 import { validateDelivery } from '../lib/delivery.js'
 import { isValidCurrency, normaliseCurrency } from '../lib/paystack-payment.js'
 import { consumeRateLimit } from '../lib/rate-limit.js'
+import { createReceiptToken, hashReceiptToken } from '../lib/receipt-access.js'
 
 const MAX_LINE_ITEMS = 25
 const MAX_QUANTITY_PER_LINE = 20
@@ -80,6 +81,8 @@ async function createCheckout({ request, env }) {
   const totalGhs = Number((totalUsd * exchangeRate).toFixed(2))
   const totalPesewas = Math.round(totalGhs * 100)
   const orderId = crypto.randomUUID()
+  const receiptToken = createReceiptToken()
+  const receiptAccessHash = await hashReceiptToken(receiptToken)
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
   const siteUrl = new URL(request.url).origin
   const callbackUrl = `${siteUrl}/?view=order-confirmed&order=${encodeURIComponent(orderId)}`
@@ -90,8 +93,8 @@ async function createCheckout({ request, env }) {
   }
 
   await env.DB.prepare(
-    `INSERT INTO orders (id, status, purchaser_email, cart_json, buyer_json, delivery_json, total_cents, payment_currency)
-     VALUES (?, 'pending', ?, ?, ?, ?, ?, ?)`
+    `INSERT INTO orders (id, status, purchaser_email, cart_json, buyer_json, delivery_json, total_cents, payment_currency, receipt_access_hash)
+     VALUES (?, 'pending', ?, ?, ?, ?, ?, ?, ?)`
   ).bind(
     orderId,
     buyer.email,
@@ -100,6 +103,7 @@ async function createCheckout({ request, env }) {
     JSON.stringify(deliveryWithFee),
     totalPesewas,
     currency,
+    receiptAccessHash,
   ).run()
 
   const customFields = [
@@ -186,6 +190,7 @@ async function createCheckout({ request, env }) {
     access_code: accessCode,
     reference,
     orderId,
+    receipt_token: receiptToken,
   })
 }
 

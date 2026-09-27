@@ -133,6 +133,19 @@ window can return control to the site.
 No HSTS header is set while the site uses the shared `petalbloom.pages.dev`
 domain. Add HSTS only after moving to a custom domain that you control.
 
+### Database migration: secure receipt access
+
+New orders receive a cryptographically random receipt credential. Only its
+SHA-256 hash is stored in D1; the raw value is held in the customer's browser
+session and never placed in a URL. Paid receipts can therefore be downloaded
+from the payment-confirmation page without exposing private order details from
+the public order-status endpoint. Historical orders do not gain a receipt
+credential and will remain unavailable for download.
+
+```bash
+npx wrangler d1 execute petal-bloom-ps-db --remote --file=./migrations/0006_add_receipt_access.sql
+```
+
 ## Included
 
 - Responsive desktop/tablet/mobile design

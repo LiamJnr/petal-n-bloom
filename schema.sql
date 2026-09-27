@@ -13,12 +13,14 @@ CREATE TABLE IF NOT EXISTS orders (
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   paid_at TEXT,
   last_payment_check_at TEXT,
+  receipt_access_hash TEXT NOT NULL,
   CHECK (status <> 'paid' OR paid_at IS NOT NULL)
 );
 
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_orders_ps_reference ON orders(ps_reference);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_orders_ps_reference_unique ON orders(ps_reference) WHERE ps_reference IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_orders_receipt_access_hash_unique ON orders(receipt_access_hash) WHERE receipt_access_hash IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS api_rate_limits (
   bucket_start TEXT NOT NULL,

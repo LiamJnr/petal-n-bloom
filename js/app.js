@@ -272,6 +272,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  const newsletterForm = document.getElementById("newsletter-form");
+  newsletterForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    window.alert("Thank you for subscribing to Petal & Bloom!");
+  });
+
   // 9. West Africa Expansion & Paystack Partnership Modal (5.5s delay on first visit)
   initAnnouncementModal({
     onExploreShop: () => {

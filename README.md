@@ -121,6 +121,18 @@ at most once per pending order per minute.
 npx wrangler d1 execute petal-bloom-ps-db --remote --file=./migrations/0005_add_abuse_protection.sql
 ```
 
+### Security headers
+
+Cloudflare Pages serves the static storefront with the policy in `_headers`.
+Pages Functions do not inherit that file, so `functions/_middleware.js` applies
+the same policy to API responses. The Content Security Policy permits only the
+site itself plus the Paystack checkout and Google Fonts origins the storefront
+uses. It deliberately uses `same-origin-allow-popups` so Paystack's checkout
+window can return control to the site.
+
+No HSTS header is set while the site uses the shared `petalbloom.pages.dev`
+domain. Add HSTS only after moving to a custom domain that you control.
+
 ## Included
 
 - Responsive desktop/tablet/mobile design

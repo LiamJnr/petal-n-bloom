@@ -1,3 +1,5 @@
+import { paymentMatchesOrder } from '../lib/paystack-payment.js'
+
 export async function onRequestPost({ request, env }) {
   const rawBody = await request.text()
   const signature = request.headers.get('x-paystack-signature') || ''
@@ -12,16 +14,28 @@ export async function onRequestPost({ request, env }) {
   }
 
   const eventName = event.event
-  const orderRef = event.data?.metadata?.order_ref
+  const payment = event.data
+  const orderRef = payment?.metadata?.order_ref
   if (!orderRef) return new Response('OK', { status: 200 })
 
   if (eventName === 'charge.success') {
-    const psReference = event.data?.reference || null
+    const order = await env.DB.prepare(
+      `SELECT id, ps_reference, total_cents, payment_currency FROM orders WHERE id = ?`,
+    ).bind(orderRef).first()
+
+    if (!order || !paymentMatchesOrder(payment, order)) {
+      console.error('Rejected Paystack payment event because it did not match its order.', {
+        orderRef,
+        reference: payment?.reference,
+      })
+      return new Response('OK', { status: 200 })
+    }
+
     await env.DB.prepare(
       `UPDATE orders
-       SET status = 'paid', ps_reference = coalesce(?, ps_reference), paid_at = datetime('now')
-       WHERE (id = ? OR ps_reference = ?) AND status = 'pending'`,
-    ).bind(psReference, orderRef, psReference).run()
+       SET status = 'paid', paid_at = datetime('now')
+       WHERE id = ? AND ps_reference = ? AND total_cents = ? AND payment_currency = ? AND status = 'pending'`,
+    ).bind(order.id, order.ps_reference, order.total_cents, order.payment_currency).run()
   }
 
   return new Response('OK', { status: 200 })

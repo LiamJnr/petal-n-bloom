@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS orders (
   -- Retained empty only for compatibility with existing deployments; no data is written here.
   delivery_json TEXT NOT NULL DEFAULT '{}',
   total_cents INTEGER NOT NULL,
+  payment_currency TEXT NOT NULL,
   ps_reference TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   paid_at TEXT
@@ -14,3 +15,4 @@ CREATE TABLE IF NOT EXISTS orders (
 
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_orders_ps_reference ON orders(ps_reference);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_orders_ps_reference_unique ON orders(ps_reference) WHERE ps_reference IS NOT NULL;

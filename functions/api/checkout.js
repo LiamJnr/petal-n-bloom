@@ -1,4 +1,5 @@
 import { PRODUCTS, GIFT_ADDONS } from '../../js/data/products.js'
+import { isValidCurrency, normaliseCurrency } from '../lib/paystack-payment.js'
 
 const MAX_LINE_ITEMS = 25
 const MAX_QUANTITY_PER_LINE = 20
@@ -21,6 +22,16 @@ async function createCheckout({ request, env }) {
   const missing = ['DB', 'PAYSTACK_SECRET_KEY'].filter((key) => !env[key])
   if (missing.length) return json({ error: `Checkout is not configured: ${missing.join(', ')}` }, 500)
 
+  const currency = normaliseCurrency(env.PAYSTACK_CURRENCY || 'GHS')
+  if (!isValidCurrency(currency)) {
+    return json({ error: 'Checkout is not configured with a valid payment currency.' }, 500)
+  }
+
+  const exchangeRate = Number(env.PAYSTACK_EXCHANGE_RATE || 11.17)
+  if (!Number.isFinite(exchangeRate) || exchangeRate <= 0) {
+    return json({ error: 'Checkout is not configured with a valid exchange rate.' }, 500)
+  }
+
   let body
   try {
     body = await request.json()
@@ -39,7 +50,6 @@ async function createCheckout({ request, env }) {
     return json({ error: error.message }, 400)
   }
 
-  const exchangeRate = Number(env.PAYSTACK_EXCHANGE_RATE || 11.17)
   const subtotalUsd = items.reduce((sum, item) => sum + item.unit_price_usd * item.quantity, 0)
   const deliveryFeeUsd = subtotalUsd >= 100 ? 0 : 14
   const totalUsd = subtotalUsd + deliveryFeeUsd
@@ -56,8 +66,8 @@ async function createCheckout({ request, env }) {
   }
 
   await env.DB.prepare(
-    `INSERT INTO orders (id, status, purchaser_email, cart_json, buyer_json, delivery_json, total_cents)
-     VALUES (?, 'pending', ?, ?, ?, ?, ?)`
+    `INSERT INTO orders (id, status, purchaser_email, cart_json, buyer_json, delivery_json, total_cents, payment_currency)
+     VALUES (?, 'pending', ?, ?, ?, ?, ?, ?)`
   ).bind(
     orderId,
     buyer.email,
@@ -65,9 +75,8 @@ async function createCheckout({ request, env }) {
     JSON.stringify(buyer),
     JSON.stringify(deliveryWithFee),
     totalPesewas,
+    currency,
   ).run()
-
-  const currency = String(env.PAYSTACK_CURRENCY || 'GHS').trim().toUpperCase()
 
   const customFields = [
     { display_name: 'Order', variable_name: 'order_ref', value: orderId },
@@ -136,13 +145,17 @@ async function createCheckout({ request, env }) {
   }
 
   const accessCode = paystackData?.data?.access_code
-  const reference = paystackData?.data?.reference
-
-  if (reference) {
+  const reference = String(paystackData?.data?.reference || '').trim()
+  if (!reference) {
     await env.DB.prepare(
-      `UPDATE orders SET ps_reference = ? WHERE id = ?`
-    ).bind(reference, orderId).run()
+      `UPDATE orders SET status = 'checkout_failed' WHERE id = ? AND status = 'pending'`,
+    ).bind(orderId).run()
+    return json({ error: 'Payment checkout could not be prepared. Please try again.' }, 502)
   }
+
+  await env.DB.prepare(
+    `UPDATE orders SET ps_reference = ? WHERE id = ? AND status = 'pending'`
+  ).bind(reference, orderId).run()
 
   return json({
     url,

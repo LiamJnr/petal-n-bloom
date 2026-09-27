@@ -1,3 +1,5 @@
+import { paymentMatchesOrder } from '../../lib/paystack-payment.js'
+
 export async function onRequestGet({ params, env }) {
   const id = String(params.id || '')
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) {
@@ -5,7 +7,7 @@ export async function onRequestGet({ params, env }) {
   }
 
   let order = await env.DB.prepare(
-    'SELECT id, status, purchaser_email, ps_reference, total_cents, cart_json, buyer_json, delivery_json, created_at, paid_at FROM orders WHERE id = ?',
+    'SELECT id, status, purchaser_email, ps_reference, total_cents, payment_currency, cart_json, buyer_json, delivery_json, created_at, paid_at FROM orders WHERE id = ?',
   ).bind(id).first()
 
   if (!order) return json({ error: 'Order not found.' }, 404)
@@ -21,12 +23,12 @@ export async function onRequestGet({ params, env }) {
       })
       if (verifyRes.ok) {
         const verifyData = await verifyRes.json()
-        if (verifyData?.data?.status === 'success') {
+        if (paymentMatchesOrder(verifyData?.data, order)) {
           await env.DB.prepare(
             `UPDATE orders
              SET status = 'paid', paid_at = datetime('now')
-             WHERE id = ? AND status = 'pending'`,
-          ).bind(id).run()
+             WHERE id = ? AND ps_reference = ? AND total_cents = ? AND payment_currency = ? AND status = 'pending'`,
+          ).bind(order.id, order.ps_reference, order.total_cents, order.payment_currency).run()
           order.status = 'paid'
         }
       }

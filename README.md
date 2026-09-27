@@ -78,6 +78,17 @@ npx wrangler d1 execute petal-and-bloom-db --remote --file=./migrations/0002_ren
 
 If starting fresh, skip this — the clean `schema.sql` already uses `ps_reference`.
 
+### Database migration: record the expected payment currency
+
+Existing Paystack orders need their expected payment currency stored before
+strict payment verification can be enabled. The migration defaults historical
+orders to GHS, so review the historical settlement currency first if the
+deployment used another currency. Then run it once against each environment:
+
+```bash
+npx wrangler d1 execute petal-and-bloom-db --remote --file=./migrations/0003_add_payment_currency.sql
+```
+
 ## Included
 
 - Responsive desktop/tablet/mobile design

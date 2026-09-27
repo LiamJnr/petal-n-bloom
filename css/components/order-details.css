@@ -53,6 +53,7 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
+  min-width: 0;
 }
 
 .checkout-fieldset:focus-within {
@@ -97,6 +98,7 @@
   flex-direction: column;
   gap: 6px;
   margin: 0;
+  min-width: 0;
 }
 
 .form-group label {
@@ -140,7 +142,10 @@
 }
 
 .form-control {
+  display: block;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   padding: 12px 16px;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-md);
@@ -150,6 +155,13 @@
   background-color: var(--bg-subtle);
   color: var(--ink);
   transition: all var(--transition-fast);
+}
+
+/* Normalize native iOS/WebKit date picker to prevent overflow */
+input[type="date"].form-control {
+  min-height: 46px;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .form-control:focus {
@@ -650,8 +662,14 @@
   font-size: 0.88rem;
   font-weight: 700;
   color: var(--primary);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   letter-spacing: 0.2px;
+}
+
+.billing-disclaimer-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .billing-disclaimer-icon {
@@ -659,6 +677,99 @@
   height: 18px;
   stroke: var(--primary);
   flex-shrink: 0;
+}
+
+/* Accepted Payment Methods Bar */
+.checkout-payment-methods-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 6px 0 14px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid #ebdff8;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(91, 43, 130, 0.03);
+}
+
+.payment-methods-header-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+
+.payment-methods-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primary, #363636);
+}
+
+.payment-methods-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.payment-method-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.95;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.payment-method-logo:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.payment-method-logo.logo-apple-pay {
+  width: 38px;
+  height: 23px;
+}
+
+.payment-method-logo.logo-visa {
+  width: 36px;
+  height: 21px;
+}
+
+.payment-method-logo.logo-mastercard {
+  width: 28px;
+  height: 23px;
+}
+
+.payment-method-logo svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.payment-guarantee-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.77rem;
+  color: #065f46;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 6px;
+  padding: 5px 10px;
+  line-height: 1.35;
+  width: fit-content;
+}
+
+.payment-guarantee-badge strong {
+  font-weight: 700;
+  color: #047857;
+}
+
+.payment-guarantee-badge svg {
+  flex-shrink: 0;
+  stroke: #059669;
 }
 
 /* 3-Pillar Card Screening Checklist */
@@ -847,6 +958,11 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+.sim-card-brand-logo.brand-apple-pay {
+  width: 28px;
+  height: 18px;
 }
 
 .sim-card-brand-logo.brand-visa {
@@ -1187,6 +1303,13 @@
   .checkout-item-row,
   .checkout-item-info {
     min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .checkout-fieldset,
+  .checkout-summary-card {
+    padding: 20px 16px;
   }
 }
 

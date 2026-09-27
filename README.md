@@ -91,6 +91,36 @@ deployment used another currency. Then run it once against each environment:
 npx wrangler d1 execute petal-bloom-ps-db --remote --file=./migrations/0003_add_payment_currency.sql
 ```
 
+### Database migration: order integrity constraints
+
+This migration rebuilds the `orders` table inside a transaction to enforce
+valid order states, positive totals, uppercase three-letter currencies, and a
+payment timestamp for paid orders. Before applying it, verify that historical
+orders satisfy these conditions:
+
+```bash
+npx wrangler d1 execute petal-bloom-ps-db --remote --command "SELECT status, COUNT(*) AS count FROM orders GROUP BY status; SELECT COUNT(*) AS invalid_total_count FROM orders WHERE total_cents <= 0; SELECT payment_currency, COUNT(*) AS count FROM orders GROUP BY payment_currency; SELECT COUNT(*) AS invalid_paid_timestamp_count FROM orders WHERE status = 'paid' AND paid_at IS NULL;"
+```
+
+Then apply the migration once:
+
+```bash
+npx wrangler d1 execute petal-bloom-ps-db --remote --file=./migrations/0004_add_order_integrity_constraints.sql
+```
+
+### Database migration: API abuse protection
+
+This adds a short-lived, D1-backed rate-limit counter and records when a
+pending order was last checked with Paystack. Set `RATE_LIMIT_SALT` as an
+encrypted Pages secret before deploying; it hashes client IPs before they are
+written to D1. Checkout accepts five requests per client per minute. Order
+status accepts 30 requests per client and order per minute, and checks Paystack
+at most once per pending order per minute.
+
+```bash
+npx wrangler d1 execute petal-bloom-ps-db --remote --file=./migrations/0005_add_abuse_protection.sql
+```
+
 ## Included
 
 - Responsive desktop/tablet/mobile design

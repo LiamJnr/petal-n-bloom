@@ -1,18 +1,28 @@
 CREATE TABLE IF NOT EXISTS orders (
   id TEXT PRIMARY KEY,
-  status TEXT NOT NULL DEFAULT 'pending',
+  status TEXT NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending', 'paid', 'checkout_failed', 'refunded')),
   purchaser_email TEXT NOT NULL,
   cart_json TEXT NOT NULL,
   buyer_json TEXT NOT NULL,
   -- Retained empty only for compatibility with existing deployments; no data is written here.
   delivery_json TEXT NOT NULL DEFAULT '{}',
-  total_cents INTEGER NOT NULL,
-  payment_currency TEXT NOT NULL,
+  total_cents INTEGER NOT NULL CHECK (total_cents > 0),
+  payment_currency TEXT NOT NULL CHECK (payment_currency GLOB '[A-Z][A-Z][A-Z]'),
   ps_reference TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  paid_at TEXT
+  paid_at TEXT,
+  last_payment_check_at TEXT,
+  CHECK (status <> 'paid' OR paid_at IS NOT NULL)
 );
 
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_orders_ps_reference ON orders(ps_reference);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_orders_ps_reference_unique ON orders(ps_reference) WHERE ps_reference IS NOT NULL;
+
+CREATE TABLE IF NOT EXISTS api_rate_limits (
+  bucket_start TEXT NOT NULL,
+  scope TEXT NOT NULL,
+  request_count INTEGER NOT NULL DEFAULT 0 CHECK (request_count >= 0),
+  PRIMARY KEY (bucket_start, scope)
+);

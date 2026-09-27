@@ -1,9 +1,11 @@
 import { PRODUCTS, GIFT_ADDONS } from '../../js/data/products.js'
 import { validateDelivery } from '../lib/delivery.js'
 import { isValidCurrency, normaliseCurrency } from '../lib/paystack-payment.js'
+import { consumeRateLimit } from '../lib/rate-limit.js'
 
 const MAX_LINE_ITEMS = 25
 const MAX_QUANTITY_PER_LINE = 20
+const MAX_CHECKOUT_BODY_BYTES = 32 * 1024
 const allProducts = [...PRODUCTS, ...(GIFT_ADDONS || [])]
 const productBySlug = new Map(allProducts.map((product) => [product.slug, product]))
 
@@ -20,8 +22,26 @@ export async function onRequestPost(context) {
 }
 
 async function createCheckout({ request, env }) {
-  const missing = ['DB', 'PAYSTACK_SECRET_KEY'].filter((key) => !env[key])
+  const missing = ['DB', 'PAYSTACK_SECRET_KEY', 'RATE_LIMIT_SALT'].filter((key) => !env[key])
   if (missing.length) return json({ error: `Checkout is not configured: ${missing.join(', ')}` }, 500)
+
+  const contentLength = Number(request.headers.get('content-length'))
+  if (Number.isFinite(contentLength) && contentLength > MAX_CHECKOUT_BODY_BYTES) {
+    return json({ error: 'Checkout request is too large.' }, 413)
+  }
+
+  const rateLimit = await consumeRateLimit({
+    request,
+    db: env.DB,
+    salt: env.RATE_LIMIT_SALT,
+    namespace: 'checkout',
+    limit: 5,
+  })
+  if (!rateLimit.allowed) {
+    return json({ error: 'Too many checkout attempts. Please try again in a minute.' }, 429, {
+      'Retry-After': String(rateLimit.retryAfterSeconds),
+    })
+  }
 
   const currency = normaliseCurrency(env.PAYSTACK_CURRENCY || 'GHS')
   if (!isValidCurrency(currency)) {
@@ -35,8 +55,11 @@ async function createCheckout({ request, env }) {
 
   let body
   try {
-    body = await request.json()
-  } catch {
+    body = await parseCheckoutBody(request)
+  } catch (error) {
+    if (error?.code === 'checkout-body-too-large') {
+      return json({ error: 'Checkout request is too large.' }, 413)
+    }
     return json({ error: 'Invalid checkout request.' }, 400)
   }
 
@@ -219,9 +242,37 @@ function checkoutDescription(items) {
   return `Order: ${itemText}`.slice(0, 1000)
 }
 
-function json(data, status = 200) {
+async function parseCheckoutBody(request) {
+  const reader = request.body?.getReader()
+  if (!reader) throw new Error('Request body is missing.')
+
+  const chunks = []
+  let size = 0
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+    size += value.byteLength
+    if (size > MAX_CHECKOUT_BODY_BYTES) {
+      await reader.cancel()
+      const error = new Error('Checkout request is too large.')
+      error.code = 'checkout-body-too-large'
+      throw error
+    }
+    chunks.push(value)
+  }
+
+  const bytes = new Uint8Array(size)
+  let offset = 0
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset)
+    offset += chunk.byteLength
+  }
+  return JSON.parse(new TextDecoder().decode(bytes))
+}
+
+function json(data, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...extraHeaders },
   })
 }

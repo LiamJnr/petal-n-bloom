@@ -1,10 +1,33 @@
 import { paymentMatchesOrder } from '../../lib/paystack-payment.js'
 import { toPublicOrderStatus } from '../../lib/public-order.js'
+import { consumeRateLimit } from '../../lib/rate-limit.js'
 
-export async function onRequestGet({ params, env }) {
+const ORDER_STATUS_RATE_LIMIT = 30
+const PAYSTACK_VERIFY_COOLDOWN_SECONDS = 60
+
+export async function onRequestGet({ params, env, request }) {
   const id = String(params.id || '')
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) {
     return json({ error: 'Invalid order reference.' }, 400)
+  }
+
+  try {
+    const rateLimit = await consumeRateLimit({
+      request,
+      db: env.DB,
+      salt: env.RATE_LIMIT_SALT,
+      namespace: 'order-status',
+      discriminator: id,
+      limit: ORDER_STATUS_RATE_LIMIT,
+    })
+    if (!rateLimit.allowed) {
+      return json({ error: 'Too many status requests. Please try again in a minute.' }, 429, {
+        'Retry-After': String(rateLimit.retryAfterSeconds),
+      })
+    }
+  } catch (error) {
+    console.error('Order status rate limiter unavailable.', error)
+    return json({ error: 'Order status is temporarily unavailable.' }, 503)
   }
 
   let order = await env.DB.prepare(
@@ -15,6 +38,13 @@ export async function onRequestGet({ params, env }) {
 
   // If order is pending, actively verify with Paystack in case webhook is delayed or dropped
   if (order.status === 'pending' && env.PAYSTACK_SECRET_KEY && order.ps_reference) {
+    const claim = await env.DB.prepare(
+      `UPDATE orders SET last_payment_check_at = datetime('now')
+       WHERE id = ? AND status = 'pending'
+         AND (last_payment_check_at IS NULL OR last_payment_check_at <= datetime('now', ?))`,
+    ).bind(order.id, `-${PAYSTACK_VERIFY_COOLDOWN_SECONDS} seconds`).run()
+    if (claim.meta.changes !== 1) return json({ order: toPublicOrderStatus(order) })
+
     try {
       const verifyRes = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(order.ps_reference)}`, {
         headers: {
@@ -41,9 +71,9 @@ export async function onRequestGet({ params, env }) {
   return json({ order: toPublicOrderStatus(order) })
 }
 
-function json(data, status = 200) {
+function json(data, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...extraHeaders },
   })
 }

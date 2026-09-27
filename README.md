@@ -20,12 +20,12 @@ continue to deploy the storefront as they do today.
 
 ### One-time Cloudflare configuration
 
-1. In Cloudflare D1, create `petal-and-bloom-db`.
+1. In Cloudflare D1, create `petal-bloom-ps-db`.
 2. The D1 database ID is recorded in `wrangler.toml`.
 3. Run the schema against the remote database:
 
    ```bash
-   npx wrangler d1 execute petal-and-bloom-db --remote --file=./schema.sql
+   npx wrangler d1 execute petal-bloom-ps-db --remote --file=./schema.sql
    ```
 
 4. In the existing Cloudflare Pages project, add a D1 binding named `DB` that
@@ -73,7 +73,7 @@ If migrating an existing D1 database that still has the `ls_order_id` column,
 run this once against each environment's D1 database:
 
 ```bash
-npx wrangler d1 execute petal-and-bloom-db --remote --file=./migrations/0002_rename_ls_to_ps.sql
+npx wrangler d1 execute petal-bloom-ps-db --remote --file=./migrations/0002_rename_ls_to_ps.sql
 ```
 
 If starting fresh, skip this — the clean `schema.sql` already uses `ps_reference`.
@@ -86,7 +86,7 @@ orders to GHS, so review the historical settlement currency first if the
 deployment used another currency. Then run it once against each environment:
 
 ```bash
-npx wrangler d1 execute petal-and-bloom-db --remote --file=./migrations/0003_add_payment_currency.sql
+npx wrangler d1 execute petal-bloom-ps-db --remote --file=./migrations/0003_add_payment_currency.sql
 ```
 
 ## Included

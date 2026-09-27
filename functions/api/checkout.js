@@ -1,4 +1,5 @@
 import { PRODUCTS, GIFT_ADDONS } from '../../js/data/products.js'
+import { validateDelivery } from '../lib/delivery.js'
 import { isValidCurrency, normaliseCurrency } from '../lib/paystack-payment.js'
 
 const MAX_LINE_ITEMS = 25
@@ -209,24 +210,6 @@ function validateBuyer(value) {
   if (!buyer.name || !buyer.email) throw new Error('Please enter your name and email address.')
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(buyer.email)) throw new Error('Please enter a valid email address.')
   return buyer
-}
-
-function validateDelivery(delivery, cardNote) {
-  const clean = (field, max) => String(delivery?.[field] || '').trim().slice(0, max)
-  const note = String(cardNote || delivery?.card_note || '').trim().slice(0, 250)
-
-  return {
-    recipient_name: clean('recipient_name', 100),
-    street: clean('street', 200),
-    city: clean('city', 100),
-    state: clean('state', 50),
-    zip: clean('zip', 20),
-    location_type: clean('location_type', 30),
-    delivery_date: clean('delivery_date', 20),
-    time_window: clean('time_window', 30),
-    courier_notes: clean('courier_notes', 300),
-    card_note: note,
-  }
 }
 
 function checkoutDescription(items) {

@@ -15,8 +15,10 @@ continue to deploy the storefront as they do today.
 - Paystack redirects the customer back to
   `/?view=order-confirmed&order=<id>`, which polls a minimal order-status
   endpoint and clears the flower bag only after the paid status is recorded.
-- Delivery-preview fields remain on the checkout screen for presentation only;
-  they are never read, persisted, or sent to Cloudflare or Paystack.
+- Recipient and delivery details are validated server-side and stored with the
+  order for fulfillment. The requested delivery schedule and card note are
+  included in Paystack transaction metadata; do not treat that metadata as the
+  fulfillment system of record.
 
 ### One-time Cloudflare configuration
 

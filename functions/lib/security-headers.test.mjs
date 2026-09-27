@@ -36,3 +36,8 @@ test('static HTML does not need inline event handlers that the policy would bloc
     assert.doesNotMatch(html, /\son[a-z]+\s*=/i)
   }
 })
+
+test('Apple Pay domain association file has its required content type', async () => {
+  const policy = await readFile(new URL('../../_headers', import.meta.url), 'utf8')
+  assert.match(policy, /\/\.well-known\/apple-developer-merchantid-domain-association\s+Content-Type: application\/text/)
+})

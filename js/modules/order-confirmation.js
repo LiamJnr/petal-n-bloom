@@ -1,7 +1,6 @@
 import { clearCart } from './cart.js'
 import { navigateToHome, scrollToTop } from './router.js'
 import { ICONS } from '../lib/icons.js'
-import { printReceipt } from '../lib/receipt.js'
 
 const POLL_INTERVAL_MS = 2000
 const MAX_POLLS = 15
@@ -53,10 +52,9 @@ async function pollOrderStatus(view, orderId) {
         renderMessage(view, {
           eyebrow: 'Payment confirmed',
           title: 'Your order is confirmed',
-          message: 'Thank you for your order. Order details have been sent to the recipient email.',
+          message: 'Thank you for your order. Our studio team will now prepare your arrangement.',
           action: 'Continue shopping',
           reference: orderId,
-          order: payload.order,
         })
         return
       }
@@ -88,15 +86,14 @@ async function pollOrderStatus(view, orderId) {
   renderMessage(view, {
     eyebrow: 'Order received',
     title: 'Your payment is still being confirmed',
-    message: 'Please keep this page or check your email receipt. Your flower bag remains saved until payment confirmation arrives.',
+    message: 'Please keep this page open or keep your order reference handy. Your flower bag remains saved until payment confirmation arrives.',
     action: 'Return to the flower shop',
     reference: orderId,
   })
 }
 
-function renderMessage(view, { eyebrow, title, message, action, loading = false, reference = '', order = null }) {
+function renderMessage(view, { eyebrow, title, message, action, loading = false, reference = '' }) {
   const safeReference = reference ? `Order reference: ${reference.slice(0, 8).toUpperCase()}` : ''
-  const showReceipt = !loading && order && order.status === 'paid'
   view.innerHTML = `
     <section class="order-confirmation">
       <div class="order-confirmation-card">
@@ -107,15 +104,11 @@ function renderMessage(view, { eyebrow, title, message, action, loading = false,
         ${safeReference ? `<p class="order-confirmation-reference">${safeReference}</p>` : ''}
         <div class="order-confirmation-actions">
           ${action ? '<button type="button" class="button button-dark" id="btn-order-confirmation-home">' + action + '</button>' : ''}
-          ${showReceipt ? '<button type="button" class="button button-outline" id="btn-order-receipt">📄 Download Receipt</button>' : ''}
         </div>
       </div>
     </section>
   `
   document.getElementById('btn-order-confirmation-home')?.addEventListener('click', () => navigateToHome())
-  if (showReceipt) {
-    document.getElementById('btn-order-receipt')?.addEventListener('click', () => printReceipt(order))
-  }
 }
 
 function isOrderId(value) {

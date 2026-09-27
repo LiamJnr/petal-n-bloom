@@ -1,4 +1,5 @@
 import { paymentMatchesOrder } from '../../lib/paystack-payment.js'
+import { toPublicOrderStatus } from '../../lib/public-order.js'
 
 export async function onRequestGet({ params, env }) {
   const id = String(params.id || '')
@@ -7,7 +8,7 @@ export async function onRequestGet({ params, env }) {
   }
 
   let order = await env.DB.prepare(
-    'SELECT id, status, purchaser_email, ps_reference, total_cents, payment_currency, cart_json, buyer_json, delivery_json, created_at, paid_at FROM orders WHERE id = ?',
+    'SELECT id, status, ps_reference, total_cents, payment_currency FROM orders WHERE id = ?',
   ).bind(id).first()
 
   if (!order) return json({ error: 'Order not found.' }, 404)
@@ -37,7 +38,7 @@ export async function onRequestGet({ params, env }) {
     }
   }
 
-  return json({ order })
+  return json({ order: toPublicOrderStatus(order) })
 }
 
 function json(data, status = 200) {

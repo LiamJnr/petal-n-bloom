@@ -500,6 +500,9 @@
 .pdp-status-dot.active {
   background-color: #10b981;
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.pdp-status-dot.active.is-motion-visible {
   animation: pdpPulseGreen 2s infinite ease-in-out;
 }
 
@@ -609,13 +612,13 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(94, 17, 115, 0.22);
+  box-shadow: 0 2px 7px rgba(94, 17, 115, 0.1);
   transition: all var(--transition-fast);
 }
 
 .btn-add-to-cart:hover {
   background-color: var(--primary-hover);
-  box-shadow: 0 6px 20px rgba(94, 17, 115, 0.32);
+  box-shadow: 0 3px 9px rgba(94, 17, 115, 0.14);
   transform: translateY(-1px);
 }
 

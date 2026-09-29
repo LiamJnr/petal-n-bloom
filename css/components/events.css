@@ -123,7 +123,7 @@
 
 .btn-order-birthday:hover {
   background-color: var(--primary-hover);
-  box-shadow: 0 6px 20px rgba(94, 17, 115, 0.25);
+  box-shadow: 0 3px 9px rgba(94, 17, 115, 0.12);
   transform: translateY(-2px);
 }
 
@@ -133,7 +133,7 @@
   background-color: #ffffff;
   border-radius: var(--radius-xl);
   padding: 20px;
-  box-shadow: 0 12px 36px rgba(94, 17, 115, 0.08);
+  box-shadow: 0 5px 14px rgba(94, 17, 115, 0.04);
   border: 1px solid var(--border);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
@@ -141,7 +141,7 @@
 
 .event-showcase-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 16px 44px rgba(94, 17, 115, 0.12);
+  box-shadow: 0 7px 18px rgba(94, 17, 115, 0.06);
 }
 
 .event-card-image-wrap {
@@ -170,7 +170,6 @@
   top: 16px;
   left: 16px;
   background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(8px);
   padding: 6px 14px;
   border-radius: var(--radius-full);
   font-size: 0.78rem;
@@ -187,7 +186,6 @@
   bottom: 16px;
   right: 16px;
   background: rgba(94, 17, 115, 0.9);
-  backdrop-filter: blur(8px);
   padding: 6px 14px;
   border-radius: var(--radius-full);
   font-size: 0.76rem;

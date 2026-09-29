@@ -317,7 +317,7 @@ input[type="date"].form-control {
   padding: 32px;
   position: sticky;
   top: calc(var(--header-height) + 24px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.015);
 }
 
 .checkout-summary-header {
@@ -1336,7 +1336,7 @@ input[type="date"].form-control {
 
 .btn-proceed-payment:hover {
   background-color: var(--primary-hover);
-  box-shadow: 0 6px 20px rgba(94, 17, 115, 0.28);
+  box-shadow: 0 3px 9px rgba(94, 17, 115, 0.13);
   transform: translateY(-2px);
 }
 
@@ -1399,8 +1399,6 @@ input[type="date"].form-control {
   position: fixed;
   inset: 0;
   background: rgba(28, 14, 38, 0.65);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -1426,7 +1424,7 @@ input[type="date"].form-control {
   border: 1px solid #ebdff8;
   border-radius: 16px;
   padding: 24px 22px;
-  box-shadow: 0 20px 48px -8px rgba(91, 43, 130, 0.25);
+  box-shadow: 0 8px 20px -4px rgba(91, 43, 130, 0.11);
   transform: translateY(16px) scale(0.97);
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
@@ -1569,7 +1567,7 @@ input[type="date"].form-control {
 
 .btn-troubleshoot-retry:hover {
   background-color: var(--primary-hover);
-  box-shadow: 0 4px 14px rgba(94, 17, 115, 0.22);
+  box-shadow: 0 2px 7px rgba(94, 17, 115, 0.1);
 }
 
 .btn-troubleshoot-dismiss {

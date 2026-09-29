@@ -28,11 +28,16 @@ import { renderCheckoutPage } from "./modules/checkout.js";
 import { renderOrderConfirmationPage } from "./modules/order-confirmation.js";
 import { renderFAQPage, renderContactPage, renderPolicyPage } from "./modules/info-pages.js";
 import { initAnnouncementModal } from "./modules/announcement-modal.js";
+import { initTrustStrip } from "./modules/trust-strip.js";
+import { initDecorativeMotion } from "./lib/decorative-motion.js";
 import { showToast } from "./modules/toast.js";
 import { getProductBySlug } from "./data/products.js";
 import { ICONS } from "./lib/icons.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+  initTrustStrip();
+  initDecorativeMotion();
+
   // 1. Initialize Shopping Cart & Storage
   initCart();
 
@@ -296,4 +301,3 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
-

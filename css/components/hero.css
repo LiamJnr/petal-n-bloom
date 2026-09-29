@@ -139,6 +139,7 @@
   width: max-content;
   overflow: hidden;
   user-select: none;
+  transform: translate3d(0, 0, 0);
 }
 
 .trust-track {
@@ -146,36 +147,39 @@
   align-items: center;
   gap: 56px;
   padding-right: 56px;
-  -webkit-animation: trustInfiniteScroll 22s linear infinite;
-  animation: trustInfiniteScroll 22s linear infinite;
-  will-change: transform;
   flex-shrink: 0;
 }
 
-.trust-strip:hover .trust-track {
+.trust-strip.is-motion-active .trust-marquee-container {
+  -webkit-animation: trustInfiniteScroll 30s linear infinite;
+  animation: trustInfiniteScroll 30s linear infinite;
+  will-change: transform;
+}
+
+.trust-strip:hover .trust-marquee-container {
   -webkit-animation-play-state: paused;
   animation-play-state: paused;
 }
 
 @-webkit-keyframes trustInfiniteScroll {
   0% {
-    -webkit-transform: translateX(0);
-    transform: translateX(0);
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
   100% {
-    -webkit-transform: translateX(-100%);
-    transform: translateX(-100%);
+    -webkit-transform: translate3d(-50%, 0, 0);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
 @keyframes trustInfiniteScroll {
   0% {
-    -webkit-transform: translateX(0);
-    transform: translateX(0);
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
   100% {
-    -webkit-transform: translateX(-100%);
-    transform: translateX(-100%);
+    -webkit-transform: translate3d(-50%, 0, 0);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
@@ -236,7 +240,6 @@
   .trust-track {
     gap: 40px;
     padding-right: 40px;
-    animation-duration: 22s;
   }
 
   .trust-strip::before,

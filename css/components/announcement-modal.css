@@ -28,7 +28,7 @@
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14), 0 0 0 1px rgba(255, 255, 255, 0.08);
   display: grid;
   grid-template-columns: 1fr 1.15fr;
   position: relative;
@@ -208,7 +208,7 @@
   background-color: #470c57;
   border-color: #470c57;
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(94, 17, 115, 0.25);
+  box-shadow: 0 3px 8px rgba(94, 17, 115, 0.11);
 }
 
 .btn-announcement-dismiss {

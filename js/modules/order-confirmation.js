@@ -2,6 +2,7 @@ import { clearCart } from './cart.js'
 import { navigateToHome, scrollToTop } from './router.js'
 import { ICONS } from '../lib/icons.js'
 import { downloadReceipt } from '../lib/receipt.js'
+import { observeDecorativeMotion } from '../lib/decorative-motion.js'
 
 const POLL_INTERVAL_MS = 2000
 const MAX_POLLS = 15
@@ -111,6 +112,7 @@ function renderMessage(view, { eyebrow, title, message, action, loading = false,
       </div>
     </section>
   `
+  observeDecorativeMotion(view.querySelector('.order-confirmation-mark.is-loading'))
   document.getElementById('btn-order-confirmation-home')?.addEventListener('click', () => navigateToHome())
   document.getElementById('btn-download-receipt')?.addEventListener('click', () => downloadOrderReceipt(reference))
 }

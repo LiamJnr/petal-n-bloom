@@ -10,6 +10,7 @@ import { ICONS, renderStars } from "../lib/icons.js";
 import { getInternationalEstimates } from "../lib/currency.js";
 import { getDeliveryCountdownState, subscribeDeliveryTimer } from "../lib/delivery-timer.js";
 import { recordProductView, renderRecentlyViewed } from "./recently-viewed.js";
+import { observeDecorativeMotion } from "../lib/decorative-motion.js";
 
 let currentProduct = null;
 let selectedSizeIndex = 0;
@@ -298,7 +299,7 @@ export function renderPDP(slug) {
           <div class="pdp-delivery-card" id="pdp-delivery-card">
             <div class="pdp-delivery-header">
               <div class="pdp-delivery-title-wrap">
-                <span class="pdp-status-dot ${initialDeliveryState.isSameDayAvailable ? "active" : "next-day"}" id="pdp-delivery-dot"></span>
+                <span class="pdp-status-dot ${initialDeliveryState.isSameDayAvailable ? "active" : "next-day"}" id="pdp-delivery-dot" data-decorative-motion></span>
                 <strong class="pdp-delivery-headline" id="pdp-delivery-headline">${initialDeliveryState.headline}</strong>
               </div>
               <span class="pdp-delivery-badge" id="pdp-delivery-badge">${initialDeliveryState.badgeText}</span>
@@ -706,6 +707,8 @@ function bindPDPEvents(product) {
     deliveryTimerUnsubscribe = null;
   }
 
+  observeDecorativeMotion(document.getElementById("pdp-delivery-dot"));
+
   deliveryTimerUnsubscribe = subscribeDeliveryTimer((state) => {
     const headlineEl = document.getElementById("pdp-delivery-headline");
     const copyEl = document.getElementById("pdp-delivery-copy");
@@ -716,7 +719,8 @@ function bindPDPEvents(product) {
     if (copyEl) copyEl.innerHTML = state.subtext;
     if (badgeEl) badgeEl.textContent = state.badgeText;
     if (dotEl) {
-      dotEl.className = `pdp-status-dot ${state.isSameDayAvailable ? "active" : "next-day"}`;
+      dotEl.classList.toggle("active", state.isSameDayAvailable);
+      dotEl.classList.toggle("next-day", !state.isSameDayAvailable);
     }
   });
 

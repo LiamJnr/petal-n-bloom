@@ -151,7 +151,7 @@
 
 .btn-write-review:hover {
   background-color: var(--primary-hover);
-  box-shadow: 0 4px 12px rgba(94, 17, 115, 0.25);
+  box-shadow: 0 2px 6px rgba(94, 17, 115, 0.12);
 }
 
 /* Reviews Filter / Sort Ribbon */
@@ -312,7 +312,6 @@
   position: fixed;
   inset: 0;
   background-color: rgba(30, 30, 36, 0.55);
-  backdrop-filter: blur(4px);
   z-index: 100;
   display: none;
   align-items: center;
@@ -330,7 +329,7 @@
   padding: 36px;
   max-width: 540px;
   width: 100%;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
   position: relative;
   max-height: 90vh;
   overflow-y: auto;

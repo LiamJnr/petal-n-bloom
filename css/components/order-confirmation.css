@@ -12,7 +12,7 @@
   text-align: center;
   background: var(--surface, #fffdfa);
   border: 1px solid rgba(74, 53, 47, 0.14);
-  box-shadow: 0 20px 55px rgba(68, 43, 33, 0.12);
+  box-shadow: 0 8px 20px rgba(68, 43, 33, 0.055);
 }
 
 .order-confirmation-mark {
@@ -28,6 +28,10 @@
 }
 
 .order-confirmation-mark.is-loading {
+  animation: none;
+}
+
+.order-confirmation-mark.is-loading.is-motion-visible {
   animation: confirmation-pulse 1.3s ease-in-out infinite;
 }
 

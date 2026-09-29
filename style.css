@@ -105,16 +105,7 @@ h2 em {
   color: var(--ink);
 }
 
-/* Header */
-
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: rgba(251, 247, 242, 0.92);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-}
+/* Header — sticky positioning is in css/components/header.css */
 
 .nav {
   height: 76px;

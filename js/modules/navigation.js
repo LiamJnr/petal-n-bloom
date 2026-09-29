@@ -24,6 +24,20 @@ export function initNavigation({
   const cartTrigger = document.querySelector(".cart-trigger");
   const wishlistTrigger = document.getElementById("wishlist-trigger");
 
+  // Dynamically sync --announcement-height with the real announcement bar size
+  const announcementBar = document.querySelector(".announcement-bar");
+  function syncAnnouncementHeight() {
+    const h = announcementBar ? announcementBar.offsetHeight : 0;
+    document.documentElement.style.setProperty("--announcement-height", h + "px");
+  }
+  syncAnnouncementHeight();
+
+  let resizeTimer;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(syncAnnouncementHeight, 100);
+  }, { passive: true });
+
   // Sticky header on scroll
   window.addEventListener("scroll", () => {
     if (window.scrollY > 20) {

@@ -306,6 +306,17 @@ export function updateWishlistUI() {
     headerCount.textContent = `${count} item${count === 1 ? "" : "s"}`;
   }
 
+  // Sync all heart buttons on active pages/carousels
+  document.querySelectorAll(".product-card-wishlist-btn, .affordable-card-wishlist").forEach(btn => {
+    const slug = btn.dataset.slug;
+    if (slug) {
+      const saved = isInWishlist(slug);
+      btn.classList.toggle("active", saved);
+      const svg = btn.querySelector("svg");
+      if (svg) svg.setAttribute("fill", saved ? "currentColor" : "none");
+    }
+  });
+
   // Footer visibility
   if (footer) {
     footer.style.display = count > 0 ? "block" : "none";

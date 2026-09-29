@@ -1,0 +1,436 @@
+/* ==========================================================================
+   PETITE LUXURIES & AFFORDABLE BUYS HORIZONTAL CAROUSEL COMPONENT
+   ========================================================================== */
+
+.affordable-section {
+  padding: 70px 0 60px;
+  background: linear-gradient(180deg, rgba(253, 247, 242, 0.45) 0%, rgba(251, 240, 251, 0.35) 100%);
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.affordable-container {
+  width: min(1200px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
+/* ── Section Header & Navigation Controls ────────────────────────────── */
+.affordable-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.affordable-header-text {
+  max-width: 680px;
+}
+
+.affordable-header-text .eyebrow {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+
+.affordable-header-text h2 {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 3.8vw, 2.6rem);
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.affordable-subtitle {
+  font-family: var(--sans);
+  font-size: 0.98rem;
+  color: var(--ink-light);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Carousel Prev/Next Buttons */
+.affordable-carousel-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.carousel-nav-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.carousel-nav-btn:hover:not(:disabled) {
+  background: var(--primary);
+  color: var(--white);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.carousel-nav-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.carousel-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ── Horizontal Scrollable Track ─────────────────────────────────────── */
+.affordable-carousel-track {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 4px;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  padding: 8px 4px 20px;
+  margin-inline: -4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(142, 68, 173, 0.25) transparent;
+}
+
+.affordable-carousel-track::-webkit-scrollbar {
+  height: 6px;
+}
+
+.affordable-carousel-track::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+}
+
+.affordable-carousel-track::-webkit-scrollbar-thumb {
+  background: rgba(142, 68, 173, 0.28);
+  border-radius: 10px;
+}
+
+.affordable-carousel-track::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* ── Carousel Product Cards ─────────────────────────────────────────── */
+.affordable-card {
+  flex: 0 0 285px;
+  width: 285px;
+  scroll-snap-align: start;
+  background: var(--white);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 16px rgba(45, 15, 60, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+  cursor: pointer;
+  position: relative;
+}
+
+.affordable-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(45, 15, 60, 0.12);
+  border-color: rgba(142, 68, 173, 0.3);
+}
+
+.affordable-card:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Card Media */
+.affordable-card-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3.8;
+  overflow: hidden;
+  background: var(--bg-alt);
+}
+
+.affordable-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.45s ease;
+}
+
+.affordable-card:hover .affordable-card-media img {
+  transform: scale(1.05);
+}
+
+/* Floating Tag Badge */
+.affordable-tag-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  color: var(--primary-dark);
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border-radius: 100px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  z-index: 2;
+}
+
+/* Floating Wishlist Button */
+.affordable-card-wishlist {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  color: var(--ink-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  z-index: 3;
+}
+
+.affordable-card-wishlist:hover {
+  color: var(--primary);
+  transform: scale(1.1);
+  background: var(--white);
+}
+
+.affordable-card-wishlist.active {
+  color: #e11d48;
+  background: var(--white);
+}
+
+/* Quick Add Overlay Button */
+.affordable-card-quick-add {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  background: rgba(45, 15, 60, 0.9);
+  backdrop-filter: blur(8px);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 9px 14px;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity var(--transition-fast), transform var(--transition-fast), background var(--transition-fast);
+  z-index: 2;
+}
+
+.affordable-card:hover .affordable-card-quick-add {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.affordable-card-quick-add:hover {
+  background: var(--primary);
+}
+
+/* Card Body */
+.affordable-card-body {
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+}
+
+.affordable-card-meta {
+  margin-bottom: 12px;
+}
+
+.affordable-card-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.affordable-card-title {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.25;
+  margin: 0;
+}
+
+.affordable-card-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink-light);
+  flex-shrink: 0;
+}
+
+.affordable-card-rating svg {
+  color: #f59e0b;
+}
+
+.affordable-card-subtitle {
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.4;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Card Footer & Price */
+.affordable-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-light);
+  margin-top: auto;
+}
+
+.affordable-price-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.affordable-price-label {
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.affordable-price-val {
+  font-family: var(--sans);
+  font-size: 1.22rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.1;
+}
+
+.affordable-card-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: rgba(142, 68, 173, 0.08);
+  padding: 6px 12px;
+  border-radius: 100px;
+  transition: all var(--transition-fast);
+}
+
+.affordable-card:hover .affordable-card-btn {
+  background: var(--primary);
+  color: var(--white);
+}
+
+/* ── Mobile Scroll Hint ──────────────────────────────────────────────── */
+.affordable-scroll-hint {
+  display: none;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.affordable-scroll-hint span {
+  font-family: var(--sans);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.03em;
+}
+
+/* ── Responsive Adjustments ──────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .affordable-section {
+    padding: 50px 0 45px;
+  }
+
+  .affordable-card {
+    flex: 0 0 250px;
+    width: 250px;
+  }
+}
+
+@media (max-width: 640px) {
+  .affordable-section {
+    padding: 40px 0 35px;
+  }
+
+  .affordable-header {
+    margin-bottom: 20px;
+  }
+
+  .affordable-carousel-controls {
+    display: none;
+  }
+
+  .affordable-card {
+    flex: 0 0 78vw;
+    width: 78vw;
+    max-width: 280px;
+  }
+
+  .affordable-card-quick-add {
+    opacity: 1;
+    transform: none;
+    position: static;
+    margin-top: 10px;
+    padding: 8px 12px;
+  }
+
+  .affordable-scroll-hint {
+    display: block;
+  }
+}

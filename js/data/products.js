@@ -545,6 +545,246 @@ export const PRODUCTS = [
       { id: "glass", name: "Fluted Clear Glass Vase", price: 14 },
       { id: "ceramic", name: "Artisan Matte Ceramic Pot", price: 24 }
     ]
+  },
+  {
+    id: "bud-vase-trio",
+    slug: "bud-vase-trio",
+    name: "The Bud Vase Trio",
+    subtitle: "Trio of Ribbed Glass Vessels & Fresh Accent Stems",
+    category: "bouquet",
+    occasion: "Everyday",
+    tag: "Petite Luxe",
+    rating: 4.9,
+    reviewCount: 42,
+    images: {
+      primary: "images/bud-vase-trio.webp",
+      gallery: [
+        "images/bud-vase-trio.webp",
+        "images/bud-vase-trio-1.webp",
+        "images/bud-vase-trio-2.webp"
+      ]
+    },
+    shortDescription: "A set of three fluted glass bud vases paired with handpicked ranunculus, garden spray roses, and eucalyptus.",
+    description: "Effortlessly chic and versatile. Our Bud Vase Trio includes three individual fluted glass vessels, each styled with single-stem focal blooms and delicate botanical accents. Scatter them across your dining table, style your bedside, or place them on your home office desk for an instant touch of elegance.",
+    stems: [
+      { name: "Blush Ranunculus", count: 2 },
+      { name: "Garden Spray Roses", count: 3 },
+      { name: "Silver Dollar Eucalyptus Sprigs", count: 3 },
+      { name: "Fragrant English Lavender", count: 3 }
+    ],
+    careGuide: [
+      "Fill each mini vase 3/4 full with cool, fresh water.",
+      "Trim 1/2 inch off the bottom of each stem before styling in the vases.",
+      "Refresh water daily to keep small reservoirs clean and blooms vibrant."
+    ],
+    sizes: [
+      { id: "standard", name: "Trio Set (3 Vases)", stems: "3 Vases + 11 Stems", price: 38, default: true },
+      { id: "deluxe", name: "Quintet Set (5 Vases)", stems: "5 Vases + 18 Stems", price: 48, default: false }
+    ],
+    vases: [
+      { id: "included", name: "Fluted Glass Bud Vases (Included)", price: 0 }
+    ]
+  },
+  {
+    id: "petite-parisian-posy",
+    slug: "petite-parisian-posy",
+    name: "Petite Parisian Posy",
+    subtitle: "Blush Spray Roses, Lisianthus & Chamomile",
+    category: "bouquet",
+    occasion: "Gratitude & Thinking of You",
+    tag: "Sweet Gesture",
+    rating: 4.8,
+    reviewCount: 39,
+    images: {
+      primary: "images/parisian-posy.webp",
+      gallery: [
+        "images/parisian-posy.webp",
+        "images/parisian-posy-1.webp",
+        "images/parisian-posy-2.webp"
+      ]
+    },
+    shortDescription: "A charming hand-tied petite posy of blush spray roses, white lisianthus buds, and sunny chamomile daisies.",
+    description: "A delicate pocket bouquet inspired by morning strolls through Parisian flower stalls. Hand-tied with sweet blush spray roses, ruffled white lisianthus, sunny chamomile daisies, and fragrant greenery, wrapped in authentic French newsprint paper with natural jute twine.",
+    stems: [
+      { name: "Blush Spray Roses", count: 4 },
+      { name: "White Lisianthus Buds", count: 3 },
+      { name: "Sunny Chamomile Blossoms", count: 5 },
+      { name: "Silver Dollar Eucalyptus", count: 3 }
+    ],
+    careGuide: [
+      "Trim stems at a 45-degree angle under cool water before placing in vase.",
+      "Change vase water every two days to maintain pristine freshness.",
+      "Keep away from direct heat sources and drafts."
+    ],
+    sizes: [
+      { id: "standard", name: "Standard Posy", stems: "12-14 stems", price: 32, default: true },
+      { id: "deluxe", name: "Deluxe Posy", stems: "18-20 stems", price: 44, default: false }
+    ],
+    vases: [
+      { id: "none", name: "French Newsprint & Twine Wrap", price: 0 },
+      { id: "glass", name: "Fluted Clear Glass Vase", price: 14 },
+      { id: "ceramic", name: "Artisan Matte Ceramic Pot", price: 24 }
+    ]
+  },
+  {
+    id: "everlasting-meadow-bundle",
+    slug: "everlasting-meadow-bundle",
+    name: "Everlasting Meadow Bundle",
+    subtitle: "Naturally Preserved Lavender, Bunny Tails & Ruscus",
+    category: "gift",
+    occasion: "Housewarming & Everyday",
+    tag: "Zero Waste",
+    rating: 4.9,
+    reviewCount: 51,
+    images: {
+      primary: "images/everlasting-meadow.webp",
+      gallery: [
+        "images/everlasting-meadow.webp",
+        "images/everlasting-meadow-1.webp",
+        "images/everlasting-meadow-2.webp"
+      ]
+    },
+    shortDescription: "A 100% naturally dried botanical bundle of French lavender, fluffy bunny tails, and bleached ruscus that lasts for years.",
+    description: "Sustainably dried and forever enchanting. This curated bundle brings organic texture and soothing botanical fragrance into your home with zero maintenance. Features sun-dried Provence lavender, soft cream bunny tails, bleached Italian ruscus, and golden starflowers tied with raw linen ribbon.",
+    stems: [
+      { name: "Preserved French Lavender", count: 12 },
+      { name: "Fluffy Cream Bunny Tails (Lagurus)", count: 10 },
+      { name: "Bleached Italian Ruscus", count: 4 },
+      { name: "Golden Starflower Sprigs", count: 6 }
+    ],
+    careGuide: [
+      "No water needed — keep stems completely dry.",
+      "Display away from direct high humidity and harsh sun to preserve vibrant tones.",
+      "Gently dust occasionally with a light feather duster or cool hairdryer setting."
+    ],
+    sizes: [
+      { id: "standard", name: "Classic Bundle", stems: "28-30 dried stems", price: 36, default: true },
+      { id: "deluxe", name: "Grand Luxe Bundle", stems: "45-50 dried stems", price: 48, default: false }
+    ],
+    vases: [
+      { id: "none", name: "Raw Linen Ribbon & Kraft Wrap", price: 0 },
+      { id: "glass", name: "Fluted Clear Glass Vase", price: 14 },
+      { id: "ceramic", name: "Artisan Matte Ceramic Pot", price: 24 }
+    ]
+  },
+  {
+    id: "cloud-nine-babys-breath",
+    slug: "cloud-nine-babys-breath",
+    name: "Cloud Nine Gypsophila Wrap",
+    subtitle: "Abundant Million-Star Baby's Breath & Chamomile",
+    category: "bouquet",
+    occasion: "Everyday",
+    tag: "Airy Botanical",
+    rating: 4.8,
+    reviewCount: 33,
+    images: {
+      primary: "images/cloud-nine.webp",
+      gallery: [
+        "images/cloud-nine.webp",
+        "images/cloud-nine-1.webp",
+        "images/cloud-nine-2.webp"
+      ]
+    },
+    shortDescription: "An ethereal cloud of pure white million-star baby's breath accented with fresh golden chamomile daisies.",
+    description: "Float into pure serenity with our Cloud Nine wrap. Densely gathered million-star gypsophila creates an ethereal, pillowy silhouette punctuated by sunny chamomile blooms. Highly durable, long-lasting, and effortlessly dries into a lasting keepsake in the vase.",
+    stems: [
+      { name: "Million-Star Gypsophila Stems", count: 8 },
+      { name: "Sunny Chamomile Blossoms", count: 8 },
+      { name: "Silver Dollar Eucalyptus", count: 3 }
+    ],
+    careGuide: [
+      "Trim stem ends by 1 inch before placing in clean, cold water.",
+      "Top up water every 2 days; gypsophila drinks steadily.",
+      "Can be left in an empty vase after 10 days to dry naturally into preserved florals."
+    ],
+    sizes: [
+      { id: "standard", name: "Standard Cloud", stems: "16-18 stems", price: 35, default: true },
+      { id: "deluxe", name: "Deluxe Cloud", stems: "24-26 stems", price: 46, default: false }
+    ],
+    vases: [
+      { id: "none", name: "Parchment Wrap & Silk Ribbon", price: 0 },
+      { id: "glass", name: "Fluted Clear Glass Vase", price: 14 },
+      { id: "ceramic", name: "Artisan Matte Ceramic Pot", price: 24 }
+    ]
+  },
+  {
+    id: "artisan-potted-pilea",
+    slug: "artisan-potted-pilea",
+    name: "Artisan Potted Pilea & Succulent",
+    subtitle: "Living Chinese Money Plant in Earthenware Pot",
+    category: "gift",
+    occasion: "Housewarming & Everyday",
+    tag: "Living Plant",
+    rating: 4.9,
+    reviewCount: 47,
+    images: {
+      primary: "images/potted-pilea.webp",
+      gallery: [
+        "images/potted-pilea.webp",
+        "images/potted-pilea-1.webp",
+        "images/potted-pilea-2.webp"
+      ]
+    },
+    shortDescription: "A lively Pilea Peperomioides (Chinese Money Plant) potted in a handcrafted terracotta vessel with living moss.",
+    description: "Renowned as the 'Pass-It-On Plant' symbolizing prosperity and good fortune. Features circular coin-shaped foliage nestled with a miniature jade succulent and preserved woodland moss, planted in an artisanal matte terracotta earthenware vessel with drainage.",
+    stems: [
+      { name: "Pilea Peperomioides Plant", count: 1 },
+      { name: "Mini Jade Succulent Accent", count: 1 },
+      { name: "Preserved Forest Moss Layer", count: 1 }
+    ],
+    careGuide: [
+      "Thrives in medium to bright indirect sunlight; avoid direct harsh sun.",
+      "Water thoroughly when the top inch of soil feels dry to the touch (approx. once weekly).",
+      "Rotate pot occasionally to ensure symmetrical leaf growth."
+    ],
+    sizes: [
+      { id: "standard", name: "Petite 4-Inch Vessel", stems: "4-inch Terracotta Vessel", price: 28, default: true },
+      { id: "deluxe", name: "Classic 6-Inch Vessel", stems: "6-inch Terracotta Vessel", price: 38, default: false }
+    ],
+    vases: [
+      { id: "terracotta", name: "Artisan Handcrafted Terracotta Pot (Included)", price: 0 }
+    ]
+  },
+  {
+    id: "sweet-carnation-lavender",
+    slug: "sweet-carnation-lavender",
+    name: "Sweet Carnation & Lavender",
+    subtitle: "Ruffled Peach Carnations & Fresh English Lavender",
+    category: "bouquet",
+    occasion: "Get Well & Cheer",
+    tag: "Long Lasting",
+    rating: 4.8,
+    reviewCount: 36,
+    images: {
+      primary: "images/carnation-lavender.webp",
+      gallery: [
+        "images/carnation-lavender.webp",
+        "images/carnation-lavender-1.webp",
+        "images/carnation-lavender-2.webp"
+      ]
+    },
+    shortDescription: "A long-lasting gathering of fragrant English lavender, peach ruffled carnations, and white waxflower.",
+    description: "Exceptional longevity meets sweet pastoral charm. Fluffy ruffled carnations in delicate peach and cream tones paired with aromatic fresh English lavender and starry white waxflower. Celebrated for lasting up to two full weeks in the vase.",
+    stems: [
+      { name: "Ruffled Peach Carnations", count: 8 },
+      { name: "Fresh English Lavender", count: 6 },
+      { name: "White Waxflower Sprigs", count: 4 },
+      { name: "Italian Ruscus", count: 3 }
+    ],
+    careGuide: [
+      "Trim stems on a sharp angle and place in fresh cold water.",
+      "Remove any leaves that fall beneath the water line.",
+      "Replenish vase water every 2 days; carnations have phenomenal vase life."
+    ],
+    sizes: [
+      { id: "standard", name: "Standard Bunch", stems: "18-20 stems", price: 34, default: true },
+      { id: "deluxe", name: "Deluxe Bunch", stems: "26-28 stems", price: 45, default: false }
+    ],
+    vases: [
+      { id: "none", name: "Vintage Kraft Wrap & Sage Ribbon", price: 0 },
+      { id: "glass", name: "Fluted Clear Glass Vase", price: 14 },
+      { id: "ceramic", name: "Artisan Matte Ceramic Pot", price: 24 }
+    ]
   }
 ];
 
@@ -678,3 +918,19 @@ export function searchProducts(keyword = "") {
     p.stems.some(s => s.name.toLowerCase().includes(term))
   );
 }
+
+/**
+ * Get affordable / petite luxury products (starting price <= $48)
+ */
+export function getAffordableProducts() {
+  return PRODUCTS.filter(p => {
+    const minPrice = Math.min(...p.sizes.map(s => s.price));
+    return minPrice <= 48;
+  }).sort((a, b) => {
+    const minA = Math.min(...a.sizes.map(s => s.price));
+    const minB = Math.min(...b.sizes.map(s => s.price));
+    return minA - minB;
+  });
+}
+
+

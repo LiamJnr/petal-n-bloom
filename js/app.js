@@ -18,6 +18,7 @@ import {
   scrollToTop
 } from "./modules/router.js";
 import { initCatalog } from "./modules/catalog.js";
+import { initAffordableCarousel } from "./modules/affordable-carousel.js";
 import { initShop, renderShop, setShopSearchQuery, setShopCategory } from "./modules/shop.js";
 import { initPDP, renderPDP } from "./modules/pdp.js";
 import { initReviews } from "./modules/reviews.js";
@@ -123,6 +124,16 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     onExploreShop: () => {
       navigateToShop();
+    }
+  });
+
+  // 4b. Petite Luxuries & Affordable Buys Horizontal Carousel
+  initAffordableCarousel({
+    onProductClick: (slug) => {
+      navigateToProduct(slug);
+    },
+    onQuickAdd: (slug) => {
+      handleQuickAdd(slug);
     }
   });
 

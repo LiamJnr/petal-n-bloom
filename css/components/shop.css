@@ -5,10 +5,21 @@
 /* ── Shop Hero Banner ─────────────────────────────────────────────────── */
 .shop-hero {
   position: relative;
-  background: linear-gradient(135deg, #fdf4f8 0%, #fbf0fb 50%, #f4e8fa 100%);
-  padding: 60px 0 45px;
+  background: url('../../images/shop-banner.webp') no-repeat center center;
+  background-size: cover;
+  padding: 85px 0 70px;
   overflow: hidden;
   border-bottom: 1px solid var(--border);
+}
+
+/* Dark purple overlay for high contrast */
+.shop-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 8, 42, 0.58);
+  z-index: 1;
+  pointer-events: none;
 }
 
 .shop-hero-inner {
@@ -25,44 +36,62 @@
   gap: 8px;
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--muted);
+  color: rgba(255, 240, 255, 0.78);
   margin-bottom: 16px;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
 }
 
 .shop-breadcrumb a {
-  color: var(--primary);
+  color: #fdf2f8;
   text-decoration: none;
   transition: color var(--transition-fast);
 }
 
 .shop-breadcrumb a:hover {
+  color: #ffffff;
   text-decoration: underline;
 }
 
 .shop-breadcrumb span {
-  color: var(--muted-light);
+  color: rgba(255, 240, 255, 0.55);
+}
+
+.shop-hero .eyebrow {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 240, 255, 0.82);
+  margin-bottom: 14px;
 }
 
 .shop-hero h1 {
+  font-family: var(--serif);
   font-size: clamp(2.4rem, 5vw, 3.8rem);
-  color: var(--ink);
-  margin-bottom: 14px;
-  line-height: 1.15;
+  font-weight: 400;
+  color: #f5f0f7;
+  margin-bottom: 16px;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
 }
 
 .shop-hero h1 em {
   font-style: italic;
-  color: var(--primary);
+  color: #fce7f3;
 }
 
 .shop-hero p {
+  font-family: var(--sans);
   font-size: 1.05rem;
-  color: var(--ink-light);
-  line-height: 1.6;
+  color: rgba(235, 225, 240, 0.92);
+  line-height: 1.65;
   max-width: 620px;
   margin: 0 auto;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* ── Shop Container & Toolbar ─────────────────────────────────────────── */

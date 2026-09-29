@@ -157,10 +157,10 @@ export function getFilteredShopProducts() {
   if (activePriceRange !== "all") {
     list = list.filter(p => {
       const minPrice = Math.min(...p.sizes.map(s => s.price));
-      if (activePriceRange === "under-65") return minPrice < 65;
-      if (activePriceRange === "65-90") return minPrice >= 65 && minPrice <= 90;
-      if (activePriceRange === "90-120") return minPrice > 90 && minPrice <= 120;
-      if (activePriceRange === "over-120") return minPrice > 120;
+      if (activePriceRange === "under-40") return minPrice < 40;
+      if (activePriceRange === "40-70") return minPrice >= 40 && minPrice <= 70;
+      if (activePriceRange === "70-100") return minPrice > 70 && minPrice <= 100;
+      if (activePriceRange === "over-100") return minPrice > 100;
       return true;
     });
   }
@@ -305,10 +305,10 @@ export function renderShopGrid() {
 
     if (activePriceRange !== "all") {
       const priceLabels = {
-        "under-65": "Under $65",
-        "65-90": "$65 – $90",
-        "90-120": "$90 – $120",
-        "over-120": "$120+"
+        "under-40": "Under $40",
+        "40-70": "$40 – $70",
+        "70-100": "$70 – $100",
+        "over-100": "$100+"
       };
       activeChips.push({
         type: "price",

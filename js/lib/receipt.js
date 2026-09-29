@@ -110,18 +110,21 @@ export function buildReceiptHtml(order) {
   const delivery = (() => { try { return JSON.parse(order.delivery_json || '{}') } catch { return {} } })()
   const items = (() => { try { return JSON.parse(order.cart_json || '[]') } catch { return [] } })()
 
-  // USD subtotal computed from cart items (source-of-truth USD prices)
-  const subtotalUsd = items.reduce((sum, item) => {
+  // Historical orders predate price audit fields, so retain the safe reconstruction fallback.
+  const reconstructedSubtotalUsd = items.reduce((sum, item) => {
     return sum + (Number(item.unit_price_usd) || 0) * (Number(item.quantity) || 1)
   }, 0)
-  const subtotalCents = Math.round(subtotalUsd * 100)
+  const reconstructedSubtotalCents = Math.round(reconstructedSubtotalUsd * 100)
+  const hasPricingAudit = Number.isSafeInteger(Number(order.subtotal_usd_cents)) && Number(order.subtotal_usd_cents) > 0
+  const subtotalCents = hasPricingAudit ? Number(order.subtotal_usd_cents) : reconstructedSubtotalCents
 
-  // Delivery fee ($14.00 for orders under $100, Free for $100+)
-  const deliveryFeeUsd = (typeof delivery.delivery_fee_usd === 'number')
-    ? delivery.delivery_fee_usd
-    : (subtotalUsd >= 100 ? 0 : 14)
-  const deliveryFeeCents = Math.round(deliveryFeeUsd * 100)
-  const totalUsdCents = subtotalCents + deliveryFeeCents
+  const deliveryFeeCents = hasPricingAudit
+    ? Number(order.delivery_fee_usd_cents || 0)
+    : Math.round((typeof delivery.delivery_fee_usd === 'number')
+      ? delivery.delivery_fee_usd
+      : (reconstructedSubtotalUsd >= 100 ? 0 : 14)) * 100
+  const discountCents = hasPricingAudit ? Number(order.discount_usd_cents || 0) : 0
+  const totalUsdCents = subtotalCents + deliveryFeeCents - discountCents
 
   // GHS settled amount (DB total_cents is in pesewas)
   const ghsSettled = ((order.total_cents || 0) / 100).toFixed(2)
@@ -315,7 +318,8 @@ export function buildReceiptHtml(order) {
       <div class="totals">
         <div class="totals-inner">
           <div class="row"><span>Subtotal</span><span>${usd(subtotalCents)}</span></div>
-          <div class="row"><span>Delivery &amp; Handling</span>${deliveryFeeUsd === 0 ? '<span class="free-tag">Free</span>' : `<span>${usd(deliveryFeeCents)}</span>`}</div>
+          <div class="row"><span>Delivery &amp; Handling</span>${deliveryFeeCents === 0 ? '<span class="free-tag">Free</span>' : `<span>${usd(deliveryFeeCents)}</span>`}</div>
+          ${discountCents > 0 ? `<div class="row"><span>Discount${order.promo_code ? ` (${esc(order.promo_code)})` : ''}</span><span>−${usd(discountCents)}</span></div>` : ''}
           <div class="row total"><span>Total Paid</span><span class="amount">${usd(totalUsdCents)}</span></div>
           <div class="settled">Settled via Paystack: GHS ${ghsSettled}</div>
         </div>

@@ -485,6 +485,85 @@ input[type="date"].form-control {
   margin-bottom: 20px;
 }
 
+.checkout-promo-form {
+  margin-top: 18px;
+  padding: 13px;
+  border: 1px dashed #d9c6e8;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #fffafd, #fbf8ff);
+}
+
+.checkout-promo-form label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--ink);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.checkout-promo-controls {
+  display: flex;
+  gap: 7px;
+}
+
+.checkout-promo-controls input {
+  min-width: 0;
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 9px;
+  color: var(--ink);
+  background: #fff;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.checkout-promo-controls input:focus {
+  border-color: var(--primary);
+  outline: 2px solid rgba(94, 17, 115, 0.14);
+  outline-offset: 1px;
+}
+
+.checkout-promo-controls button {
+  border: 0;
+  border-radius: 6px;
+  padding: 8px 13px;
+  background: var(--primary);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.checkout-promo-controls button:hover { background: var(--primary-hover); }
+
+.checkout-promo-status {
+  min-height: 1.2em;
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 0.73rem;
+  line-height: 1.4;
+}
+
+.checkout-promo-status.applied { color: #047857; }
+.checkout-promo-status.invalid { color: #b45309; }
+
+.checkout-discount-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2px;
+  color: #047857;
+  font-size: 0.88rem;
+}
+
+.checkout-discount-row strong { color: #047857; }
+
 .checkout-total-row {
   display: flex;
   justify-content: space-between;

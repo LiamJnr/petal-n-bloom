@@ -6,6 +6,7 @@ import { showToast } from "./toast.js";
 import { getProductBySlug, GIFT_ADDONS } from "../data/products.js";
 import { ICONS } from "../lib/icons.js";
 import { getInternationalEstimates } from "../lib/currency.js";
+import { getPromotionCode, getPromotionPreview, setPromotionCode } from "../lib/promotion.js";
 import { navigateToCheckout } from "./router.js";
 
 const CART_STORAGE_KEY = "petal_bloom_cart";
@@ -249,6 +250,18 @@ function renderCartDrawerMarkup() {
 
       <!-- Cart Footer & Checkout -->
       <div class="cart-footer" id="cart-footer">
+        <form class="promo-code-form" id="cart-promo-form" novalidate>
+          <label for="cart-promo-code">Promo code</label>
+          <div class="promo-code-controls">
+            <input id="cart-promo-code" type="text" autocomplete="off" autocapitalize="characters" maxlength="32" placeholder="BLOOM10" aria-describedby="cart-promo-status" />
+            <button type="submit" class="promo-apply-btn">Apply</button>
+          </div>
+          <p class="promo-code-status" id="cart-promo-status" role="status"></p>
+        </form>
+        <div class="cart-price-breakdown" aria-label="Order price breakdown">
+          <span>Merchandise</span><span id="cart-subtotal-val">$0.00</span>
+          <span class="cart-discount-label" id="cart-discount-label" hidden>Discount <b id="cart-promo-label"></b></span><span class="cart-discount-value" id="cart-discount-val" hidden></span>
+        </div>
         <div class="cart-total-row">
           <div class="cart-total-label-wrap">
             <span>Estimated Total:</span>
@@ -305,6 +318,13 @@ function bindCartEvents() {
     if (checkoutBtn) checkoutBtn.blur();
     closeCart();
     navigateToCheckout();
+  });
+
+  const promoForm = document.getElementById("cart-promo-form");
+  promoForm?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    setPromotionCode(document.getElementById("cart-promo-code")?.value);
+    updateCartUI();
   });
 
   // Cart body delegation for steppers & remove buttons
@@ -372,6 +392,7 @@ export function updateCartUI() {
 
   const totalCount = getTotalItemCount();
   const subtotal = getCartSubtotal();
+  const promotion = getPromotionPreview(subtotal);
 
   // 1. Update Navbar Badge
   if (badge) {
@@ -468,7 +489,8 @@ export function updateCartUI() {
   // 5. Update Totals & Delivery Note
   const isFreeDelivery = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0;
   const deliveryFee = (subtotal === 0 || isFreeDelivery) ? 0 : 14;
-  const total = subtotal + deliveryFee;
+  const discount = promotion.state === "applied" ? promotion.discountUsd : 0;
+  const total = subtotal + deliveryFee - discount;
 
   const deliveryNoteEl = document.getElementById("cart-delivery-note");
   if (deliveryNoteEl) {
@@ -483,6 +505,24 @@ export function updateCartUI() {
 
   if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
   if (totalEl) totalEl.textContent = `$${total.toFixed(2)}`;
+
+  const promoInput = document.getElementById("cart-promo-code");
+  if (promoInput && document.activeElement !== promoInput) promoInput.value = getPromotionCode();
+  const promoStatus = document.getElementById("cart-promo-status");
+  if (promoStatus) {
+    promoStatus.textContent = promotion.message || "Enter a code to see your eligible discount.";
+    promoStatus.className = `promo-code-status ${promotion.state}`;
+  }
+  const discountLabel = document.getElementById("cart-discount-label");
+  const discountValue = document.getElementById("cart-discount-val");
+  const promoLabel = document.getElementById("cart-promo-label");
+  const hasDiscount = discount > 0;
+  if (discountLabel) discountLabel.hidden = !hasDiscount;
+  if (discountValue) {
+    discountValue.hidden = !hasDiscount;
+    discountValue.textContent = hasDiscount ? `−$${discount.toFixed(2)}` : "";
+  }
+  if (promoLabel) promoLabel.textContent = hasDiscount ? `(${promotion.code})` : "";
 
   // 6. Update International Estimates (Sleek Inline Strip)
   const intlEstimatesEl = document.getElementById("cart-intl-estimates");

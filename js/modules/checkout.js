@@ -11,6 +11,7 @@ import { startCheckout } from "../lib/checkout.js";
 import { ICONS } from "../lib/icons.js";
 import { getInternationalEstimates } from "../lib/currency.js";
 import { getDeliveryCountdownState } from "../lib/delivery-timer.js";
+import { getPromotionCode, getPromotionPreview, setPromotionCode } from "../lib/promotion.js";
 
 let selectedTimeWindow = "morning";
 let selectedLocationType = "residential";
@@ -179,7 +180,9 @@ export function renderCheckoutPage() {
   const minDateStr = deliveryState.earliestDateStr;
   const isFreeDelivery = subtotal >= 100;
   const deliveryFee = isFreeDelivery ? 0 : 14;
-  const totalDue = subtotal + deliveryFee;
+  const promotion = getPromotionPreview(subtotal);
+  const discount = promotion.state === "applied" ? promotion.discountUsd : 0;
+  const totalDue = subtotal + deliveryFee - discount;
   const ghsEstimate = getInternationalEstimates(totalDue).find(e => e.code === "GHS");
   const ghsFormatted = ghsEstimate ? ghsEstimate.formatted : `GH₵ ${(totalDue * 11.17).toFixed(2)}`;
   const usdFormatted = `$${totalDue.toFixed(2)}`;
@@ -587,6 +590,15 @@ export function renderCheckoutPage() {
               }).join("")}
             </div>
 
+            <form class="checkout-promo-form" id="checkout-promo-form" novalidate>
+              <label for="checkout-promo-code">Promo code</label>
+              <div class="checkout-promo-controls">
+                <input id="checkout-promo-code" type="text" autocomplete="off" autocapitalize="characters" maxlength="32" value="${getPromotionCode()}" placeholder="BLOOM10" aria-describedby="checkout-promo-status" />
+                <button type="submit">Apply</button>
+              </div>
+              <p class="checkout-promo-status ${promotion.state}" id="checkout-promo-status" role="status">${promotion.message || "Enter a code to see your eligible discount."}</p>
+            </form>
+
             <!-- Totals & Calculations -->
             <div class="checkout-calc-rows">
               <div class="checkout-breakdown-row" style="display:flex; justify-content:space-between; font-size:0.88rem; color:var(--muted); margin-bottom:6px;">
@@ -597,16 +609,20 @@ export function renderCheckoutPage() {
                 <span>Delivery:</span>
                 <span>${isFreeDelivery ? '<strong style="color:#059669;">FREE</strong>' : '<strong>$14.00</strong>'}</span>
               </div>
+              <div class="checkout-breakdown-row checkout-discount-row" id="checkout-discount-row" ${discount > 0 ? '' : 'hidden'}>
+                <span>Discount <strong id="checkout-promo-label">${discount > 0 ? `(${promotion.code})` : ''}</strong></span>
+                <strong id="checkout-discount-value">${discount > 0 ? `−$${discount.toFixed(2)}` : ''}</strong>
+              </div>
               <div class="checkout-total-row">
                 <div class="checkout-total-label-wrap">
                   <span>Total Due:</span>
                   <small class="checkout-delivery-note">${isFreeDelivery ? 'Complimentary delivery applied (Orders over $100)' : 'Standard delivery ($14.00) applied'}</small>
                 </div>
-                <strong>$${totalDue.toFixed(2)}</strong>
+                <strong id="checkout-total-due">$${totalDue.toFixed(2)}</strong>
               </div>
 
               <!-- International Store Estimates -->
-              <div class="checkout-intl-prices">
+              <div class="checkout-intl-prices" id="checkout-intl-prices">
                 <div class="checkout-intl-header">International Store Estimates</div>
                 <div class="checkout-intl-strip-items">
                   ${getInternationalEstimates(totalDue).map(est => `
@@ -636,6 +652,44 @@ export function renderCheckoutPage() {
   bindCheckoutEvents();
 }
 
+function updateCheckoutPromotionSummary() {
+  const subtotal = getCartSubtotal();
+  const promotion = getPromotionPreview(subtotal);
+  const discount = promotion.state === "applied" ? promotion.discountUsd : 0;
+  const deliveryFee = subtotal >= 100 ? 0 : 14;
+  const total = subtotal + deliveryFee - discount;
+  const input = document.getElementById("checkout-promo-code");
+  const status = document.getElementById("checkout-promo-status");
+  const discountRow = document.getElementById("checkout-discount-row");
+  const discountLabel = document.getElementById("checkout-promo-label");
+  const discountValue = document.getElementById("checkout-discount-value");
+  const totalDue = document.getElementById("checkout-total-due");
+  const estimates = document.getElementById("checkout-intl-prices");
+
+  if (input) input.value = getPromotionCode();
+  if (status) {
+    status.textContent = promotion.message || "Enter a code to see your eligible discount.";
+    status.className = `checkout-promo-status ${promotion.state}`;
+  }
+  if (discountRow) discountRow.hidden = discount <= 0;
+  if (discountLabel) discountLabel.textContent = discount > 0 ? `(${promotion.code})` : "";
+  if (discountValue) discountValue.textContent = discount > 0 ? `−$${discount.toFixed(2)}` : "";
+  if (totalDue) totalDue.textContent = `$${total.toFixed(2)}`;
+  if (estimates) {
+    estimates.innerHTML = `
+      <div class="checkout-intl-header">International Store Estimates</div>
+      <div class="checkout-intl-strip-items">
+        ${getInternationalEstimates(total).map(est => `
+          <span class="checkout-intl-item">
+            <span class="checkout-intl-code">${est.code}</span>
+            <span class="checkout-intl-val">${est.formatted}</span>
+          </span>
+        `).join('<span class="checkout-intl-sep">•</span>')}
+      </div>
+    `;
+  }
+}
+
 /**
  * Bind form interactions, time pills, location types, and submit flow
  */
@@ -654,6 +708,13 @@ function bindCheckoutEvents() {
       e.preventDefault();
       openCart();
     });
+  });
+
+  const promoForm = document.getElementById("checkout-promo-form");
+  promoForm?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    setPromotionCode(document.getElementById("checkout-promo-code")?.value);
+    updateCheckoutPromotionSummary();
   });
 
   // Time window pills
@@ -777,6 +838,7 @@ function bindCheckoutEvents() {
         buyer,
         delivery,
         card_note: cardNote,
+        promo_code: getPromotionCode(),
         onCancel: () => {
           resetSubmitBtn();
           showToast({

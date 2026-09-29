@@ -3,6 +3,7 @@ import { validateDelivery } from '../lib/delivery.js'
 import { isValidCurrency, normaliseCurrency } from '../lib/paystack-payment.js'
 import { consumeRateLimit } from '../lib/rate-limit.js'
 import { createReceiptToken, hashReceiptToken } from '../lib/receipt-access.js'
+import { calculatePromotion } from '../lib/promotions.js'
 
 const MAX_LINE_ITEMS = 25
 const MAX_QUANTITY_PER_LINE = 20
@@ -75,9 +76,29 @@ async function createCheckout({ request, env }) {
     return json({ error: error.message }, 400)
   }
 
-  const subtotalUsd = items.reduce((sum, item) => sum + item.unit_price_usd * item.quantity, 0)
-  const deliveryFeeUsd = subtotalUsd >= 100 ? 0 : 14
-  const totalUsd = subtotalUsd + deliveryFeeUsd
+  const subtotalUsdCents = items.reduce((sum, item) => sum + item.unit_price_cents * item.quantity, 0)
+  const deliveryFeeUsdCents = subtotalUsdCents >= 10_000 ? 0 : 1_400
+  let promotion
+  try {
+    promotion = calculatePromotion(body.promo_code, subtotalUsdCents)
+  } catch (error) {
+    return json({ error: error.message }, 400)
+  }
+  if (promotion?.firstPaidOrderOnly) {
+    const previousPaidOrder = await env.DB.prepare(
+      `SELECT 1 FROM orders WHERE purchaser_email = ? AND status = 'paid' LIMIT 1`,
+    ).bind(buyer.email).first()
+    if (previousPaidOrder) {
+      return json({ error: 'BLOOM10 is available on a customer’s first paid order only.' }, 400)
+    }
+  }
+
+  const discountUsdCents = promotion?.discountUsdCents || 0
+  const totalUsdCents = subtotalUsdCents + deliveryFeeUsdCents - discountUsdCents
+  const subtotalUsd = subtotalUsdCents / 100
+  const deliveryFeeUsd = deliveryFeeUsdCents / 100
+  const discountUsd = discountUsdCents / 100
+  const totalUsd = totalUsdCents / 100
   const totalGhs = Number((totalUsd * exchangeRate).toFixed(2))
   const totalPesewas = Math.round(totalGhs * 100)
   const orderId = crypto.randomUUID()
@@ -90,11 +111,16 @@ async function createCheckout({ request, env }) {
   const deliveryWithFee = {
     ...delivery,
     delivery_fee_usd: deliveryFeeUsd,
+    delivery_fee_usd_cents: deliveryFeeUsdCents,
+    discount_usd_cents: discountUsdCents,
+    promo_code: promotion?.code || null,
   }
 
   await env.DB.prepare(
-    `INSERT INTO orders (id, status, purchaser_email, cart_json, buyer_json, delivery_json, total_cents, payment_currency, receipt_access_hash)
-     VALUES (?, 'pending', ?, ?, ?, ?, ?, ?, ?)`
+    `INSERT INTO orders (id, status, purchaser_email, cart_json, buyer_json, delivery_json, total_cents,
+                        subtotal_usd_cents, delivery_fee_usd_cents, discount_usd_cents, promo_code,
+                        payment_currency, receipt_access_hash)
+     VALUES (?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   ).bind(
     orderId,
     buyer.email,
@@ -102,6 +128,10 @@ async function createCheckout({ request, env }) {
     JSON.stringify(buyer),
     JSON.stringify(deliveryWithFee),
     totalPesewas,
+    subtotalUsdCents,
+    deliveryFeeUsdCents,
+    discountUsdCents,
+    promotion?.code || null,
     currency,
     receiptAccessHash,
   ).run()
@@ -110,6 +140,10 @@ async function createCheckout({ request, env }) {
     { display_name: 'Order', variable_name: 'order_ref', value: orderId },
     { display_name: 'Subtotal USD', variable_name: 'subtotal_usd', value: `$${subtotalUsd.toFixed(2)}` },
     { display_name: 'Delivery Fee', variable_name: 'delivery_fee', value: deliveryFeeUsd === 0 ? 'FREE (Over $100)' : `$${deliveryFeeUsd.toFixed(2)}` },
+    ...(promotion ? [
+      { display_name: 'Promo Code', variable_name: 'promo_code', value: promotion.code },
+      { display_name: 'Discount USD', variable_name: 'discount_usd', value: `-$${discountUsd.toFixed(2)}` },
+    ] : []),
     { display_name: 'Total USD', variable_name: 'total_usd', value: `$${totalUsd.toFixed(2)}` },
     { display_name: 'Exchange Rate', variable_name: 'exchange_rate', value: `1 USD = ${exchangeRate} GHS` },
     { display_name: 'Items', variable_name: 'item_count', value: `${itemCount} item${itemCount === 1 ? '' : 's'}` },
@@ -142,6 +176,8 @@ async function createCheckout({ request, env }) {
       amount_usd: `$${totalUsd.toFixed(2)}`,
       subtotal_usd: `$${subtotalUsd.toFixed(2)}`,
       delivery_fee_usd: deliveryFeeUsd === 0 ? 'FREE' : `$${deliveryFeeUsd.toFixed(2)}`,
+      promo_code: promotion?.code || '',
+      discount_usd: promotion ? `-$${discountUsd.toFixed(2)}` : '',
       exchange_rate: exchangeRate,
       cart_description: checkoutDescription(items),
       card_note: delivery.card_note || '',

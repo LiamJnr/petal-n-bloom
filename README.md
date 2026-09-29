@@ -146,6 +146,16 @@ credential and will remain unavailable for download.
 npx wrangler d1 execute petal-bloom-ps-db --remote --file=./migrations/0006_add_receipt_access.sql
 ```
 
+### Database migration: promotion audit fields
+
+This adds immutable USD pricing audit fields for merchandise, delivery, and any
+promotion, plus the applied promo code. The checkout Function calculates the
+discount from trusted product prices before it creates the Paystack transaction.
+
+```bash
+npx wrangler d1 execute petal-bloom-ps-db --remote --file=./migrations/0007_add_promotion_audit_fields.sql
+```
+
 ## Included
 
 - Responsive desktop/tablet/mobile design

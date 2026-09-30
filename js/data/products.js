@@ -787,6 +787,82 @@ export const PRODUCTS = [
     ]
   },
   {
+    id: "classic-dozen-roses",
+    slug: "classic-dozen-roses",
+    name: "Classic Dozen Roses",
+    subtitle: "Twelve Fresh Red Roses in a Signature Wrap",
+    category: "bouquet",
+    occasion: "Romantic",
+    tag: "Everyday Romance",
+    rating: 4.9,
+    reviewCount: 42,
+    images: {
+      primary: "images/dozen-roses.webp",
+      gallery: ["images/dozen-roses.webp"]
+    },
+    shortDescription: "A thoughtful dozen of fresh red roses, hand-tied and finished in our signature wrap.",
+    description: "Twelve classic red roses, freshly hand-tied with seasonal foliage and finished in our signature presentation wrap. An easy, heartfelt gesture for birthdays, apologies, and just-because moments.",
+    stems: [
+      { name: "Fresh Red Roses", count: 12 },
+      { name: "Seasonal Greenery", count: 4 }
+    ],
+    careGuide: [
+      "Trim stems at a 45-degree angle and place in fresh, cool water.",
+      "Refresh the water every two days to extend vase life."
+    ],
+    sizes: [
+      { id: "standard", name: "Classic Dozen", stems: "12 Roses", price: 23, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Signature Rose Wrap", price: 0 }
+    ]
+  },
+  {
+    id: "combo-kingsbite-roses",
+    slug: "combo-kingsbite-roses",
+    name: "Roses & Kingsbite Gift Pack",
+    subtitle: "Classic Dozen Roses + Medium Kingsbite Chocolate Pack",
+    category: "combo",
+    isCombo: true,
+    homepagePlacement: "banner",
+    occasion: "Everyday",
+    tag: "Ghana Gift Pick",
+    featured: true,
+    rating: 4.9,
+    reviewCount: 28,
+    comboSavings: 4,
+    originalPrice: 32,
+    comboItems: [
+      { slug: "classic-dozen-roses", sizeId: "standard", vaseId: "none" },
+      { slug: "kingsbite-medium-pack", sizeId: "standard", vaseId: "none" }
+    ],
+    comboIncludes: [
+      "Classic Dozen Red Roses",
+      "Medium Kingsbite Chocolate Pack",
+      "Complimentary Gift Card"
+    ],
+    images: {
+      primary: "images/kingsbite.webp",
+      gallery: ["images/kingsbite.webp", "images/dozen-roses.webp"]
+    },
+    shortDescription: "A simple, generous gift: a dozen fresh roses with a medium Kingsbite chocolate pack.",
+    description: "A thoughtful Ghanaian gift pairing for everyday celebrations. Twelve fresh red roses arrive hand-tied in our signature wrap alongside a medium Kingsbite chocolate pack and a complimentary gift card.",
+    stems: [
+      { name: "Fresh Red Roses", count: 12 },
+      { name: "Medium Kingsbite Chocolate Pack", count: 1 }
+    ],
+    careGuide: [
+      "Trim rose stems at a 45-degree angle and refresh water every two days.",
+      "Store chocolate in a cool, dry place away from direct sunlight."
+    ],
+    sizes: [
+      { id: "standard", name: "Complete Gift Pack (Save $4)", stems: "12 Roses + Medium Kingsbite", price: 28, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Signature Gift Wrap", price: 0 }
+    ]
+  },
+  {
     id: "combo-sweet-indulgence",
     slug: "combo-sweet-indulgence",
     name: "The Sweet Indulgence Gift Set",
@@ -1093,6 +1169,30 @@ export const PRODUCTS = [
  */
 export const GIFT_ADDONS = [
   {
+    id: "kingsbite-medium-pack",
+    slug: "kingsbite-medium-pack",
+    name: "Medium Kingsbite Chocolate Pack",
+    subtitle: "A Thoughtful Ghanaian Chocolate Gift",
+    category: "gift",
+    occasion: "Everyday",
+    tag: "Ghana Favourite",
+    rating: 4.8,
+    reviewCount: 18,
+    images: {
+      primary: "images/kingsbite.webp",
+      gallery: ["images/kingsbite.webp"]
+    },
+    shortDescription: "A medium Kingsbite chocolate pack, ready to pair with fresh flowers.",
+    description: "A medium Kingsbite chocolate pack selected for easy, thoughtful gifting alongside fresh flowers.",
+    sizes: [
+      { id: "standard", name: "Medium Pack", stems: "Chocolate Gift Pack", price: 9, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Gift Presentation", price: 0 }
+    ],
+    stems: []
+  },
+  {
     id: "chocolate-strawberries",
     slug: "chocolate-strawberries",
     name: "Belgian Chocolate-Dipped Strawberries",
@@ -1380,6 +1480,20 @@ export function getGiftCombos() {
 }
 
 /**
+ * Get gift sets intended for the standard multi-card homepage showcase.
+ */
+export function getGiftCombosForGrid() {
+  return getGiftCombos().filter(combo => combo.homepagePlacement !== "banner");
+}
+
+/**
+ * Get the singular gift set highlighted in the homepage feature banner.
+ */
+export function getHomepageComboBanner() {
+  return getGiftCombos().find(combo => combo.homepagePlacement === "banner") || null;
+}
+
+/**
  * Get curated gift sets that include a given catalogue item.
  */
 export function getGiftCombosForProduct(slug) {
@@ -1463,4 +1577,3 @@ export function getAffordableProducts() {
     return minA - minB;
   });
 }
-

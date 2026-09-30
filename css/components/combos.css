@@ -52,6 +52,112 @@
   font-size: 1rem;
 }
 
+/* Ghanaian roses and chocolate feature — a distinct homepage banner, not a grid card. */
+#ghana-gift-banner {
+  margin-top: 24px;
+}
+
+.ghana-gift-banner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+  align-items: stretch;
+  overflow: hidden;
+  background: #2d1b1a;
+  color: #fffaf6;
+}
+
+.ghana-gift-banner-media {
+  min-height: 310px;
+}
+
+.ghana-gift-banner-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ghana-gift-banner-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: clamp(28px, 4vw, 56px);
+}
+
+.ghana-gift-banner-copy .eyebrow {
+  color: #f0bf9f;
+}
+
+.ghana-gift-banner-copy h2 {
+  max-width: 10ch;
+  margin: 9px 0 12px;
+  color: #ffffff;
+  font-size: clamp(2.1rem, 4vw, 3.9rem);
+  letter-spacing: -0.04em;
+  line-height: 0.96;
+}
+
+.ghana-gift-banner-copy h2 em {
+  color: #eead91;
+}
+
+.ghana-gift-banner-copy p {
+  max-width: 38ch;
+  margin: 0;
+  color: #f3ddd1;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.ghana-gift-banner-pricing {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 20px 0;
+}
+
+.ghana-gift-banner-pricing strong {
+  color: #ffffff;
+  font-size: 1.55rem;
+}
+
+.ghana-gift-banner-pricing span {
+  color: #f0bf9f;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.btn-ghana-gift {
+  background: #fffaf6;
+  color: #2d1b1a;
+}
+
+.btn-ghana-gift:hover,
+.btn-ghana-gift:focus-visible {
+  background: #eead91;
+  color: #2d1b1a;
+}
+
+@media (max-width: 720px) {
+  #ghana-gift-banner {
+    margin-top: 16px;
+  }
+
+  .ghana-gift-banner {
+    grid-template-columns: 1fr;
+  }
+
+  .ghana-gift-banner-media {
+    min-height: 220px;
+  }
+
+  .ghana-gift-banner-copy {
+    padding: 28px 24px 32px;
+  }
+}
+
 /* Combos Grid — Matches Featured Product Grid */
 .combos-grid {
   display: grid;

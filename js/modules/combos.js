@@ -3,7 +3,7 @@
  * Renders the gift combo showcase section on the homepage with clean, uncluttered styling matching the best seller cards.
  */
 
-import { getGiftCombos, getProductBySlug } from "../data/products.js";
+import { getGiftCombosForGrid, getHomepageComboBanner, getProductBySlug } from "../data/products.js";
 import { isInWishlist, toggleWishlist } from "./wishlist.js";
 
 let productClickHandler = null;
@@ -14,9 +14,10 @@ export function initCombos({ onProductClick, onQuickAdd }) {
   quickAddHandler = onQuickAdd;
 
   const grid = document.getElementById("combos-grid");
-  if (!grid) return;
+  if (grid) renderCombosGrid();
+  renderHomepageComboBanner();
 
-  renderCombosGrid();
+  if (!grid) return;
 
   // Event delegation on combos grid
   grid.addEventListener("click", (e) => {
@@ -78,7 +79,7 @@ export function renderCombosGrid() {
   const container = document.getElementById("combos-grid");
   if (!container) return;
 
-  const combos = getGiftCombos();
+  const combos = getGiftCombosForGrid();
   if (!combos || combos.length === 0) return;
 
   container.innerHTML = combos.map(combo => {
@@ -154,4 +155,34 @@ export function renderCombosGrid() {
       </article>
     `;
   }).join("");
+}
+
+function renderHomepageComboBanner() {
+  const container = document.getElementById("ghana-gift-banner");
+  const combo = getHomepageComboBanner();
+  if (!container || !combo) return;
+
+  const price = combo.sizes.find(size => size.default)?.price ?? combo.sizes[0].price;
+  const deliveredPrice = price + 14;
+  container.innerHTML = `
+    <section class="ghana-gift-banner" aria-labelledby="ghana-gift-banner-title">
+      <div class="ghana-gift-banner-media">
+        <img src="${combo.images.primary}" alt="${combo.name}" loading="lazy" />
+      </div>
+      <div class="ghana-gift-banner-copy">
+        <span class="eyebrow">GIFTING, THE GHANAIAN WAY</span>
+        <h2 id="ghana-gift-banner-title">Roses &amp; <em>Kingsbite.</em></h2>
+        <p>A classic dozen roses and a medium Kingsbite chocolate pack—an easy, heartfelt gift for everyday moments.</p>
+        <div class="ghana-gift-banner-pricing">
+          <strong>$${price.toFixed(2)}</strong>
+          <span>Save $${combo.comboSavings} · $${deliveredPrice.toFixed(2)} with standard delivery</span>
+        </div>
+        <button type="button" class="button button-dark btn-ghana-gift" data-slug="${combo.slug}">Send this gift &rarr;</button>
+      </div>
+    </section>
+  `;
+
+  container.querySelector(".btn-ghana-gift")?.addEventListener("click", () => {
+    if (typeof productClickHandler === "function") productClickHandler(combo.slug);
+  });
 }

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { getGiftComboUpgradesForCartItem, getGiftCombosForProduct, PRODUCTS } from '../../js/data/products.js'
+import { getGiftComboUpgradesForCartItem, getGiftCombosForGrid, getGiftCombosForProduct, getHomepageComboBanner, PRODUCTS } from '../../js/data/products.js'
 import { expandCuratedCombo, validateCuratedComboCatalog } from './combo-order.js'
 
 const combo = (slug) => PRODUCTS.find((product) => product.slug === slug)
@@ -31,10 +31,21 @@ test('gift-set component lines preserve quantity and apply the set saving exactl
   assert.equal(expanded[1].gift_message, '')
 })
 
-test('all curated gift sets keep their advertised saving in the $5–$9 range', () => {
-  for (const product of PRODUCTS.filter((item) => item.isCombo)) {
+test('standard showcase gift sets keep their advertised saving in the $5–$9 range', () => {
+  for (const product of getGiftCombosForGrid()) {
     assert.ok(product.comboSavings >= 5 && product.comboSavings <= 9, product.slug)
   }
+})
+
+test('the Ghana gift banner is a $28 server-validated combo with a $4 saving', () => {
+  const banner = getHomepageComboBanner()
+  const expanded = expandCuratedCombo({ combo: banner, quantity: 1 })
+
+  assert.equal(banner.slug, 'combo-kingsbite-roses')
+  assert.equal(banner.sizes[0].price, 28)
+  assert.equal(banner.comboSavings, 4)
+  assert.equal(expanded.reduce((sum, item) => sum + item.unit_price_cents, 0), 2_800)
+  assert.deepEqual(expanded.map((item) => item.slug), ['classic-dozen-roses', 'kingsbite-medium-pack'])
 })
 
 test('each component points to only the curated gift sets that include it', () => {

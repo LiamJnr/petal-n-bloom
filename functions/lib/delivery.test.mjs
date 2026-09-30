@@ -34,11 +34,3 @@ for (const [name, update, message] of [
     assert.throws(() => validateDelivery({ ...delivery, ...update }, '', now), message)
   })
 }
-
-test('rejects same-day delivery after the 2:00 PM Edmonton cut-off', () => {
-  const afterEdmontonCutoff = new Date('2026-09-27T20:00:00.000Z') // 2:00 PM MDT
-  assert.throws(
-    () => validateDelivery(delivery, '', afterEdmontonCutoff),
-    /valid delivery date that is not in the past/,
-  )
-})

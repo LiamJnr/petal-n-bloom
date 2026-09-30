@@ -163,7 +163,7 @@ export function renderFAQPage(tab = "care") {
               <span class="faq-icon-arrow">▼</span>
             </button>
             <div class="faq-answer">
-              Orders placed before <strong>2:00 PM Edmonton time</strong> Monday through Saturday qualify for guaranteed same-day delivery. Orders placed after 2:00 PM are hand-delivered the following morning.
+              Orders placed before <strong>1:00 PM (local recipient time)</strong> Monday through Saturday qualify for guaranteed same-day delivery. Orders placed after 1:00 PM are hand-delivered the following morning.
             </div>
           </div>
 

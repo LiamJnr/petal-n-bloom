@@ -785,6 +785,306 @@ export const PRODUCTS = [
       { id: "glass", name: "Fluted Clear Glass Vase", price: 14 },
       { id: "ceramic", name: "Artisan Matte Ceramic Pot", price: 24 }
     ]
+  },
+  {
+    id: "combo-sweet-indulgence",
+    slug: "combo-sweet-indulgence",
+    name: "The Sweet Indulgence Gift Set",
+    subtitle: "Rose Garden Bouquet + Belgian Dipped Strawberries",
+    category: "combo",
+    isCombo: true,
+    occasion: "Romantic",
+    tag: "Save $8 (Best Value)",
+    featured: true,
+    rating: 5.0,
+    reviewCount: 96,
+    comboSavings: 8,
+    originalPrice: 94,
+    comboItems: [
+      { slug: "rose-garden", sizeId: "standard", vaseId: "none" },
+      { slug: "chocolate-strawberries", sizeId: "standard", vaseId: "none" }
+    ],
+    comboIncludes: [
+      "Rose Garden Bouquet (Standard)",
+      "6-pc Belgian Chocolate-Dipped Strawberries",
+      "Complimentary Gold-Foil Letterpress Card"
+    ],
+    images: {
+      primary: "images/combo-sweet-indulgence.webp",
+      gallery: [
+        "images/combo-sweet-indulgence.webp",
+        "images/strawberries.webp"
+      ]
+    },
+    shortDescription: "The ultimate romantic pairing: velvety Ecuadorian red roses alongside handcrafted chocolate-dipped strawberries.",
+    description: "Make their heart race with our most coveted luxury pairing. Features our signature Rose Garden hand-tied bouquet of crimson roses, blush spray blooms, and seeded eucalyptus alongside a box of 6 handcrafted Belgian chocolate-dipped strawberries with white chocolate drizzle and crushed Sicilian pistachios.",
+    stems: [
+      { name: "Premium Ecuadorian Red Roses", count: 12 },
+      { name: "Blush Garden Spray Roses", count: 6 },
+      { name: "Belgian Chocolate-Dipped Strawberries", count: 6 },
+      { name: "Seeded Eucalyptus", count: 4 }
+    ],
+    careGuide: [
+      "Bouquet: Trim stems at 45° angle under cool water and refresh vase water every 2 days.",
+      "Strawberries: Best enjoyed within 48 hours. Keep chilled until ready to serve."
+    ],
+    sizes: [
+      { id: "standard", name: "Complete Gift Set (Save $8)", stems: "Bouquet + 6 Dipped Strawberries", price: 86, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Luxury Gift Presentation Wrap & Box", price: 0 }
+    ]
+  },
+  {
+    id: "combo-birthday-delights",
+    slug: "combo-birthday-delights",
+    name: "The Birthday Delights Gift Set",
+    subtitle: "Birthday Bloom Box + 12 French Macarons + Keepsake Card",
+    category: "combo",
+    isCombo: true,
+    occasion: "Birthday & Anniversaries",
+    tag: "Save $9 (Top Seller)",
+    featured: true,
+    rating: 4.9,
+    reviewCount: 118,
+    comboSavings: 9,
+    originalPrice: 104,
+    comboItems: [
+      { slug: "birthday-bloom-box", sizeId: "standard", vaseId: "hatbox" },
+      { slug: "french-macarons", sizeId: "standard", vaseId: "none" },
+      { slug: "photo-keepsake-card", sizeId: "standard", vaseId: "none" }
+    ],
+    comboIncludes: [
+      "Birthday Bloom Hat Box (Standard)",
+      "12-pc French Macaron Collection",
+      "Personalized Keepsake Greeting Card"
+    ],
+    images: {
+      primary: "images/combo-birthday-delights.webp",
+      gallery: [
+        "images/combo-birthday-delights.webp",
+        "images/macarons.webp",
+        "images/photo-card.webp"
+      ]
+    },
+    shortDescription: "Signature pastel rose hat box with a dozen Parisian macarons and a gold foil letterpress card.",
+    description: "Everything needed for an unforgettable birthday milestone. A dense, lush arrangement of pastel garden roses in our signature keepsake round hat box, paired with 12 artisan French macarons and your personalized gold-foil greeting card.",
+    stems: [
+      { name: "Pastel Garden Roses", count: 10 },
+      { name: "Pink Hydrangea Accents", count: 4 },
+      { name: "French Pastel Macarons", count: 12 },
+      { name: "Personalized Keepsake Card", count: 1 }
+    ],
+    careGuide: [
+      "Bloom Box: Add 1/2 cup cool water to center foam every 2 days.",
+      "Macarons: Store at room temperature away from heat; enjoy within 5 days."
+    ],
+    sizes: [
+      { id: "standard", name: "Complete Birthday Set (Save $9)", stems: "Hat Box + 12 Macarons + Card", price: 95, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Round Keepsake Hat Box & Silk Ribbon", price: 0 }
+    ]
+  },
+  {
+    id: "combo-pamper-me",
+    slug: "combo-pamper-me",
+    name: "The Botanical Pamper Me Set",
+    subtitle: "Cloud Nine Baby's Breath + Spa Trio + Silk Scrunchies",
+    category: "combo",
+    isCombo: true,
+    occasion: "Self-Care & Comfort",
+    tag: "Save $7 (Spa Favorite)",
+    featured: true,
+    rating: 5.0,
+    reviewCount: 64,
+    comboSavings: 7,
+    originalPrice: 69,
+    comboItems: [
+      { slug: "cloud-nine-babys-breath", sizeId: "standard", vaseId: "none" },
+      { slug: "botanical-spa-trio", sizeId: "standard", vaseId: "none" },
+      { slug: "silk-scrunchies", sizeId: "standard", vaseId: "none" }
+    ],
+    comboIncludes: [
+      "Cloud Nine Baby's Breath Bunch",
+      "Botanical Spa Trio Ritual (3-pc)",
+      "Mulberry Silk Scrunchie Trio (3-pack)"
+    ],
+    images: {
+      primary: "images/combo-pamper-me.webp",
+      gallery: [
+        "images/combo-pamper-me.webp",
+        "images/spa-trio.webp",
+        "images/silk-scrunchies.webp"
+      ]
+    },
+    shortDescription: "A relaxing botanical spa ritual: ethereal cloud nine blooms, artisan bath bomb & soap trio, and mulberry silk scrunchies.",
+    description: "A restorative home sanctuary in a box. Features a generous cloud of fluffy white baby's breath, a handmade botanical bath bomb and lavender soap trio, and 3 pure mulberry silk hair scrunchies in botanic watercolor tones.",
+    stems: [
+      { name: "Voluminous White Baby's Breath", count: 12 },
+      { name: "Botanical Spa Trio", count: 3 },
+      { name: "Mulberry Silk Scrunchies", count: 3 }
+    ],
+    careGuide: [
+      "Flowers: Display fresh in cold water or hang upside down to dry into an everlasting cloud.",
+      "Spa items: Suitable for sensitive skin, made with organic botanical oils."
+    ],
+    sizes: [
+      { id: "standard", name: "Complete Pamper Set (Save $7)", stems: "Blooms + Spa Trio + Scrunchies", price: 62, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Signature Kraft Wrap & Gift Box", price: 0 }
+    ]
+  },
+  {
+    id: "combo-cozy-evening",
+    slug: "combo-cozy-evening",
+    name: "The Cozy Evening Kit",
+    subtitle: "Petite Parisian Posy + Belgian Hot Cocoa + Rose Santal Candle",
+    category: "combo",
+    isCombo: true,
+    occasion: "Everyday",
+    tag: "Save $9 (Cozy Favorite)",
+    featured: true,
+    rating: 4.9,
+    reviewCount: 52,
+    comboSavings: 9,
+    originalPrice: 64,
+    comboItems: [
+      { slug: "petite-parisian-posy", sizeId: "standard", vaseId: "none" },
+      { slug: "hot-chocolate-kit", sizeId: "standard", vaseId: "none" },
+      { slug: "botanical-candle", sizeId: "standard", vaseId: "none" }
+    ],
+    comboIncludes: [
+      "Petite Parisian Posy",
+      "Luxe Belgian Hot Chocolate Kit",
+      "Rose & Santal Botanical Candle (50-hr)"
+    ],
+    images: {
+      primary: "images/combo-cozy-evening.webp",
+      gallery: [
+        "images/combo-cozy-evening.webp",
+        "images/hot-chocolate.webp",
+        "images/candle.webp"
+      ]
+    },
+    shortDescription: "Charming French posy bouquet, rich Belgian cocoa with marshmallows, and an amber glass botanical candle.",
+    description: "The cozy retreat gift. A fresh pocket posy of spray roses and chamomile, paired with artisanal Belgian hot cocoa mix, vanilla bean marshmallows, chocolate stirrer spoon, and our bestselling Rose & Santal amber glass candle.",
+    stems: [
+      { name: "Pink Spray Roses & Chamomile", count: 8 },
+      { name: "Belgian Hot Chocolate Kit", count: 1 },
+      { name: "Rose & Santal Soy Candle", count: 1 }
+    ],
+    careGuide: [
+      "Posy: Keep in a petite water vessel away from direct heaters.",
+      "Candle: Trim wick to 1/4 inch before lighting; burn for 2-3 hours per session."
+    ],
+    sizes: [
+      { id: "standard", name: "Complete Cozy Set (Save $9)", stems: "Posy + Hot Cocoa + Candle", price: 55, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Kraft Posy Wrap & Ribbon", price: 0 }
+    ]
+  },
+  {
+    id: "combo-little-ones-welcome",
+    slug: "combo-little-ones-welcome",
+    name: "Little One's Welcome Gift Set",
+    subtitle: "Sunday Tulips + Petite Bloom Bear + Champagne Truffles",
+    category: "combo",
+    isCombo: true,
+    occasion: "Celebrations",
+    tag: "Save $8 (New Baby)",
+    featured: true,
+    rating: 4.9,
+    reviewCount: 71,
+    comboSavings: 8,
+    originalPrice: 80,
+    comboItems: [
+      { slug: "sunday-tulips", sizeId: "standard", vaseId: "none" },
+      { slug: "bloom-bear", sizeId: "standard", vaseId: "none" },
+      { slug: "champagne-truffles", sizeId: "standard", vaseId: "none" }
+    ],
+    comboIncludes: [
+      "Sunday Tulips Bouquet (Standard)",
+      "Petite Bloom Bear with Preserved Posy",
+      "Artisanal Champagne Truffles (8-pc)"
+    ],
+    images: {
+      primary: "images/combo-little-ones-welcome.webp",
+      gallery: [
+        "images/combo-little-ones-welcome.webp",
+        "images/bloom-bear.webp",
+        "images/truffles.webp"
+      ]
+    },
+    shortDescription: "Cheerful fresh tulips, a plush keepsake bloom bear with dried flowers, and artisan Belgian truffles.",
+    description: "Celebrate life's sweetest arrivals. Vibrant Dutch tulips for the nursery, a cuddly heirloom plush bear holding an everlasting dried posy, and decadent dark chocolate champagne truffles for the proud parents.",
+    stems: [
+      { name: "Dutch Pastel Tulips", count: 15 },
+      { name: "Petite Plush Bloom Bear", count: 1 },
+      { name: "Champagne Truffles Box", count: 8 }
+    ],
+    careGuide: [
+      "Tulips: Trim 1 inch straight across and replenish with cold water daily.",
+      "Bloom Bear: Surface washable; keep preserved mini posy dry."
+    ],
+    sizes: [
+      { id: "standard", name: "Complete Welcome Set (Save $8)", stems: "Tulips + Bear + Truffles", price: 72, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Pastel Kraft Wrap & Satin Ribbon", price: 0 }
+    ]
+  },
+  {
+    id: "combo-garden-retreat",
+    slug: "combo-garden-retreat",
+    name: "The Garden Retreat Set",
+    subtitle: "Sweet Carnation & Lavender + Raw Honey & Tea + Scented Candle",
+    category: "combo",
+    isCombo: true,
+    occasion: "Get Well & Cheer",
+    tag: "Save $7 (Long Lasting)",
+    featured: true,
+    rating: 4.8,
+    reviewCount: 43,
+    comboSavings: 7,
+    originalPrice: 65,
+    comboItems: [
+      { slug: "sweet-carnation-lavender", sizeId: "standard", vaseId: "none" },
+      { slug: "artisan-honey-tea", sizeId: "standard", vaseId: "none" },
+      { slug: "botanical-candle", sizeId: "standard", vaseId: "none" }
+    ],
+    comboIncludes: [
+      "Sweet Carnation & Lavender Bunch",
+      "Artisan Honey & Chamomile Tea Duo",
+      "Rose & Santal Botanical Candle"
+    ],
+    images: {
+      primary: "images/combo-garden-retreat.webp",
+      gallery: [
+        "images/combo-garden-retreat.webp",
+        "images/honey-tea.webp",
+        "images/candle.webp"
+      ]
+    },
+    shortDescription: "Fragrant English lavender and peach carnations with raw wildflower honey, chamomile tea, and a botanical candle.",
+    description: "Send warm wishes and pastoral comfort. Long-lasting peach carnations and aromatic English lavender paired with pure wildflower honey with wooden dipper, herbal chamomile lavender tea sachets, and a hand-poured soy candle.",
+    stems: [
+      { name: "Peach Carnations & English Lavender", count: 14 },
+      { name: "Wildflower Honey & Tea Duo", count: 1 },
+      { name: "Rose & Santal Soy Candle", count: 1 }
+    ],
+    careGuide: [
+      "Bouquet: Carnations have outstanding 14-day vase life; refresh water every 2 days.",
+      "Honey & Tea: Store honey at room temp; steep tea bag in hot water for 5 minutes."
+    ],
+    sizes: [
+      { id: "standard", name: "Complete Garden Set (Save $7)", stems: "Bunch + Honey/Tea + Candle", price: 58, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Vintage Botanical Wrap", price: 0 }
+    ]
   }
 ];
 
@@ -792,6 +1092,198 @@ export const PRODUCTS = [
  * Boutique Gift Add-Ons & Standalone Pairing Products
  */
 export const GIFT_ADDONS = [
+  {
+    id: "chocolate-strawberries",
+    slug: "chocolate-strawberries",
+    name: "Belgian Chocolate-Dipped Strawberries",
+    subtitle: "Handcrafted Dark & Milk Chocolate (6-Piece)",
+    category: "gift",
+    occasion: "Romantic",
+    tag: "Bestseller Pair",
+    rating: 5.0,
+    reviewCount: 112,
+    images: {
+      primary: "images/strawberries.webp",
+      gallery: ["images/strawberries.webp"]
+    },
+    shortDescription: "6 hand-dipped gourmet strawberries in Belgian chocolate with artisan drizzle and crushed pistachio.",
+    description: "Our signature florist delicacy: 6 ripe, succulent strawberries hand-dipped in rich Belgian dark and creamy milk chocolate, crowned with white chocolate drizzle and crushed Sicilian pistachios. Presented in a luxury keepsake box.",
+    sizes: [
+      { id: "standard", name: "6-Piece Luxury Box", stems: "6 Confections", price: 22, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Gold-Foil Keepsake Box", price: 0 }
+    ],
+    stems: []
+  },
+  {
+    id: "french-macarons",
+    slug: "french-macarons",
+    name: "French Macaron Collection",
+    subtitle: "Assorted Parisian Pastel Macarons (12-Piece)",
+    category: "gift",
+    occasion: "Celebrations",
+    tag: "Artisanal",
+    rating: 4.9,
+    reviewCount: 84,
+    images: {
+      primary: "images/macarons.webp",
+      gallery: ["images/macarons.webp"]
+    },
+    shortDescription: "12 delicate French macarons in rose petal, pistachio, lavender, vanilla, and salted caramel.",
+    description: "Crisp almond meringue shells with luscious ganache centers. Flavors include Rose Petal, Roasted Pistachio, Earl Grey Lavender, Tahitian Vanilla, Fleur de Sel Caramel, and 70% Dark Chocolate. Packed in an elegant sliding sleeve box.",
+    sizes: [
+      { id: "standard", name: "12-Piece Collection", stems: "12 Macarons", price: 18, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Pastel Gift Sleeve", price: 0 }
+    ],
+    stems: []
+  },
+  {
+    id: "hot-chocolate-kit",
+    slug: "hot-chocolate-kit",
+    name: "Luxe Belgian Hot Chocolate Kit",
+    subtitle: "Single-Origin Cocoa, Marshmallows & Stirring Spoon",
+    category: "gift",
+    occasion: "Everyday",
+    tag: "Winter Warmth",
+    rating: 4.9,
+    reviewCount: 47,
+    images: {
+      primary: "images/hot-chocolate.webp",
+      gallery: ["images/hot-chocolate.webp"]
+    },
+    shortDescription: "Artisanal Belgian hot cocoa blend with gourmet vanilla bean marshmallows and solid dark chocolate stirring spoon.",
+    description: "The ultimate cozy treat. Single-origin Belgian cocoa powder mix, fluffy vanilla bean marshmallows, and a hand-dipped dark chocolate stirring spoon in a rustic craft gift cylinder tied with satin ribbon.",
+    sizes: [
+      { id: "standard", name: "Gourmet Hot Cocoa Kit", stems: "Full Kit", price: 16, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Botanical Kraft Tube", price: 0 }
+    ],
+    stems: []
+  },
+  {
+    id: "botanical-spa-trio",
+    slug: "botanical-spa-trio",
+    name: "Botanical Spa Trio Ritual",
+    subtitle: "Rose Bath Bomb, Lavender Soap & Shower Steamer",
+    category: "gift",
+    occasion: "Self-Care",
+    tag: "Pampering",
+    rating: 5.0,
+    reviewCount: 56,
+    images: {
+      primary: "images/spa-trio.webp",
+      gallery: ["images/spa-trio.webp"]
+    },
+    shortDescription: "Handmade botanical bath ritual: English rose petal bath bomb, lavender oat milk soap, and eucalyptus shower steamer.",
+    description: "Turn any evening into a serene botanical retreat. Formulated with organic botanical oils, real dried rose petals, soothing colloidal oatmeal, and pure eucalyptus essential oils. Arranged in a woven bamboo fiber tray.",
+    sizes: [
+      { id: "standard", name: "3-Piece Spa Set", stems: "3 Spa Items", price: 20, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Natural Fiber Gift Tray", price: 0 }
+    ],
+    stems: []
+  },
+  {
+    id: "silk-scrunchies",
+    slug: "silk-scrunchies",
+    name: "Floral Mulberry Silk Scrunchies",
+    subtitle: "100% Mulberry Silk in Botanical Print Shades (3-Pack)",
+    category: "gift",
+    occasion: "Everyday",
+    tag: "Keepsake",
+    rating: 4.9,
+    reviewCount: 39,
+    images: {
+      primary: "images/silk-scrunchies.webp",
+      gallery: ["images/silk-scrunchies.webp"]
+    },
+    shortDescription: "Set of 3 Grade 6A mulberry silk hair scrunchies in blush peony, sage eucalyptus, and cream dahlia.",
+    description: "Ultra-gentle on hair and wrist. Made from 100% 22-momme pure mulberry silk printed with delicate botanical watercolors. Comes in an ivory sheer organza pouch with gold drawstring.",
+    sizes: [
+      { id: "standard", name: "Set of 3 Silk Scrunchies", stems: "3 Scrunchies", price: 14, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Sheer Organza Pouch", price: 0 }
+    ],
+    stems: []
+  },
+  {
+    id: "artisan-honey-tea",
+    slug: "artisan-honey-tea",
+    name: "Artisan Wildflower Honey & Tea Duo",
+    subtitle: "Raw Floral Honey (4 oz) & Loose Chamomile Lavender",
+    category: "gift",
+    occasion: "Get Well & Cheer",
+    tag: "Farmhouse",
+    rating: 4.8,
+    reviewCount: 42,
+    images: {
+      primary: "images/honey-tea.webp",
+      gallery: ["images/honey-tea.webp"]
+    },
+    shortDescription: "Small-batch raw wildflower honey with wooden dipper paired with relaxing chamomile lavender tea blend.",
+    description: "A soothing garden harvest. Includes a 4 oz hexagonal jar of pure unpasteurized wildflower blossom honey, mini beechwood honey dipper, and 10 biodegradable pyramid sachets of soothing chamomile and lavender blossom tea.",
+    sizes: [
+      { id: "standard", name: "Honey & Tea Pairing", stems: "Honey + 10 Sachets", price: 15, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Rustic Kraft Window Box", price: 0 }
+    ],
+    stems: []
+  },
+  {
+    id: "photo-keepsake-card",
+    slug: "photo-keepsake-card",
+    name: "Personalized Keepsake Greeting Card",
+    subtitle: "Gold Foil Cotton Cardstock & Wax-Sealed Envelope",
+    category: "gift",
+    occasion: "Celebrations",
+    tag: "Bespoke",
+    rating: 5.0,
+    reviewCount: 78,
+    images: {
+      primary: "images/photo-card.webp",
+      gallery: ["images/photo-card.webp"]
+    },
+    shortDescription: "Heavy cotton greeting card with gold foil trim, personalized printed message, and real wax seal.",
+    description: "Elevate your heartfelt message. Printed on 350gsm textured Italian cotton cardstock with embossed gold foil borders and sealed inside a translucent vellum envelope with a botanical wax medallion.",
+    sizes: [
+      { id: "standard", name: "Keepsake Card & Wax Seal", stems: "Custom Stationery", price: 8, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Vellum Envelope & Wax Seal", price: 0 }
+    ],
+    stems: []
+  },
+  {
+    id: "bloom-bear",
+    slug: "bloom-bear",
+    name: "Petite Bloom Bear with Preserved Posy",
+    subtitle: "10-Inch Plush Bear with Handcrafted Everlasting Flower",
+    category: "gift",
+    occasion: "Celebrations",
+    tag: "Keepsake",
+    rating: 4.9,
+    reviewCount: 65,
+    images: {
+      primary: "images/bloom-bear.webp",
+      gallery: ["images/bloom-bear.webp"]
+    },
+    shortDescription: "Ultra-soft 10\" plush keepsake bear holding a miniature bouquet of preserved baby's breath and blush spray rose.",
+    description: "The sweetest companion for milestone celebrations and welcoming new arrivals. Crafted with velvety plush fur in heirloom cream, gently clutching a real preserved mini floral posy that lasts indefinitely.",
+    sizes: [
+      { id: "standard", name: "10-Inch Plush Bear", stems: "Plush + Preserved Posy", price: 16, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Signature Taupe Ribbon", price: 0 }
+    ],
+    stems: []
+  },
   {
     id: "champagne-truffles",
     slug: "champagne-truffles",
@@ -874,10 +1366,48 @@ export function getProductBySlug(slug) {
 }
 
 /**
- * Get only Featured & Best-Selling arrangements for homepage curation
+ * Get only Featured & Best-Selling arrangements for homepage curation (excluding combo sets which have their own showcase)
  */
 export function getFeaturedProducts() {
-  return PRODUCTS.filter(p => p.featured || p.tag === "Bestseller" || p.rating >= 4.9).slice(0, 6);
+  return PRODUCTS.filter(p => p.category !== "combo" && (p.featured || p.tag === "Bestseller" || p.rating >= 4.9)).slice(0, 6);
+}
+
+/**
+ * Get all curated gift combos
+ */
+export function getGiftCombos() {
+  return PRODUCTS.filter(p => p.category === "combo" || p.isCombo);
+}
+
+/**
+ * Get curated gift sets that include a given catalogue item.
+ */
+export function getGiftCombosForProduct(slug) {
+  return getGiftCombos().filter(combo =>
+    combo.comboItems?.some(item => item.slug === slug)
+  );
+}
+
+/**
+ * Get gift-set upgrades that can safely replace a single bag item. A set is
+ * not offered when the bag already contains that set or another component of it.
+ */
+export function getGiftComboUpgradesForCartItem(item, cartItems = []) {
+  if (!item || item.isCombo) return [];
+
+  return getGiftCombosForProduct(item.slug).filter(combo => {
+    const matchingComponent = combo.comboItems?.find(component => component.slug === item.slug);
+    const matchesCuratedPresentation = matchingComponent
+      && matchingComponent.sizeId === item.size?.id
+      && matchingComponent.vaseId === item.vase?.id;
+    const setOrComponentAlreadyInBag = cartItems.some(cartItem =>
+      cartItem.id !== item.id && (
+        cartItem.slug === combo.slug
+        || combo.comboItems?.some(component => component.slug === cartItem.slug)
+      )
+    );
+    return matchesCuratedPresentation && !setOrComponentAlreadyInBag;
+  });
 }
 
 /**
@@ -892,7 +1422,7 @@ export function getProductsByCategory(category = "all") {
  * Get all unique categories
  */
 export function getAllCategories() {
-  return ["all", "bouquet", "luxury", "gift", "celebration"];
+  return ["all", "bouquet", "combo", "luxury", "gift", "celebration"];
 }
 
 /**
@@ -915,7 +1445,8 @@ export function searchProducts(keyword = "") {
     p.category.toLowerCase().includes(term) ||
     p.occasion.toLowerCase().includes(term) ||
     p.description.toLowerCase().includes(term) ||
-    p.stems.some(s => s.name.toLowerCase().includes(term))
+    (p.stems && p.stems.some(s => s.name.toLowerCase().includes(term))) ||
+    (p.comboIncludes && p.comboIncludes.some(c => c.toLowerCase().includes(term)))
   );
 }
 
@@ -932,5 +1463,4 @@ export function getAffordableProducts() {
     return minA - minB;
   });
 }
-
 

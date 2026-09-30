@@ -1,0 +1,125 @@
+/* ==========================================================================
+   CURATED GIFT COMBOS SECTION & CARDS
+   ========================================================================== */
+
+.combos-section {
+  padding-top: 50px;
+  padding-bottom: 90px;
+}
+
+.combos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 36px;
+}
+
+.combos-header-text {
+  max-width: 640px;
+}
+
+.combos-header-text h2 {
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.combos-subtitle {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.combos-header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--cream-dark);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 8px 18px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.combos-badge-sparkle {
+  color: #d97706;
+  font-size: 1rem;
+}
+
+/* Combos Grid — Matches Featured Product Grid */
+.combos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 24px;
+}
+
+@media (max-width: 1024px) {
+  .combos-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .combos-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+/* Combo Card Specific Refinements (built on .product-card) */
+.combo-product-card {
+  position: relative;
+}
+
+.combo-card-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 5;
+  background: #1e1e24;
+  color: #ffffff;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+}
+
+.combo-card-inclusions {
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.4;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.combo-price-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.combo-orig-price {
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  color: #8c8c93;
+  text-decoration: line-through;
+  font-weight: 400;
+}

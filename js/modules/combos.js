@@ -1,58 +1,25 @@
 /**
- * Petal & Bloom — Petite Luxuries & Affordable Buys Carousel Module
- * Handles dynamic rendering, smooth scroll snap controls, and product interactions with clean, consistent card design.
+ * Petal & Bloom — Curated Gift Combos Module
+ * Renders the gift combo showcase section on the homepage with clean, uncluttered styling matching the best seller cards.
  */
 
-import { getAffordableProducts, getProductBySlug } from "../data/products.js";
+import { getGiftCombos, getProductBySlug } from "../data/products.js";
 import { isInWishlist, toggleWishlist } from "./wishlist.js";
 
 let productClickHandler = null;
 let quickAddHandler = null;
 
-export function initAffordableCarousel({ onProductClick, onQuickAdd }) {
+export function initCombos({ onProductClick, onQuickAdd }) {
   productClickHandler = onProductClick;
   quickAddHandler = onQuickAdd;
 
-  const track = document.getElementById("affordable-carousel-track");
-  const prevBtn = document.getElementById("affordable-carousel-prev");
-  const nextBtn = document.getElementById("affordable-carousel-next");
+  const grid = document.getElementById("combos-grid");
+  if (!grid) return;
 
-  if (!track) return;
+  renderCombosGrid();
 
-  // 1. Initial Render
-  renderAffordableCarousel();
-
-  // 2. Carousel Arrow Controls
-  const updateButtonStates = () => {
-    if (!prevBtn || !nextBtn) return;
-    const isAtStart = track.scrollLeft <= 5;
-    const isAtEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 5;
-
-    prevBtn.disabled = isAtStart;
-    nextBtn.disabled = isAtEnd;
-  };
-
-  const scrollTrack = (direction) => {
-    const cardWidth = track.querySelector(".product-card")?.offsetWidth || 280;
-    const scrollAmount = (cardWidth + 20) * 1.5; // Scroll approx 1.5 cards
-    track.scrollBy({
-      left: direction === "next" ? scrollAmount : -scrollAmount,
-      behavior: "smooth"
-    });
-  };
-
-  prevBtn?.addEventListener("click", () => scrollTrack("prev"));
-  nextBtn?.addEventListener("click", () => scrollTrack("next"));
-
-  // Track scroll listener to update button disabled states
-  track.addEventListener("scroll", updateButtonStates, { passive: true });
-  window.addEventListener("resize", updateButtonStates, { passive: true });
-
-  // Initial button state check
-  setTimeout(updateButtonStates, 150);
-
-  // 3. Event Delegation for Card Clicks, Wishlist & Quick Add
-  track.addEventListener("click", (e) => {
+  // Event delegation on combos grid
+  grid.addEventListener("click", (e) => {
     const card = e.target.closest(".product-card");
     if (!card) return;
 
@@ -85,7 +52,7 @@ export function initAffordableCarousel({ onProductClick, onQuickAdd }) {
       return;
     }
 
-    // Default card click -> Open PDP
+    // Default card or "VIEW SET" click -> navigate to PDP
     if (typeof productClickHandler === "function") {
       e.preventDefault();
       productClickHandler(slug);
@@ -93,7 +60,7 @@ export function initAffordableCarousel({ onProductClick, onQuickAdd }) {
   });
 
   // Keyboard accessibility
-  track.addEventListener("keydown", (e) => {
+  grid.addEventListener("keydown", (e) => {
     if (e.key === "Enter" || e.key === " ") {
       const card = e.target.closest(".product-card");
       if (card && typeof productClickHandler === "function") {
@@ -105,38 +72,49 @@ export function initAffordableCarousel({ onProductClick, onQuickAdd }) {
 }
 
 /**
- * Render affordable products into the carousel track matching the clean boutique product card design
+ * Render curated gift combos into the grid matching the clean boutique card design
  */
-export function renderAffordableCarousel() {
-  const track = document.getElementById("affordable-carousel-track");
-  if (!track) return;
+export function renderCombosGrid() {
+  const container = document.getElementById("combos-grid");
+  if (!container) return;
 
-  const items = getAffordableProducts();
+  const combos = getGiftCombos();
+  if (!combos || combos.length === 0) return;
 
-  track.innerHTML = items.map(product => {
-    const minPrice = Math.min(...product.sizes.map(s => s.price));
-    const isSaved = isInWishlist(product.slug);
-    const ratingDisplay = (product.rating || 4.8).toFixed(1);
-    const tagText = product.tag || "Petite Edit";
+  container.innerHTML = combos.map(combo => {
+    const isSaved = isInWishlist(combo.slug);
+    const standardSize = combo.sizes.find(s => s.default) || combo.sizes[0];
+    const comboPrice = standardSize.price;
+    const origPrice = combo.originalPrice || (comboPrice + (combo.comboSavings || 0));
+    const savings = combo.comboSavings || (origPrice - comboPrice);
+    const ratingDisplay = (combo.rating || 4.9).toFixed(1);
+
+    // Clean, readable inclusions string
+    const inclusionsSummary = combo.comboIncludes 
+      ? combo.comboIncludes.map(item => item.replace(" (Standard)", "").replace(" (3-pack)", "").replace(" (3-pc)", "")).join(" + ")
+      : combo.subtitle;
 
     return `
       <article 
-        class="product-card affordable-product-card" 
-        data-slug="${product.slug}" 
+        class="product-card combo-product-card" 
+        data-slug="${combo.slug}" 
         tabindex="0" 
         role="button" 
-        aria-label="View details for ${product.name}"
+        aria-label="View details for ${combo.name}"
       >
         <div class="product-card-media">
-          <img src="${product.images.primary}" alt="${product.name}" loading="lazy" />
-          <span class="product-card-badge">${tagText}</span>
+          <img src="${combo.images.primary}" alt="${combo.name}" loading="lazy" />
           
+          ${savings > 0 ? `
+            <span class="combo-card-badge">Save $${savings}</span>
+          ` : ""}
+
           <button 
             class="product-card-wishlist-btn ${isSaved ? 'active' : ''}" 
             type="button" 
             aria-label="${isSaved ? 'Remove from wishlist' : 'Add to wishlist'}" 
             title="${isSaved ? 'Saved in wishlist' : 'Add to wishlist'}"
-            data-slug="${product.slug}"
+            data-slug="${combo.slug}"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
               <path d="M0 0h24v24H0z" fill="none" />
@@ -147,25 +125,30 @@ export function renderAffordableCarousel() {
           <button 
             class="product-card-quick-add-btn" 
             type="button" 
-            data-slug="${product.slug}"
-            aria-label="Quick add ${product.name} to cart"
-            title="Quick add to bag"
+            data-slug="${combo.slug}"
+            aria-label="Quick add ${combo.name} to cart"
+            title="Quick add set to bag"
           >
-            <span>+ Quick Add</span>
+            <span>+ Quick Add Set</span>
           </button>
         </div>
 
         <div class="product-card-body">
           <div class="product-card-top-row">
-            <h3 class="product-card-title">${product.name}</h3>
+            <h3 class="product-card-title">${combo.name}</h3>
             <span class="product-card-rating">★ ${ratingDisplay}</span>
           </div>
 
-          <div class="product-card-starting-label">STARTING FROM</div>
+          <p class="combo-card-inclusions" title="${inclusionsSummary}">${inclusionsSummary}</p>
+
+          <div class="product-card-starting-label">COMPLETE GIFT SET</div>
 
           <div class="product-card-bottom-row">
-            <div class="product-card-price">$${minPrice}</div>
-            <span class="product-card-view-options">VIEW OPTIONS</span>
+            <div class="combo-price-wrap">
+              <span class="product-card-price">$${comboPrice}</span>
+              ${origPrice > comboPrice ? `<span class="combo-orig-price">$${origPrice}</span>` : ""}
+            </div>
+            <span class="product-card-view-options">VIEW SET</span>
           </div>
         </div>
       </article>

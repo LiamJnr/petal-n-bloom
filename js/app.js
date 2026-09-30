@@ -19,6 +19,7 @@ import {
 } from "./modules/router.js";
 import { initCatalog } from "./modules/catalog.js";
 import { initAffordableCarousel } from "./modules/affordable-carousel.js";
+import { initCombos } from "./modules/combos.js";
 import { initShop, renderShop, setShopSearchQuery, setShopCategory } from "./modules/shop.js";
 import { initPDP, renderPDP } from "./modules/pdp.js";
 import { initReviews } from "./modules/reviews.js";
@@ -134,6 +135,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 4b. Petite Luxuries & Affordable Buys Horizontal Carousel
   initAffordableCarousel({
+    onProductClick: (slug) => {
+      navigateToProduct(slug);
+    },
+    onQuickAdd: (slug) => {
+      handleQuickAdd(slug);
+    }
+  });
+
+  // 4c. Curated Gift Combos & Luxury Sets
+  initCombos({
     onProductClick: (slug) => {
       navigateToProduct(slug);
     },

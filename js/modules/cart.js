@@ -3,7 +3,7 @@
  * Includes persistent localStorage, free shipping meter, and auto-syncing catalog data.
  */
 import { showToast } from "./toast.js";
-import { getProductBySlug, GIFT_ADDONS } from "../data/products.js";
+import { getGiftComboUpgradesForCartItem, getProductBySlug, GIFT_ADDONS } from "../data/products.js";
 import { ICONS } from "../lib/icons.js";
 import { getInternationalEstimates } from "../lib/currency.js";
 import { getPromotionCode, getPromotionPreview, setPromotionCode } from "../lib/promotion.js";
@@ -145,6 +145,56 @@ export function updateQuantity(itemId, delta) {
   }
 }
 
+function getComboUpgradeOffer() {
+  for (const item of cartItems) {
+    const combo = getGiftComboUpgradesForCartItem(item, cartItems)[0];
+    if (combo) return { item, combo };
+  }
+  return null;
+}
+
+function upgradeCartItemToCombo(itemId, comboSlug) {
+  const item = cartItems.find(cartItem => cartItem.id === itemId);
+  const combo = getProductBySlug(comboSlug);
+  if (!item || !combo?.isCombo) return;
+
+  const isEligible = getGiftComboUpgradesForCartItem(item, cartItems)
+    .some(candidate => candidate.slug === combo.slug);
+  if (!isEligible) return;
+
+  const size = combo.sizes.find(option => option.default) || combo.sizes[0];
+  const vase = combo.vases[0];
+  const giftMessage = String(item.giftMessage || "");
+  const comboItemId = `${combo.slug}_${size.id}_${vase.id}_${encodeURIComponent(giftMessage.slice(0, 10))}`;
+  const existingCombo = cartItems.find(cartItem => cartItem.id === comboItemId);
+
+  cartItems = cartItems.filter(cartItem => cartItem.id !== item.id);
+  if (existingCombo) {
+    existingCombo.quantity += item.quantity;
+  } else {
+    cartItems.push({
+      id: comboItemId,
+      slug: combo.slug,
+      name: combo.name,
+      image: combo.images.primary,
+      size: { ...size },
+      vase: { ...vase },
+      giftMessage,
+      deliveryDate: item.deliveryDate,
+      unitPrice: size.price + vase.price,
+      quantity: item.quantity,
+    });
+  }
+
+  saveCartToStorage();
+  updateCartUI();
+  showToast({
+    title: "Gift Set Added",
+    message: `${combo.name} now includes your ${item.name} and its curated pairings.`,
+    icon: ICONS.sparkles,
+  });
+}
+
 /**
  * Open the Cart Drawer
  */
@@ -238,6 +288,9 @@ function renderCartDrawerMarkup() {
 
       <!-- Cart Items List Container -->
       <div class="cart-body">
+        <div class="cart-combo-upgrade-section" id="cart-combo-upgrade-container">
+          <!-- Populated dynamically when a set upgrade is available -->
+        </div>
         <div id="cart-items-container">
           <!-- Populated dynamically -->
         </div>
@@ -368,6 +421,13 @@ function bindCartEvents() {
     }
   });
 
+  const comboUpgradeSection = document.getElementById("cart-combo-upgrade-container");
+  comboUpgradeSection?.addEventListener("click", (e) => {
+    const upgradeButton = e.target.closest(".btn-cart-combo-upgrade");
+    if (!upgradeButton) return;
+    upgradeCartItemToCombo(upgradeButton.dataset.itemId, upgradeButton.dataset.comboSlug);
+  });
+
   // Global custom events
   document.addEventListener("open-cart", openCart);
   document.addEventListener("add-to-cart", (e) => {
@@ -443,10 +503,36 @@ export function updateCartUI() {
     if (footer) footer.style.display = "none";
     const addonsSection = document.getElementById("cart-addons-container");
     if (addonsSection) addonsSection.style.display = "none";
+    const comboUpgradeSection = document.getElementById("cart-combo-upgrade-container");
+    if (comboUpgradeSection) comboUpgradeSection.style.display = "none";
     return;
   }
 
   if (footer) footer.style.display = "flex";
+
+  const comboUpgradeSection = document.getElementById("cart-combo-upgrade-container");
+  const comboUpgradeOffer = getComboUpgradeOffer();
+  if (comboUpgradeSection) {
+    if (comboUpgradeOffer) {
+      const { item, combo } = comboUpgradeOffer;
+      const comboPrice = combo.sizes.find(size => size.default)?.price ?? combo.sizes[0].price;
+      comboUpgradeSection.style.display = "block";
+      comboUpgradeSection.innerHTML = `
+        <section class="cart-combo-upgrade" aria-label="Upgrade ${item.name} to a gift set">
+          <img src="${combo.images.primary}" alt="${combo.name}" loading="lazy" />
+          <div class="cart-combo-upgrade-copy">
+            <span>Complete the gift · Save $${combo.comboSavings}</span>
+            <strong>Upgrade to ${combo.name}</strong>
+            <p>Includes your ${item.name} plus curated pairings for $${comboPrice.toFixed(2)}.</p>
+          </div>
+          <button type="button" class="btn-cart-combo-upgrade" data-item-id="${item.id}" data-combo-slug="${combo.slug}">Upgrade</button>
+        </section>
+      `;
+    } else {
+      comboUpgradeSection.style.display = "none";
+      comboUpgradeSection.innerHTML = "";
+    }
+  }
 
   // Build items HTML with verified live product image
   container.innerHTML = cartItems.map(item => {
@@ -553,13 +639,21 @@ export function updateCartUI() {
         <div class="cart-addons-row">
           ${GIFT_ADDONS.map(addon => {
             const inCart = cartItems.find(i => i.slug === addon.slug);
+            const shortName = addon.name
+              .replace("Artisanal ", "")
+              .replace("Botanical ", "")
+              .replace("Belgian ", "")
+              .replace(" Collection", "")
+              .replace(" Ritual", "")
+              .replace("Floral ", "")
+              .split("(")[0].trim();
             return `
               <div class="cart-addon-chip">
                 <div class="cart-addon-thumb">
                   <img src="${addon.images.primary}" alt="${addon.name}" loading="lazy" />
                 </div>
                 <div class="cart-addon-info">
-                  <span class="cart-addon-title">${addon.name.replace("Artisanal ", "").replace("Botanical ", "")}</span>
+                  <span class="cart-addon-title">${shortName}</span>
                   <span class="cart-addon-price">$${addon.sizes[0].price}</span>
                 </div>
                 <button type="button" class="btn-quick-addon" data-slug="${addon.slug}">

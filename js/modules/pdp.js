@@ -1,7 +1,7 @@
 /**
  * Dedicated Product Detail Page (PDP) Module — Matching Design Mockup
  */
-import { getProductBySlug, GIFT_ADDONS } from "../data/products.js";
+import { getGiftCombosForProduct, getProductBySlug } from "../data/products.js";
 import { getReviewsForProduct, getReviewMetrics } from "../data/reviews.js";
 import { navigateToHome, scrollToTop } from "./router.js";
 import { showToast } from "./toast.js";
@@ -107,6 +107,7 @@ export function renderPDP(slug) {
   selectedVaseIndex = 0;
   quantity = 1;
   giftMessage = "";
+  const relatedGiftCombos = product.isCombo ? [] : getGiftCombosForProduct(product.slug);
 
   // View toggle
   homeView.style.display = "none";
@@ -335,35 +336,32 @@ export function renderPDP(slug) {
             </button>
           </div>
 
-          <!-- Complete Your Gift Add-Ons Upsell Box -->
-          ${GIFT_ADDONS && GIFT_ADDONS.length > 0 ? `
-            <div class="pdp-gift-addons-box">
-              <div class="pdp-gift-addons-header">
-                <span class="pdp-gift-addons-title">Complete Your Gift</span>
-                <span class="pdp-gift-addons-badge">Boutique Pairing</span>
+          <!-- Curated Gift Sets that include this arrangement -->
+          ${relatedGiftCombos.length > 0 ? `
+            <section class="pdp-gift-combos" aria-label="Gift sets including ${product.name}">
+              <div class="pdp-gift-combos-header">
+                <span class="pdp-gift-combos-title">Complete the Gift</span>
+                <span class="pdp-gift-combos-badge">Curated set</span>
               </div>
-              <div class="pdp-gift-addons-grid">
-                ${GIFT_ADDONS.map(addon => `
-                  <div class="pdp-gift-addon-item">
-                    <div class="pdp-gift-addon-thumb">
-                      <img src="${addon.images.primary}" alt="${addon.name}" loading="lazy" />
-                    </div>
-                    <div class="pdp-gift-addon-info">
-                      <span class="pdp-gift-addon-name">${addon.name.replace("Artisanal ", "").replace("Botanical ", "")}</span>
-                      <span class="pdp-gift-addon-price">$${addon.sizes[0].price}.00</span>
-                    </div>
-                    <button 
-                      type="button" 
-                      class="btn-pdp-addon-quick-add" 
-                      data-addon-slug="${addon.slug}"
-                      aria-label="Add ${addon.name} to bag"
-                    >
-                      + Add
-                    </button>
-                  </div>
-                `).join("")}
+              <p class="pdp-gift-combos-intro">Make this arrangement part of a thoughtfully paired gift set.</p>
+              <div class="pdp-gift-combos-grid">
+                ${relatedGiftCombos.map(combo => {
+                  const comboPrice = combo.sizes.find(size => size.default)?.price ?? combo.sizes[0].price;
+                  return `
+                    <article class="pdp-gift-combo-card">
+                      <img class="pdp-gift-combo-thumb" src="${combo.images.primary}" alt="${combo.name}" loading="lazy" />
+                      <div class="pdp-gift-combo-info">
+                        <span class="pdp-gift-combo-saving">Save $${combo.comboSavings}</span>
+                        <strong class="pdp-gift-combo-name">${combo.name}</strong>
+                        <span class="pdp-gift-combo-summary">${combo.comboIncludes.join(" · ")}</span>
+                        <span class="pdp-gift-combo-price">$${comboPrice.toFixed(2)} <s>$${combo.originalPrice.toFixed(2)}</s></span>
+                      </div>
+                      <button type="button" class="btn-pdp-combo-view" data-combo-slug="${combo.slug}" aria-label="View ${combo.name}">View set</button>
+                    </article>
+                  `;
+                }).join("")}
               </div>
-            </div>
+            </section>
           ` : ""}
 
           <!-- Metadata -->
@@ -657,28 +655,14 @@ function bindPDPEvents(product) {
     toggleWishlist(product);
   });
 
-  // PDP Complete Your Gift Add-On Quick Add Buttons
-  pdpContainer.querySelectorAll(".btn-pdp-addon-quick-add").forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const addonSlug = btn.dataset.addonSlug;
-      const addon = GIFT_ADDONS.find(a => a.slug === addonSlug);
-      if (addon && typeof addToCartHandler === "function") {
-        addToCartHandler({
-          product: addon,
-          size: addon.sizes[0],
-          vase: { id: "none", name: "Standard", price: 0 },
-          giftMessage: "",
-          deliveryDate: "",
-          unitPrice: addon.sizes[0].price,
-          quantity: 1
-        });
-        btn.textContent = "✓ Added";
-        btn.classList.add("added");
-        setTimeout(() => {
-          btn.textContent = "+ Add";
-          btn.classList.remove("added");
-        }, 2000);
+  // View the exact curated gift set that includes this product.
+  pdpContainer.querySelectorAll(".btn-pdp-combo-view").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const comboSlug = btn.dataset.comboSlug;
+      if (typeof productClickHandler === "function") {
+        productClickHandler(comboSlug);
+      } else {
+        renderPDP(comboSlug);
       }
     });
   });

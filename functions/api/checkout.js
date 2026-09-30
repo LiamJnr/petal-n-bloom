@@ -1,15 +1,13 @@
-import { PRODUCTS, GIFT_ADDONS } from '../../js/data/products.js'
 import { validateDelivery } from '../lib/delivery.js'
 import { isValidCurrency, normaliseCurrency } from '../lib/paystack-payment.js'
 import { consumeRateLimit } from '../lib/rate-limit.js'
 import { createReceiptToken, hashReceiptToken } from '../lib/receipt-access.js'
 import { calculatePromotion } from '../lib/promotions.js'
+import { expandCuratedCombo, getCheckoutProduct } from '../lib/combo-order.js'
 
 const MAX_LINE_ITEMS = 25
 const MAX_QUANTITY_PER_LINE = 20
 const MAX_CHECKOUT_BODY_BYTES = 32 * 1024
-const allProducts = [...PRODUCTS, ...(GIFT_ADDONS || [])]
-const productBySlug = new Map(allProducts.map((product) => [product.slug, product]))
 
 export async function onRequestPost(context) {
   try {
@@ -234,8 +232,8 @@ function validateItems(items) {
   if (!Array.isArray(items) || items.length === 0) throw new Error('Your flower bag is empty.')
   if (items.length > MAX_LINE_ITEMS) throw new Error('Your flower bag has too many different items.')
 
-  return items.map((item) => {
-    const product = productBySlug.get(String(item?.slug || ''))
+  const validatedItems = items.flatMap((item) => {
+    const product = getCheckoutProduct(String(item?.slug || ''))
     const sizeId = String(item?.size_id || '').trim()
     const vaseId = String(item?.vase_id || '').trim()
     const quantity = Number(item?.quantity)
@@ -244,6 +242,15 @@ function validateItems(items) {
     if (!product) throw new Error('One of the arrangements in your bag is no longer available.')
     if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_QUANTITY_PER_LINE) {
       throw new Error('Please choose a valid quantity for every arrangement.')
+    }
+
+    if (product.isCombo) {
+      const defaultSize = product.sizes.find((option) => option.default) || product.sizes[0]
+      const presentation = product.vases[0]
+      if (sizeId !== defaultSize?.id || vaseId !== presentation?.id) {
+        throw new Error(`${product.name} is sold in its curated gift presentation.`)
+      }
+      return expandCuratedCombo({ combo: product, quantity, giftMessage })
     }
 
     const size = product.sizes.find((option) => option.id === sizeId)
@@ -262,6 +269,11 @@ function validateItems(items) {
       unit_price_cents: Math.round((size.price + vase.price) * 100),
     }
   })
+
+  if (validatedItems.length > MAX_LINE_ITEMS) {
+    throw new Error('Your flower bag has too many items in its gift sets.')
+  }
+  return validatedItems
 }
 
 function validateBuyer(value) {

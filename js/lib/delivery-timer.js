@@ -2,8 +2,9 @@
  * Real-Time Delivery Cut-Off Countdown Engine
  * Calculates same-day vs. next-day delivery cut-offs and dispatches live tick updates.
  */
+import { EDMONTON_CUTOFF_HOUR, EDMONTON_TIME_ZONE, getEarliestEdmontonDeliveryDate, getEdmontonCutoffDate, isBeforeEdmontonCutoff } from './edmonton-time.js'
 
-const DEFAULT_CUTOFF_HOUR = 14; // 2:00 PM local time
+export const DEFAULT_CUTOFF_HOUR = EDMONTON_CUTOFF_HOUR
 let subscribers = new Set();
 let timerInterval = null;
 
@@ -14,19 +15,14 @@ let timerInterval = null;
  * @returns {Object} Delivery state object.
  */
 export function getDeliveryCountdownState(cutoffHour = DEFAULT_CUTOFF_HOUR, now = new Date()) {
-  const currentHour = now.getHours();
-  const currentMinutes = now.getMinutes();
-  const currentSeconds = now.getSeconds();
-
-  const isSameDayAvailable = currentHour < cutoffHour;
+  const isSameDayAvailable = isBeforeEdmontonCutoff(cutoffHour, now)
 
   let hoursRemaining = 0;
   let minutesRemaining = 0;
   let secondsRemaining = 0;
 
   if (isSameDayAvailable) {
-    const cutoffDate = new Date(now);
-    cutoffDate.setHours(cutoffHour, 0, 0, 0);
+    const cutoffDate = getEdmontonCutoffDate(cutoffHour, now)
 
     const diffMs = Math.max(0, cutoffDate.getTime() - now.getTime());
     const totalSeconds = Math.floor(diffMs / 1000);
@@ -42,16 +38,12 @@ export function getDeliveryCountdownState(cutoffHour = DEFAULT_CUTOFF_HOUR, now 
     ? `${hoursRemaining}h ${pad(minutesRemaining)}m ${pad(secondsRemaining)}s`
     : "";
 
-  // Earliest date available string (YYYY-MM-DD)
-  const earliestDate = new Date(now);
-  if (!isSameDayAvailable) {
-    earliestDate.setDate(earliestDate.getDate() + 1);
-  }
-  const earliestDateStr = earliestDate.toISOString().split("T")[0];
+  const earliestDateStr = getEarliestEdmontonDeliveryDate(cutoffHour, now)
 
   return {
     isSameDayAvailable,
     cutoffHour,
+    timeZone: EDMONTON_TIME_ZONE,
     hoursRemaining,
     minutesRemaining,
     secondsRemaining,

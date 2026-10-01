@@ -863,6 +863,51 @@ export const PRODUCTS = [
     ]
   },
   {
+    id: "combo-kingsbite-celebration",
+    slug: "combo-kingsbite-celebration",
+    name: "Golden Kingsbite & Peach Posy",
+    subtitle: "Sweet Peach Carnations + Kingsbite Deluxe Cocoa Duo",
+    category: "combo",
+    isCombo: true,
+    occasion: "Celebrations",
+    tag: "Free Delivery ($40+)",
+    featured: true,
+    rating: 4.9,
+    reviewCount: 34,
+    comboSavings: 6,
+    originalPrice: 50,
+    comboItems: [
+      { slug: "sweet-carnation-lavender", sizeId: "standard", vaseId: "none" },
+      { slug: "kingsbite-deluxe-duo", sizeId: "standard", vaseId: "none" }
+    ],
+    comboIncludes: [
+      "Sweet Carnation & Lavender Bouquet",
+      "Kingsbite Deluxe Cocoa Duo (2 Bars)",
+      "Complimentary Gift Card"
+    ],
+    images: {
+      primary: "images/kingsbite-goldenpeach.webp",
+      gallery: ["images/kingsbite-goldenpeach.webp", "images/carnation-lavender.webp", "images/kingsbite-duo.webp"]
+    },
+    shortDescription: "Delicate peach carnations and lavender paired with a duo of Kingsbite chocolate bars. Unlocks free delivery!",
+    description: "A delightful Ghanaian celebratory pairing. Fragrant English lavender and ruffled peach carnations paired with two full-size Golden Tree Kingsbite chocolate bars and a handwritten card. Arrives in our signature gift wrap.",
+    stems: [
+      { name: "Ruffled Peach Carnations", count: 8 },
+      { name: "Fresh English Lavender", count: 6 },
+      { name: "Kingsbite Milk & Roasted Cocoa Bars", count: 2 }
+    ],
+    careGuide: [
+      "Bouquet: Trim stems at a 45° angle under cool water and refresh vase water every 2 days.",
+      "Chocolate: Store in a cool, dry place away from direct sunlight."
+    ],
+    sizes: [
+      { id: "standard", name: "Complete Gift Set (Save $6)", stems: "Bouquet + Kingsbite Duo", price: 44, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Signature Gift Wrap", price: 0 }
+    ]
+  },
+  {
     id: "combo-sweet-indulgence",
     slug: "combo-sweet-indulgence",
     name: "The Sweet Indulgence Gift Set",
@@ -1179,13 +1224,37 @@ export const GIFT_ADDONS = [
     rating: 4.8,
     reviewCount: 18,
     images: {
-      primary: "images/kingsbite.webp",
-      gallery: ["images/kingsbite.webp"]
+      primary: "images/kingsbite-medium-pack.webp",
+      gallery: ["images/kingsbite-medium-pack.webp"]
     },
     shortDescription: "A medium Kingsbite chocolate pack, ready to pair with fresh flowers.",
     description: "A medium Kingsbite chocolate pack selected for easy, thoughtful gifting alongside fresh flowers.",
     sizes: [
       { id: "standard", name: "Medium Pack", stems: "Chocolate Gift Pack", price: 9, default: true }
+    ],
+    vases: [
+      { id: "none", name: "Gift Presentation", price: 0 }
+    ],
+    stems: []
+  },
+  {
+    id: "kingsbite-deluxe-duo",
+    slug: "kingsbite-deluxe-duo",
+    name: "Kingsbite Deluxe Cocoa Duo",
+    subtitle: "Artisanal Milk & Roasted Cocoa Chocolate Bars",
+    category: "gift",
+    occasion: "Everyday",
+    tag: "Ghana Favourite",
+    rating: 4.9,
+    reviewCount: 22,
+    images: {
+      primary: "images/kingsbite-duo.webp",
+      gallery: ["images/kingsbite-duo.webp"]
+    },
+    shortDescription: "A premium duo of authentic Golden Tree Kingsbite milk chocolate and rich roasted cocoa bars.",
+    description: "Two classic Ghanaian chocolate bars presented in our signature gold-embossed sleeve. Made with 100% premium Ghana cocoa, ready to pair with any floral bouquet or enjoy as a sweet standalone gesture.",
+    sizes: [
+      { id: "standard", name: "Duo Pack (2 Bars)", stems: "2x 100g Bars", price: 16, default: true }
     ],
     vases: [
       { id: "none", name: "Gift Presentation", price: 0 }

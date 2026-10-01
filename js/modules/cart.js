@@ -8,9 +8,10 @@ import { ICONS } from "../lib/icons.js";
 import { getInternationalEstimates } from "../lib/currency.js";
 import { getPromotionCode, getPromotionPreview, setPromotionCode } from "../lib/promotion.js";
 import { navigateToCheckout } from "./router.js";
+import { getKingsbiteFreeDeliveryOffer, hasFreeDelivery, STANDARD_FREE_DELIVERY_THRESHOLD_USD } from "../lib/kingsbite-delivery.js";
 
 const CART_STORAGE_KEY = "petal_bloom_cart";
-const FREE_SHIPPING_THRESHOLD = 100;
+const FREE_SHIPPING_THRESHOLD = STANDARD_FREE_DELIVERY_THRESHOLD_USD;
 
 let cartItems = [];
 
@@ -452,7 +453,10 @@ export function updateCartUI() {
 
   const totalCount = getTotalItemCount();
   const subtotal = getCartSubtotal();
-  const promotion = getPromotionPreview(subtotal);
+  const kingsbiteOffer = getKingsbiteFreeDeliveryOffer(cartItems, subtotal);
+  const promotion = kingsbiteOffer.isEligible
+    ? { code: getPromotionCode(), state: "unavailable", discountUsd: 0, message: "Kingsbite free delivery is applied; promo codes are not combined with this offer." }
+    : getPromotionPreview(subtotal);
 
   // 1. Update Navbar Badge
   if (badge) {
@@ -467,13 +471,18 @@ export function updateCartUI() {
 
   // 3. Free Delivery Progress
   if (shippingText && shippingFill) {
-    const remaining = FREE_SHIPPING_THRESHOLD - subtotal;
-    const pct = Math.min(100, Math.round((subtotal / FREE_SHIPPING_THRESHOLD) * 100));
+    const target = kingsbiteOffer.hasKingsbite ? 40 : FREE_SHIPPING_THRESHOLD;
+    const remaining = target - subtotal;
+    const pct = Math.min(100, Math.round((subtotal / target) * 100));
     shippingFill.style.width = `${pct}%`;
 
-    if (remaining <= 0 && subtotal > 0) {
-      shippingText.innerHTML = `${ICONS.sparkles} <span><strong>Congratulations!</strong> You unlocked <strong>FREE Local Florist Delivery</strong>!</span>`;
+    if (hasFreeDelivery(cartItems, subtotal) && subtotal > 0) {
+      const offerLabel = kingsbiteOffer.isEligible ? "Kingsbite free delivery" : "FREE Local Florist Delivery";
+      shippingText.innerHTML = `${ICONS.sparkles} <span><strong>Congratulations!</strong> You unlocked <strong>${offerLabel}</strong>!</span>`;
       shippingFill.classList.add("unlocked");
+    } else if (kingsbiteOffer.hasKingsbite) {
+      shippingText.innerHTML = `<span>Add <strong>$${Math.max(0, remaining).toFixed(2)}</strong> more to unlock <strong>Kingsbite free delivery</strong></span>`;
+      shippingFill.classList.remove("unlocked");
     } else {
       shippingText.innerHTML = `<span>Add <strong>$${Math.max(0, remaining).toFixed(2)}</strong> more for <strong>FREE Local Delivery</strong></span>`;
       shippingFill.classList.remove("unlocked");
@@ -573,7 +582,7 @@ export function updateCartUI() {
   }).join("");
 
   // 5. Update Totals & Delivery Note
-  const isFreeDelivery = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0;
+  const isFreeDelivery = hasFreeDelivery(cartItems, subtotal) || subtotal === 0;
   const deliveryFee = (subtotal === 0 || isFreeDelivery) ? 0 : 14;
   const discount = promotion.state === "applied" ? promotion.discountUsd : 0;
   const total = subtotal + deliveryFee - discount;
@@ -581,9 +590,9 @@ export function updateCartUI() {
   const deliveryNoteEl = document.getElementById("cart-delivery-note");
   if (deliveryNoteEl) {
     if (subtotal === 0) {
-      deliveryNoteEl.textContent = "Complimentary delivery on orders $100+";
+      deliveryNoteEl.textContent = "Free delivery on $100+ or $40+ with Kingsbite";
     } else if (isFreeDelivery) {
-      deliveryNoteEl.textContent = "Complimentary delivery applied";
+      deliveryNoteEl.textContent = kingsbiteOffer.isEligible ? "Kingsbite free delivery applied" : "Complimentary delivery applied";
     } else {
       deliveryNoteEl.textContent = "+$14 delivery fee";
     }

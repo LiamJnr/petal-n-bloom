@@ -3,7 +3,7 @@
  * Handles multi-criteria filtering, live search, occasion filtering, price ranges, sorting, active chips, and product grid.
  */
 
-import { PRODUCTS, getAllOccasions } from "../data/products.js";
+import { PRODUCTS, GIFT_ADDONS, getAllOccasions } from "../data/products.js";
 import { isInWishlist, toggleWishlist } from "./wishlist.js";
 import { ICONS } from "../lib/icons.js";
 import { renderRecentlyViewed } from "./recently-viewed.js";
@@ -141,10 +141,13 @@ export function initShop({ onProductClick, onQuickAdd }) {
  * Filter and sort products according to current shop criteria
  */
 export function getFilteredShopProducts() {
-  let list = [...PRODUCTS];
+  const allAvailable = [...PRODUCTS, ...GIFT_ADDONS];
+  let list = activeCategory === "kingsbite"
+    ? allAvailable.filter(p => p.slug.includes("kingsbite") || p.category === "kingsbite" || (p.name && p.name.toLowerCase().includes("kingsbite")) || (p.subtitle && p.subtitle.toLowerCase().includes("kingsbite")))
+    : [...PRODUCTS];
 
   // 1. Filter by category
-  if (activeCategory !== "all") {
+  if (activeCategory !== "all" && activeCategory !== "kingsbite") {
     list = list.filter(p => p.category === activeCategory);
   }
 
@@ -278,9 +281,10 @@ export function renderShopGrid() {
     const activeChips = [];
 
     if (activeCategory !== "all") {
+      const catLabel = activeCategory === "kingsbite" ? "Kingsbite Treats" : capitalize(activeCategory);
       activeChips.push({
         type: "category",
-        label: `Category: ${capitalize(activeCategory)}`,
+        label: `Category: ${catLabel}`,
         onRemove: () => {
           activeCategory = "all";
           syncControlElements();

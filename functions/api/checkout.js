@@ -4,6 +4,7 @@ import { consumeRateLimit } from '../lib/rate-limit.js'
 import { createReceiptToken, hashReceiptToken } from '../lib/receipt-access.js'
 import { calculatePromotion } from '../lib/promotions.js'
 import { expandCuratedCombo, getCheckoutProduct } from '../lib/combo-order.js'
+import { getKingsbiteFreeDeliveryOffer, hasFreeDelivery } from '../../js/lib/kingsbite-delivery.js'
 
 const MAX_LINE_ITEMS = 25
 const MAX_QUANTITY_PER_LINE = 20
@@ -75,12 +76,17 @@ async function createCheckout({ request, env }) {
   }
 
   const subtotalUsdCents = items.reduce((sum, item) => sum + item.unit_price_cents * item.quantity, 0)
-  const deliveryFeeUsdCents = subtotalUsdCents >= 10_000 ? 0 : 1_400
+  const subtotalUsd = subtotalUsdCents / 100
+  const kingsbiteDeliveryOffer = getKingsbiteFreeDeliveryOffer(items, subtotalUsd)
+  const deliveryFeeUsdCents = hasFreeDelivery(items, subtotalUsd) ? 0 : 1_400
   let promotion
   try {
     promotion = calculatePromotion(body.promo_code, subtotalUsdCents)
   } catch (error) {
     return json({ error: error.message }, 400)
+  }
+  if (kingsbiteDeliveryOffer.isEligible && promotion) {
+    return json({ error: 'The Kingsbite free-delivery offer cannot be combined with a promo code.' }, 400)
   }
   if (promotion?.firstPaidOrderOnly) {
     const previousPaidOrder = await env.DB.prepare(
@@ -93,7 +99,6 @@ async function createCheckout({ request, env }) {
 
   const discountUsdCents = promotion?.discountUsdCents || 0
   const totalUsdCents = subtotalUsdCents + deliveryFeeUsdCents - discountUsdCents
-  const subtotalUsd = subtotalUsdCents / 100
   const deliveryFeeUsd = deliveryFeeUsdCents / 100
   const discountUsd = discountUsdCents / 100
   const totalUsd = totalUsdCents / 100
@@ -112,6 +117,7 @@ async function createCheckout({ request, env }) {
     delivery_fee_usd_cents: deliveryFeeUsdCents,
     discount_usd_cents: discountUsdCents,
     promo_code: promotion?.code || null,
+    delivery_offer: kingsbiteDeliveryOffer.isEligible ? 'KINGSBITE_FREE_DELIVERY' : null,
   }
 
   await env.DB.prepare(
@@ -137,7 +143,7 @@ async function createCheckout({ request, env }) {
   const customFields = [
     { display_name: 'Order', variable_name: 'order_ref', value: orderId },
     { display_name: 'Subtotal USD', variable_name: 'subtotal_usd', value: `$${subtotalUsd.toFixed(2)}` },
-    { display_name: 'Delivery Fee', variable_name: 'delivery_fee', value: deliveryFeeUsd === 0 ? 'FREE (Over $100)' : `$${deliveryFeeUsd.toFixed(2)}` },
+    { display_name: 'Delivery Fee', variable_name: 'delivery_fee', value: deliveryFeeUsd === 0 ? (kingsbiteDeliveryOffer.isEligible ? 'FREE (Kingsbite offer)' : 'FREE (Over $100)') : `$${deliveryFeeUsd.toFixed(2)}` },
     ...(promotion ? [
       { display_name: 'Promo Code', variable_name: 'promo_code', value: promotion.code },
       { display_name: 'Discount USD', variable_name: 'discount_usd', value: `-$${discountUsd.toFixed(2)}` },

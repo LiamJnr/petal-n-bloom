@@ -12,6 +12,7 @@ import { ICONS } from "../lib/icons.js";
 import { getInternationalEstimates } from "../lib/currency.js";
 import { getDeliveryCountdownState } from "../lib/delivery-timer.js";
 import { getPromotionCode, getPromotionPreview, setPromotionCode } from "../lib/promotion.js";
+import { getKingsbiteFreeDeliveryOffer, hasFreeDelivery, STANDARD_FREE_DELIVERY_THRESHOLD_USD } from "../lib/kingsbite-delivery.js";
 
 let selectedTimeWindow = "morning";
 let selectedLocationType = "residential";
@@ -176,11 +177,14 @@ export function renderCheckoutPage() {
   }
 
   const subtotal = getCartSubtotal();
+  const kingsbiteOffer = getKingsbiteFreeDeliveryOffer(cart, subtotal);
   const deliveryState = getDeliveryCountdownState();
   const minDateStr = deliveryState.earliestDateStr;
-  const isFreeDelivery = subtotal >= 100;
+  const isFreeDelivery = hasFreeDelivery(cart, subtotal);
   const deliveryFee = isFreeDelivery ? 0 : 14;
-  const promotion = getPromotionPreview(subtotal);
+  const promotion = kingsbiteOffer.isEligible
+    ? { code: getPromotionCode(), state: "unavailable", discountUsd: 0, message: "Kingsbite free delivery is applied; promo codes are not combined with this offer." }
+    : getPromotionPreview(subtotal);
   const discount = promotion.state === "applied" ? promotion.discountUsd : 0;
   const totalDue = subtotal + deliveryFee - discount;
   const ghsEstimate = getInternationalEstimates(totalDue).find(e => e.code === "GHS");
@@ -188,7 +192,7 @@ export function renderCheckoutPage() {
   const usdFormatted = `$${totalDue.toFixed(2)}`;
 
   // Free shipping progress meter calculations
-  const shippingThreshold = 100;
+  const shippingThreshold = kingsbiteOffer.hasKingsbite ? 40 : STANDARD_FREE_DELIVERY_THRESHOLD_USD;
   const shippingRemaining = shippingThreshold - subtotal;
   const shippingProgressPct = Math.min(100, Math.round((subtotal / shippingThreshold) * 100));
 
@@ -557,8 +561,8 @@ export function renderCheckoutPage() {
             <div class="checkout-shipping-meter ${isFreeDelivery ? 'unlocked' : ''}">
               <p class="checkout-shipping-meter-text">
                 ${isFreeDelivery
-                  ? `<span class="checkout-meter-icon">${ICONS.sparkles || '✨'}</span> <span><strong>Congratulations!</strong> You unlocked <strong>FREE Local Delivery</strong>!</span>`
-                  : `<span class="checkout-meter-icon">🚚</span> <span>Add <strong>$${Math.max(0, shippingRemaining).toFixed(2)}</strong> more for <strong>FREE Local Delivery</strong></span>`
+                  ? `<span class="checkout-meter-icon">${ICONS.sparkles || '✨'}</span> <span><strong>Congratulations!</strong> You unlocked <strong>${kingsbiteOffer.isEligible ? 'Kingsbite free delivery' : 'FREE Local Delivery'}</strong>!</span>`
+                  : `<span class="checkout-meter-icon">🚚</span> <span>Add <strong>$${Math.max(0, shippingRemaining).toFixed(2)}</strong> more for <strong>${kingsbiteOffer.hasKingsbite ? 'Kingsbite free delivery' : 'FREE Local Delivery'}</strong></span>`
                 }
               </p>
               <div class="checkout-shipping-meter-track">
@@ -607,7 +611,7 @@ export function renderCheckoutPage() {
               </div>
               <div class="checkout-breakdown-row" style="display:flex; justify-content:space-between; font-size:0.88rem; color:var(--muted); margin-bottom:10px;">
                 <span>Delivery:</span>
-                <span>${isFreeDelivery ? '<strong style="color:#059669;">FREE</strong>' : '<strong>$14.00</strong>'}</span>
+                <span>${isFreeDelivery ? `<strong style="color:#059669;">FREE${kingsbiteOffer.isEligible ? ' · Kingsbite' : ''}</strong>` : '<strong>$14.00</strong>'}</span>
               </div>
               <div class="checkout-breakdown-row checkout-discount-row" id="checkout-discount-row" ${discount > 0 ? '' : 'hidden'}>
                 <span>Discount <strong id="checkout-promo-label">${discount > 0 ? `(${promotion.code})` : ''}</strong></span>
@@ -616,7 +620,7 @@ export function renderCheckoutPage() {
               <div class="checkout-total-row">
                 <div class="checkout-total-label-wrap">
                   <span>Total Due:</span>
-                  <small class="checkout-delivery-note">${isFreeDelivery ? 'Complimentary delivery applied (Orders over $100)' : 'Standard delivery ($14.00) applied'}</small>
+                  <small class="checkout-delivery-note">${isFreeDelivery ? (kingsbiteOffer.isEligible ? 'Kingsbite free delivery applied ($40+ with Kingsbite)' : 'Complimentary delivery applied (orders over $100)') : 'Standard delivery ($14.00) applied'}</small>
                 </div>
                 <strong id="checkout-total-due">$${totalDue.toFixed(2)}</strong>
               </div>
@@ -654,9 +658,13 @@ export function renderCheckoutPage() {
 
 function updateCheckoutPromotionSummary() {
   const subtotal = getCartSubtotal();
-  const promotion = getPromotionPreview(subtotal);
+  const cart = getCartItems();
+  const kingsbiteOffer = getKingsbiteFreeDeliveryOffer(cart, subtotal);
+  const promotion = kingsbiteOffer.isEligible
+    ? { code: getPromotionCode(), state: "unavailable", discountUsd: 0, message: "Kingsbite free delivery is applied; promo codes are not combined with this offer." }
+    : getPromotionPreview(subtotal);
   const discount = promotion.state === "applied" ? promotion.discountUsd : 0;
-  const deliveryFee = subtotal >= 100 ? 0 : 14;
+  const deliveryFee = hasFreeDelivery(cart, subtotal) ? 0 : 14;
   const total = subtotal + deliveryFee - discount;
   const input = document.getElementById("checkout-promo-code");
   const status = document.getElementById("checkout-promo-status");
@@ -827,8 +835,10 @@ function bindCheckoutEvents() {
     }
 
     try {
+      const checkoutItems = getCartItems();
+      const kingsbiteOffer = getKingsbiteFreeDeliveryOffer(checkoutItems, getCartSubtotal());
       await startCheckout({
-        items: getCartItems().map(item => ({
+        items: checkoutItems.map(item => ({
           slug: item.slug,
           size_id: item.size.id,
           vase_id: item.vase.id,
@@ -838,7 +848,9 @@ function bindCheckoutEvents() {
         buyer,
         delivery,
         card_note: cardNote,
-        promo_code: getPromotionCode(),
+        // The endpoint independently rejects a stacked offer. Sending no promo here
+        // keeps a saved BLOOM10 code from blocking an eligible Kingsbite checkout.
+        promo_code: kingsbiteOffer.isEligible ? "" : getPromotionCode(),
         onCancel: () => {
           resetSubmitBtn();
           showToast({

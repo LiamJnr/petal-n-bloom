@@ -1,10 +1,6 @@
-/**
- * Petal & Bloom — Curated Gift Combos Module
- * Renders the gift combo showcase section on the homepage with clean, uncluttered styling matching the best seller cards.
- */
-
 import { getGiftCombosForGrid, getHomepageComboBanner, getProductBySlug } from "../data/products.js";
 import { isInWishlist, toggleWishlist } from "./wishlist.js";
+import { navigateToShop } from "./router.js";
 
 let productClickHandler = null;
 let quickAddHandler = null;
@@ -163,26 +159,26 @@ function renderHomepageComboBanner() {
   if (!container || !combo) return;
 
   const price = combo.sizes.find(size => size.default)?.price ?? combo.sizes[0].price;
-  const deliveredPrice = price + 14;
   container.innerHTML = `
     <section class="ghana-gift-banner" aria-labelledby="ghana-gift-banner-title">
-      <div class="ghana-gift-banner-media">
-        <img src="${combo.images.primary}" alt="${combo.name}" loading="lazy" />
-      </div>
-      <div class="ghana-gift-banner-copy">
-        <span class="eyebrow">GIFTING, THE GHANAIAN WAY</span>
-        <h2 id="ghana-gift-banner-title">Roses &amp; <em>Kingsbite.</em></h2>
-        <p>A classic dozen roses and a medium Kingsbite chocolate pack—an easy, heartfelt gift for everyday moments.</p>
-        <div class="ghana-gift-banner-pricing">
-          <strong>$${price.toFixed(2)}</strong>
-          <span>Save $${combo.comboSavings} · $${deliveredPrice.toFixed(2)} with standard delivery</span>
+      <div class="container ghana-gift-banner-container">
+        <div class="ghana-gift-banner-content">
+          <span class="eyebrow">LIMITED OFFER</span>
+          <h2 id="ghana-gift-banner-title">FREE DELIVERY with a <em>Kingsbite.</em></h2>
+          <p class="ghana-gift-banner-copy">
+            Discover our curated Ghanaian chocolate treats starting at $9.00. Add any Kingsbite item to an order of $40 or more, and get FREE DELIVERY.
+          </p>
+          <div class="ghana-gift-banner-actions">
+            <button type="button" class="button btn-ghana-gift" data-kingsbite-explore>
+              Explore Kingsbite Treats &rarr;
+            </button>
+          </div>
         </div>
-        <button type="button" class="button button-dark btn-ghana-gift" data-slug="${combo.slug}">Send this gift &rarr;</button>
       </div>
     </section>
   `;
 
-  container.querySelector(".btn-ghana-gift")?.addEventListener("click", () => {
-    if (typeof productClickHandler === "function") productClickHandler(combo.slug);
+  container.querySelector("[data-kingsbite-explore]")?.addEventListener("click", () => {
+    navigateToShop({ category: "kingsbite" });
   });
 }

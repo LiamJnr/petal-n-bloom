@@ -554,6 +554,7 @@
 
 .promo-code-status.applied { color: #047857; }
 .promo-code-status.invalid { color: #b45309; }
+.promo-code-status.unavailable { color: #92400e; }
 
 .cart-price-breakdown {
   display: grid;

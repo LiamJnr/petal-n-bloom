@@ -52,109 +52,189 @@
   font-size: 1rem;
 }
 
-/* Ghanaian roses and chocolate feature — a distinct homepage banner, not a grid card. */
+/* Ghanaian roses and chocolate feature — styled in the hero section aesthetic */
 #ghana-gift-banner {
-  margin-top: 24px;
+  margin: 48px 0 16px;
+  width: 100%;
 }
 
 .ghana-gift-banner {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
-  align-items: stretch;
+  position: relative;
+  min-height: 520px;
+  display: flex;
+  align-items: center;
   overflow: hidden;
-  background: #2d1b1a;
-  color: #fffaf6;
+  background: url('../../images/kingsbite-offer.webp') no-repeat center right;
+  background-size: cover;
+  padding: 84px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
-.ghana-gift-banner-media {
-  min-height: 310px;
+/* Atmospheric chocolate-plum gradient overlay for high contrast */
+.ghana-gift-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(28, 8, 22, 0.94) 0%, rgba(28, 8, 22, 0.84) 45%, rgba(28, 8, 22, 0.42) 100%);
+  z-index: 1;
+  pointer-events: none;
 }
 
-.ghana-gift-banner-media img {
+.ghana-gift-banner-container {
+  width: min(980px, calc(100% - 48px));
+  max-width: 980px;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  z-index: 2;
+}
+
+.ghana-gift-banner-content {
+  position: relative;
+  z-index: 2;
+  text-align: left;
+  max-width: 560px;
+  margin: 0;
+}
+
+.ghana-gift-banner-content .eyebrow {
   display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #f0bf9f;
+  margin-bottom: 18px;
+}
+
+.ghana-gift-banner-content h2 {
+  font-family: var(--serif);
+  font-size: clamp(2.35rem, 4.9vw, 3.75rem);
+  font-weight: 400;
+  color: #f5f0f7;
+  margin-bottom: 18px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.ghana-gift-banner-content h2 em {
+  color: #eead91;
+  font-style: italic;
 }
 
 .ghana-gift-banner-copy {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  padding: clamp(28px, 4vw, 56px);
-}
-
-.ghana-gift-banner-copy .eyebrow {
-  color: #f0bf9f;
-}
-
-.ghana-gift-banner-copy h2 {
-  max-width: 10ch;
-  margin: 9px 0 12px;
-  color: #ffffff;
-  font-size: clamp(2.1rem, 4vw, 3.9rem);
-  letter-spacing: -0.04em;
-  line-height: 0.96;
-}
-
-.ghana-gift-banner-copy h2 em {
-  color: #eead91;
-}
-
-.ghana-gift-banner-copy p {
-  max-width: 38ch;
-  margin: 0;
-  color: #f3ddd1;
-  font-size: 0.95rem;
-  line-height: 1.55;
+  max-width: 480px;
+  margin: 0 0 24px 0;
+  color: rgba(243, 221, 209, 0.9);
+  font-family: var(--sans);
+  font-size: 1.05rem;
+  line-height: 1.6;
 }
 
 .ghana-gift-banner-pricing {
-  display: flex;
+  display: inline-flex;
   align-items: baseline;
-  flex-wrap: wrap;
-  gap: 9px;
-  margin: 20px 0;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(240, 191, 159, 0.28);
+  padding: 8px 18px;
+  border-radius: 999px;
+  margin-bottom: 28px;
 }
 
 .ghana-gift-banner-pricing strong {
   color: #ffffff;
-  font-size: 1.55rem;
+  font-size: 1.35rem;
+  font-family: var(--serif);
 }
 
 .ghana-gift-banner-pricing span {
   color: #f0bf9f;
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.ghana-gift-banner-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .btn-ghana-gift {
-  background: #fffaf6;
-  color: #2d1b1a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary);
+  color: #ffffff !important;
+  font-family: var(--sans);
+  font-size: 0.94rem;
+  font-weight: 600;
+  padding: 13px 28px;
+  border-radius: 0;
+  border: none;
+  cursor: pointer;
+  box-shadow: none;
+  transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .btn-ghana-gift:hover,
 .btn-ghana-gift:focus-visible {
-  background: #eead91;
-  color: #2d1b1a;
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(157, 0, 126, 0.35);
 }
 
-@media (max-width: 720px) {
+.ghana-gift-banner-link {
+  appearance: none;
+  padding: 6px 0;
+  border: 0;
+  border-bottom: 1px solid rgba(240, 191, 159, 0.6);
+  background: transparent;
+  color: #f0bf9f;
+  font-family: var(--sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.ghana-gift-banner-link:hover,
+.ghana-gift-banner-link:focus-visible {
+  color: #ffffff;
+  border-color: #ffffff;
+}
+
+@media (max-width: 768px) {
   #ghana-gift-banner {
-    margin-top: 16px;
+    margin: 32px 0 12px;
   }
 
   .ghana-gift-banner {
-    grid-template-columns: 1fr;
+    min-height: auto;
+    padding: 60px 0;
+    background-position: center;
   }
 
-  .ghana-gift-banner-media {
-    min-height: 220px;
+  .ghana-gift-banner::before {
+    background: linear-gradient(180deg, rgba(28, 8, 22, 0.93) 0%, rgba(28, 8, 22, 0.85) 100%);
   }
 
-  .ghana-gift-banner-copy {
-    padding: 28px 24px 32px;
+  .ghana-gift-banner-content h2 {
+    font-size: clamp(2rem, 7vw, 2.6rem);
+  }
+
+  .ghana-gift-banner-pricing {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    border-radius: 12px;
+    padding: 10px 14px;
   }
 }
 

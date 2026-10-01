@@ -553,6 +553,7 @@ input[type="date"].form-control {
 
 .checkout-promo-status.applied { color: #047857; }
 .checkout-promo-status.invalid { color: #b45309; }
+.checkout-promo-status.unavailable { color: #92400e; }
 
 .checkout-discount-row {
   display: flex;

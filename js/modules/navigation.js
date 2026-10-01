@@ -135,8 +135,9 @@ export function initNavigation({
 
       if (link.id === "nav-shop-link" || link.classList.contains("btn-explore-full-shop") || link.classList.contains("btn-hero-explore-shop") || link.id === "btn-header-go-shop") {
         e.preventDefault();
+        const category = link.dataset.category || "";
         if (typeof onNavigateShop === "function") {
-          onNavigateShop({});
+          onNavigateShop(category ? { category } : {});
         }
       }
     });

@@ -13,9 +13,12 @@ import { getInternationalEstimates } from "../lib/currency.js";
 import { getDeliveryCountdownState } from "../lib/delivery-timer.js";
 import { getPromotionCode, getPromotionPreview, setPromotionCode } from "../lib/promotion.js";
 import { getKingsbiteFreeDeliveryOffer, hasFreeDelivery, STANDARD_FREE_DELIVERY_THRESHOLD_USD } from "../lib/kingsbite-delivery.js";
+import { escapeHtml } from "../lib/html-escape.js";
 
 let selectedTimeWindow = "morning";
 let selectedLocationType = "residential";
+let currentStep = 1;
+let disclaimerObserver = null;
 
 // SVG Assets for Location Types
 const homeSvg = `
@@ -117,8 +120,421 @@ const lockSvg = `
   </svg>
 `;
 
+// ─── Stepper ─────────────────────────────────────────────────────────────────
+function buildStepperHtml() {
+  const steps = [
+    { num: 1, label: "Your Details" },
+    { num: 2, label: "Delivery & Gift" },
+    { num: 3, label: "Review & Pay" },
+  ];
+  const checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  return '<div class="co-stepper" id="co-stepper" role="navigation" aria-label="Checkout steps">' +
+    steps.map(s => {
+      const cls = s.num < currentStep ? 'done' : s.num === currentStep ? 'active' : '';
+      const bubble = s.num < currentStep ? checkSvg : String(s.num);
+      const track = s.num < steps.length ? `<div class="co-step-track ${s.num < currentStep ? 'done' : ''}"></div>` : '';
+      return `<div class="co-step ${cls}" data-step="${s.num}"><div class="co-step-bubble">${bubble}</div><span class="co-step-label">${s.label}</span></div>${track}`;
+    }).join('') + '</div>';
+}
+
+// ─── Step 1: Customer Information ────────────────────────────────────────────
+function buildStep1Html() {
+  return `
+    <div class="co-step-panel" id="co-panel-1">
+      <div class="checkout-header-intro">
+        <h2>Your Details</h2>
+        <p class="checkout-subtitle">We&rsquo;ll use this to send you order updates and receipts.</p>
+      </div>
+      <fieldset class="checkout-fieldset">
+        <legend class="checkout-legend"><span class="legend-num">1</span><span>Customer Information</span></legend>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cust-name">Your Full Name *</label>
+            <input type="text" id="cust-name" class="form-control" placeholder="e.g. Eleanor Vance" autocomplete="name" required />
+          </div>
+          <div class="form-group">
+            <label for="cust-email">Email Address (For order updates) *</label>
+            <input type="email" id="cust-email" class="form-control" placeholder="e.g. eleanor@example.com" autocomplete="email" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="cust-phone">Your Phone Number (Optional)</label>
+          <input type="tel" id="cust-phone" class="form-control" placeholder="e.g. +1 555-0199" autocomplete="tel" />
+        </div>
+      </fieldset>
+      <div class="co-step-nav">
+        <span></span>
+        <button type="button" class="btn-co-next" id="btn-step1-next">Continue: Delivery &amp; Gift &rarr;</button>
+      </div>
+    </div>`;
+}
+
+// ─── Step 2: Recipient, Delivery & Gift ──────────────────────────────────────
+function buildStep2Html(deliveryState) {
+  const minDateStr = deliveryState.earliestDateStr;
+  const bg = deliveryState.isSameDayAvailable ? 'rgba(16,185,129,0.12)' : 'rgba(245,158,11,0.12)';
+  const col = deliveryState.isSameDayAvailable ? '#047857' : '#b45309';
+  return `
+    <div class="co-step-panel" id="co-panel-2">
+      <div class="checkout-header-intro">
+        <h2>Delivery &amp; Gift Details</h2>
+        <p class="checkout-subtitle">Where should we deliver, and when? Add your personal gift note below.</p>
+      </div>
+
+      <fieldset class="checkout-fieldset">
+        <legend class="checkout-legend"><span class="legend-num">2</span><span>Recipient Information</span></legend>
+        <div class="checkout-same-as-buyer-wrap">
+          <label class="checkout-checkbox-label" for="same-as-buyer">
+            <input type="checkbox" id="same-as-buyer" class="checkout-checkbox" />
+            <span>I am the recipient (Deliver to myself)</span>
+          </label>
+        </div>
+        <div class="form-group">
+          <label for="rec-name">Recipient Full Name *</label>
+          <input type="text" id="rec-name" class="form-control" placeholder="e.g. Clara Harrington" required />
+        </div>
+        <div class="form-group">
+          <label for="rec-address">Street Address *</label>
+          <input type="text" id="rec-address" class="form-control" placeholder="e.g. 742 Evergreen Terrace" autocomplete="shipping street-address" required />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="rec-suite">Apt / Suite / Floor (Optional)</label>
+            <input type="text" id="rec-suite" class="form-control" placeholder="e.g. Apt 4B" />
+          </div>
+          <div class="form-group">
+            <label for="rec-city">City *</label>
+            <input type="text" id="rec-city" class="form-control" placeholder="e.g. Edmonton" autocomplete="shipping locality" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="rec-state">State / Province *</label>
+            <input type="text" id="rec-state" class="form-control" placeholder="e.g. AB" autocomplete="shipping region" required />
+          </div>
+          <div class="form-group">
+            <label for="rec-zip">Postal / ZIP Code *</label>
+            <input type="text" id="rec-zip" class="form-control" placeholder="e.g. T5N 1R5" autocomplete="shipping postal-code" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="rec-notes">Courier Notes / Gate Code (Optional)</label>
+          <input type="text" id="rec-notes" class="form-control" placeholder="e.g. Leave with concierge on 1st floor, ring buzzer #4" />
+        </div>
+      </fieldset>
+
+      <fieldset class="checkout-fieldset">
+        <legend class="checkout-legend"><span class="legend-num">3</span><span>Delivery Schedule &amp; Timing</span></legend>
+        <div class="form-group">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px 12px;margin-bottom:6px;">
+            <label for="rec-delivery-date" style="margin-bottom:0;">Requested Delivery Date *</label>
+            <span style="font-size:0.72rem;font-weight:600;padding:2px 8px;border-radius:9999px;background:${bg};color:${col};">${deliveryState.badgeText}</span>
+          </div>
+          <input type="date" id="rec-delivery-date" class="form-control" value="${minDateStr}" min="${minDateStr}" required />
+        </div>
+        <div class="form-group">
+          <label>Preferred Delivery Time Window:</label>
+          <div class="time-window-grid">
+            <div class="time-window-pill active" data-window="morning">
+              <div class="time-window-icon">${sunSvg}</div>
+              <span class="time-window-title">Morning</span>
+              <span class="time-window-hours">9:00 AM &ndash; 1:00 PM</span>
+            </div>
+            <div class="time-window-pill" data-window="afternoon">
+              <div class="time-window-icon">${afternoonSvg}</div>
+              <span class="time-window-title">Afternoon</span>
+              <span class="time-window-hours">1:00 PM &ndash; 5:00 PM</span>
+            </div>
+            <div class="time-window-pill" data-window="evening">
+              <div class="time-window-icon">${moonSvg}</div>
+              <span class="time-window-title">Evening</span>
+              <span class="time-window-hours">5:00 PM &ndash; 8:00 PM</span>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="checkout-fieldset">
+        <legend class="checkout-legend"><span class="legend-num">4</span><span>Letterpress Card Note</span></legend>
+        <div class="form-group">
+          <label for="rec-card-msg">Personal Gift Note (Printed on luxury cardstock)</label>
+          <textarea id="rec-card-msg" class="form-control" rows="3" maxlength="250" placeholder="Write your heartfelt note for the recipient..."></textarea>
+          <div class="checkout-gift-note-footer">
+            <span>Handwritten by our studio team</span>
+            <span id="checkout-char-count">0 / 250</span>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="co-step-nav">
+        <button type="button" class="btn-co-back" id="btn-step2-back">&larr; Back</button>
+        <button type="button" class="btn-co-next" id="btn-step2-next">Review &amp; Pay &rarr;</button>
+      </div>
+    </div>`;
+}
+
+// ─── Step 3: Review & Pay ─────────────────────────────────────────────────────
+function buildStep3Html({ ghsFormatted, usdFormatted }) {
+  return `
+    <div class="co-step-panel" id="co-panel-3">
+      <div class="checkout-header-intro">
+        <h2>Review &amp; Pay</h2>
+        <p class="checkout-subtitle">Almost there &mdash; review your info and read the billing notes before paying.</p>
+      </div>
+
+      <div class="co-review-card" id="co-review-card"></div>
+
+      <!-- International Billing Disclaimer & Payment Readiness -->
+      <div class="checkout-billing-disclaimer" id="checkout-billing-disclaimer">
+        <div class="billing-disclaimer-inner">
+          <div class="billing-disclaimer-header">
+            <div class="billing-disclaimer-title">
+              <svg class="billing-disclaimer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="14" x="2" y="5" rx="2"/>
+                <line x1="2" y1="10" x2="22" y2="10"/>
+              </svg>
+              <span>Billing &amp; Payment Security</span>
+            </div>
+          </div>
+
+          <div class="checkout-payment-methods-strip">
+            <div class="payment-methods-header-group">
+              <span class="payment-methods-label">We accept</span>
+              <div class="payment-methods-badges">
+                <span class="payment-method-logo logo-apple-pay" title="Apple Pay" aria-label="Apple Pay">
+                  <svg viewBox="2.8 7.5 18.5 9" fill="#000000" role="img" xmlns="http://www.w3.org/2000/svg"><title>Apple Pay</title><path d="M6.86 8.018c-.3.016-.668.199-.88.456-.191.22-.36.58-.316.918.338.03.675-.169.888-.418.205-.258.345-.603.308-.955zm2.207.42v5.493h.852v-1.877h1.18c1.078 0 1.835-.739 1.835-1.812 0-1.07-.742-1.805-1.808-1.805zm.852.719h.982c.739 0 1.161.396 1.161 1.089 0 .692-.422 1.092-1.164 1.092h-.979zm-3.154.3c-.45.01-.83.28-1.05.28-.235 0-.593-.264-.981-.257a1.446 1.446 0 0 0-1.23.747c-.527.908-.139 2.255.374 2.995.249.366.549.769.944.754.373-.014.52-.242.973-.242.454 0 .586.242.98.235.41-.007.667-.366.915-.733.286-.417.403-.82.41-.841-.007-.008-.79-.308-.797-1.209-.008-.754.615-1.113.644-1.135-.352-.52-.9-.578-1.09-.593a1.123 1.123 0 0 0-.092-.002zm8.204.397c-.99 0-1.606.533-1.652 1.256h.777c.072-.358.369-.586.845-.586.502 0 .803.266.803.711v.309l-1.097.064c-.951.054-1.488.484-1.488 1.184 0 .72.548 1.207 1.332 1.207.526 0 1.032-.281 1.264-.727h.019v.659h.788v-2.76c0-.803-.62-1.317-1.591-1.317zm1.94.072l1.446 4.009c0 .003-.073.24-.073.247-.125.41-.33.571-.711.571-.069 0-.206 0-.267-.015v.666c.06.011.267.019.335.019.83 0 1.226-.312 1.568-1.283l1.5-4.214h-.868l-1.012 3.259h-.015l-1.013-3.26zm-1.167 2.189v.316c0 .521-.45.917-1.024.917-.442 0-.731-.228-.731-.579 0-.342.278-.56.769-.593z"/></svg>
+                </span>
+                <span class="payment-method-logo logo-visa" title="Visa" aria-label="Visa">
+                  <svg viewBox="0 8 24 8" fill="#1A1F71" role="img" xmlns="http://www.w3.org/2000/svg"><title>Visa</title><path d="M9.112 8.262L5.97 15.758H3.92L2.374 9.775c-.094-.368-.175-.503-.461-.658C1.447 8.864.677 8.627 0 8.479l.046-.217h3.3a.904.904 0 01.894.764l.817 4.338 2.018-5.102zm8.033 5.049c.008-1.979-2.736-2.088-2.717-2.972.006-.269.262-.555.822-.628a3.66 3.66 0 011.913.336l.34-1.59a5.207 5.207 0 00-1.814-.333c-1.917 0-3.266 1.02-3.278 2.479-.012 1.079.963 1.68 1.698 2.04.756.367 1.01.603 1.006.931-.005.504-.602.725-1.16.734-.975.015-1.54-.263-1.992-.473l-.351 1.642c.453.208 1.289.39 2.156.398 2.037 0 3.37-1.006 3.377-2.564m5.061 2.447H24l-1.565-7.496h-1.656a.883.883 0 00-.826.55l-2.909 6.946h2.036l.405-1.12h2.488zm-2.163-2.656l1.02-2.815.588 2.815zm-8.16-4.84l-1.603 7.496H8.34l1.605-7.496z"/></svg>
+                </span>
+                <span class="payment-method-logo logo-mastercard" title="Mastercard" aria-label="Mastercard">
+                  <svg viewBox="1 2.5 22 13" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" role="img"><title>Mastercard</title><circle cx="7.5" cy="9" r="6.5" fill="#EB001B" /><circle cx="16.5" cy="9" r="6.5" fill="#F79E1B" /><path d="M 12 3.895 A 6.5 6.5 0 0 0 10 9 A 6.5 6.5 0 0 0 12 14.105 A 6.5 6.5 0 0 0 14 9 A 6.5 6.5 0 0 0 12 3.895 Z" fill="#FF5F00" /></svg>
+                </span>
+              </div>
+            </div>
+            <div class="payment-guarantee-badge">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span><strong>Visa &amp; Mastercard</strong> recommended for successful card payments</span>
+            </div>
+          </div>
+
+          <div class="payment-readiness-checklist">
+            <div class="readiness-item">
+              <div class="readiness-icon-wrap" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+              </div>
+              <div class="readiness-content">
+                <strong>Apple Pay &amp; International Cards</strong>
+                <span>Pay in seconds with Apple Pay or any international Visa &amp; Mastercard debit/credit card.</span>
+              </div>
+            </div>
+            <div class="readiness-item">
+              <div class="readiness-icon-wrap" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+              </div>
+              <div class="readiness-content">
+                <strong>3D Secure / OTP Authentication</strong>
+                <span>Have your device ready to approve your bank&rsquo;s SMS OTP or mobile app confirmation.</span>
+              </div>
+            </div>
+            <div class="readiness-item">
+              <div class="readiness-icon-wrap" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div class="readiness-content">
+                <strong>Cross-Border Clearance</strong>
+                <span>If an initial attempt is flagged by bank security filters, approving the bank SMS alert or trying an alternate card resolves it immediately.</span>
+              </div>
+            </div>
+          </div>
+
+          <p class="billing-disclaimer-text">
+            All orders are billed in USD. International amounts (${ghsFormatted}, CAD, GBP etc) <strong>automatically convert when you enter your card details</strong>.
+          </p>
+
+          <!-- Dynamic Payment Currency Conversion Micro-Animation -->
+          <div class="disclaimer-sim-card" aria-hidden="true">
+            <div class="sim-card-form-grid">
+              <div class="sim-card-field-group">
+                <span class="sim-card-label">Card Number</span>
+                <div class="sim-card-input-box">
+                  <div class="sim-card-digits">
+                    <span class="sim-card-hashed">&#x2022;&#x2022;&#x2022;&#x2022; &#x2022;&#x2022;&#x2022;&#x2022; &#x2022;&#x2022;&#x2022;&#x2022; </span>
+                    <span class="sim-typed-digits">2204</span>
+                    <span class="sim-cursor"></span>
+                  </div>
+                  <div class="sim-card-brand-logos">
+                    <div class="sim-card-brand-logo brand-apple-pay" title="Apple Pay">
+                      <svg fill="#000000" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Apple Pay</title><path d="M2.15 4.318a42.16 42.16 0 0 0-.454.003c-.15.005-.303.013-.452.04a1.44 1.44 0 0 0-1.06.772c-.07.138-.114.278-.14.43-.028.148-.037.3-.04.45A10.2 10.2 0 0 0 0 6.222v11.557c0 .07.002.138.003.207.004.15.013.303.04.452.027.15.072.291.142.429a1.436 1.436 0 0 0 .63.63c.138.07.278.115.43.142.148.027.3.036.45.04l.208.003h20.194l.207-.003c.15-.004.303-.013.452-.04.15-.027.291-.071.428-.141a1.432 1.432 0 0 0 .631-.631c.07-.138.115-.278.141-.43.027-.148.036-.3.04-.45.002-.07.003-.138.003-.208l.001-.246V6.221c0-.07-.002-.138-.004-.207a2.995 2.995 0 0 0-.04-.452 1.446 1.446 0 0 0-1.2-1.201 3.022 3.022 0 0 0-.452-.04 10.448 10.448 0 0 0-.453-.003zm0 .512h19.942c.066 0 .131.002.197.003.115.004.25.01.375.032.109.02.2.05.287.094a.927.927 0 0 1 .407.407.997.997 0 0 1 .094.288c.022.123.028.258.031.374.002.065.003.13.003.197v11.552c0 .065 0 .13-.003.196-.003.115-.009.25-.032.375a.927.927 0 0 1-.5.693 1.002 1.002 0 0 1-.286.094 2.598 2.598 0 0 1-.373.032l-.2.003H1.906c-.066 0-.133-.002-.196-.003a2.61 2.61 0 0 1-.375-.032c-.109-.02-.2-.05-.288-.094a.918.918 0 0 1-.406-.407 1.006 1.006 0 0 1-.094-.288 2.531 2.531 0 0 1-.032-.373 9.588 9.588 0 0 1-.002-.197V6.224c0-.065 0-.131.002-.197.004-.114.01-.248.032-.375.02-.108.05-.199.094-.287a.925.925 0 0 1 .407-.406 1.03 1.03 0 0 1 .287-.094c.125-.022.26-.029.375-.032.065-.002.131-.002.196-.003zm4.71 3.7c-.3.016-.668.199-.88.456-.191.22-.36.58-.316.918.338.03.675-.169.888-.418.205-.258.345-.603.308-.955zm2.207.42v5.493h.852v-1.877h1.18c1.078 0 1.835-.739 1.835-1.812 0-1.07-.742-1.805-1.808-1.805zm.852.719h.982c.739 0 1.161.396 1.161 1.089 0 .692-.422 1.092-1.164 1.092h-.979zm-3.154.3c-.45.01-.83.28-1.05.28-.235 0-.593-.264-.981-.257a1.446 1.446 0 0 0-1.23.747c-.527.908-.139 2.255.374 2.995.249.366.549.769.944.754.373-.014.52-.242.973-.242.454 0 .586.242.98.235.41-.007.667-.366.915-.733.286-.417.403-.82.41-.841-.007-.008-.79-.308-.797-1.209-.008-.754.615-1.113.644-1.135-.352-.52-.9-.578-1.09-.593a1.123 1.123 0 0 0-.092-.002zm8.204.397c-.99 0-1.606.533-1.652 1.256h.777c.072-.358.369-.586.845-.586.502 0 .803.266.803.711v.309l-1.097.064c-.951.054-1.488.484-1.488 1.184 0 .72.548 1.207 1.332 1.207.526 0 1.032-.281 1.264-.727h.019v.659h.788v-2.76c0-.803-.62-1.317-1.591-1.317zm1.94.072l1.446 4.009c0 .003-.073.24-.073.247-.125.41-.33.571-.711.571-.069 0-.206 0-.267-.015v.666c.06.011.267.019.335.019.83 0 1.226-.312 1.568-1.283l1.5-4.214h-.868l-1.012 3.259h-.015l-1.013-3.26zm-1.167 2.189v.316c0 .521-.45.917-1.024.917-.442 0-.731-.228-.731-.579 0-.342.278-.56.769-.593z"/></svg>
+                    </div>
+                    <div class="sim-card-brand-logo brand-visa">
+                      <svg fill="#1A1F71" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Visa</title><path d="M9.112 8.262L5.97 15.758H3.92L2.374 9.775c-.094-.368-.175-.503-.461-.658C1.447 8.864.677 8.627 0 8.479l.046-.217h3.3a.904.904 0 01.894.764l.817 4.338 2.018-5.102zm8.033 5.049c.008-1.979-2.736-2.088-2.717-2.972.006-.269.262-.555.822-.628a3.66 3.66 0 011.913.336l.34-1.59a5.207 5.207 0 00-1.814-.333c-1.917 0-3.266 1.02-3.278 2.479-.012 1.079.963 1.68 1.698 2.04.756.367 1.01.603 1.006.931-.005.504-.602.725-1.16.734-.975.015-1.54-.263-1.992-.473l-.351 1.642c.453.208 1.289.39 2.156.398 2.037 0 3.37-1.006 3.377-2.564m5.061 2.447H24l-1.565-7.496h-1.656a.883.883 0 00-.826.55l-2.909 6.946h2.036l.405-1.12h2.488zm-2.163-2.656l1.02-2.815.588 2.815zm-8.16-4.84l-1.603 7.496H8.34l1.605-7.496z"/></svg>
+                    </div>
+                    <div class="sim-card-brand-logo brand-mastercard">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 18" width="100%" height="100%" role="img"><title>Mastercard</title><circle cx="7.5" cy="9" r="6.5" fill="#EB001B" /><circle cx="16.5" cy="9" r="6.5" fill="#F79E1B" /><path d="M 12 3.895 A 6.5 6.5 0 0 0 10 9 A 6.5 6.5 0 0 0 12 14.105 A 6.5 6.5 0 0 0 14 9 A 6.5 6.5 0 0 0 12 3.895 Z" fill="#FF5F00" /></svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="sim-card-split-row">
+                <div class="sim-card-field-group">
+                  <span class="sim-card-label">Expiry Date</span>
+                  <div class="sim-card-input-box">
+                    <span class="sim-card-val">02 / 24</span>
+                    <div class="sim-card-icon-end"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></div>
+                  </div>
+                </div>
+                <div class="sim-card-field-group">
+                  <span class="sim-card-label">Security Code</span>
+                  <div class="sim-card-input-box">
+                    <span class="sim-card-hashed">&#x2022;&#x2022;&#x2022;</span>
+                    <div class="sim-card-icon-end"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="sim-action-row">
+              <div class="sim-pay-btn">
+                <span class="sim-btn-content sim-btn-ghs">Pay ${ghsFormatted}</span>
+                <span class="sim-btn-content sim-btn-usd">Pay ${usdFormatted} USD</span>
+              </div>
+              <span class="sim-conversion-pill">
+                <span class="sim-pill-icon-slot">
+                  <svg class="sim-pill-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity="0.25" stroke-width="2.5"/><path d="M12 3a9 9 0 0 1 9 9" stroke="currentColor" stroke-width="2.5"/></svg>
+                  <svg class="sim-pill-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M0 0h32v32H0z" fill="none" /><path fill="currentColor" d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2m-2 19.59l-5-5L10.59 15L14 18.41L21.41 11l1.596 1.586Z" /></svg>
+                </span>
+                <span class="sim-pill-label">Auto-converts to USD</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="co-step-nav">
+        <button type="button" class="btn-co-back" id="btn-step3-back">&larr; Back</button>
+        <button type="submit" class="btn-proceed-payment" id="btn-submit-order-details">Proceed to Checkout &rarr;</button>
+      </div>
+    </div>`;
+}
+
+// ─── Review Card (Step 3 summary, built dynamically) ─────────────────────────
+function buildReviewCard() {
+  const g = id => document.getElementById(id)?.value.trim() || '';
+  const custName = escapeHtml(g('cust-name') || '—');
+  const custEmail = escapeHtml(g('cust-email') || '—');
+  const custPhone = escapeHtml(g('cust-phone'));
+  const recName = escapeHtml(g('rec-name') || '—');
+  const address = g('rec-address') || '—';
+  const suite = g('rec-suite');
+  const city = g('rec-city');
+  const state = g('rec-state');
+  const zip = g('rec-zip');
+  const courierNotes = escapeHtml(g('rec-notes'));
+  const deliveryDate = escapeHtml(g('rec-delivery-date') || '—');
+  const cardNote = escapeHtml(g('rec-card-msg'));
+  const timeLabel = escapeHtml({ morning: 'Morning (9 AM–1 PM)', afternoon: 'Afternoon (1–5 PM)', evening: 'Evening (5–8 PM)' }[selectedTimeWindow] || selectedTimeWindow);
+  const formattedAddress = escapeHtml(suite ? `${address}, ${suite}` : address);
+  const formattedCity = escapeHtml([city, state, zip].filter(Boolean).join(', '));
+
+  const card = document.getElementById('co-review-card');
+  if (!card) return;
+  card.innerHTML = `
+    <div class="co-review-section">
+      <div class="co-review-section-header"><span class="co-review-section-title">Your Details</span><button type="button" class="co-review-edit-btn" data-target-step="1">Edit</button></div>
+      <div class="co-review-row"><span>Name</span><strong>${custName}</strong></div>
+      <div class="co-review-row"><span>Email</span><strong>${custEmail}</strong></div>
+      ${custPhone ? `<div class="co-review-row"><span>Phone</span><strong>${custPhone}</strong></div>` : ''}
+    </div>
+    <div class="co-review-section">
+      <div class="co-review-section-header"><span class="co-review-section-title">Delivery Details</span><button type="button" class="co-review-edit-btn" data-target-step="2">Edit</button></div>
+      <div class="co-review-row"><span>Recipient</span><strong>${recName}</strong></div>
+      <div class="co-review-row"><span>Address</span><strong>${formattedAddress}</strong></div>
+      <div class="co-review-row"><span>City</span><strong>${formattedCity}</strong></div>
+      ${courierNotes ? `<div class="co-review-row"><span>Courier Notes</span><strong>${courierNotes}</strong></div>` : ''}
+      <div class="co-review-row"><span>Date</span><strong>${deliveryDate}</strong></div>
+      <div class="co-review-row"><span>Time</span><strong>${timeLabel}</strong></div>
+    </div>
+    ${cardNote ? `<div class="co-review-section"><div class="co-review-section-header"><span class="co-review-section-title">Gift Note</span><button type="button" class="co-review-edit-btn" data-target-step="2">Edit</button></div><div class="co-review-note">&ldquo;${cardNote}&rdquo;</div></div>` : ''}
+  `;
+  card.querySelectorAll('.co-review-edit-btn').forEach(btn =>
+    btn.addEventListener('click', () => goToStep(parseInt(btn.dataset.targetStep, 10)))
+  );
+}
+
+// ─── Step navigation ──────────────────────────────────────────────────────────
+function goToStep(step) {
+  currentStep = step;
+  const checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  document.querySelectorAll('.co-step').forEach(el => {
+    const n = parseInt(el.dataset.step, 10);
+    el.className = 'co-step ' + (n < step ? 'done' : n === step ? 'active' : '');
+    const b = el.querySelector('.co-step-bubble');
+    if (b) b.innerHTML = n < step ? checkSvg : String(n);
+  });
+  document.querySelectorAll('.co-step-track').forEach((el, i) => el.classList.toggle('done', i + 1 < step));
+  document.querySelectorAll('.co-step-panel').forEach(panel => {
+    const n = parseInt(panel.id.replace('co-panel-', ''), 10);
+    if (n === step) { panel.classList.add('active'); panel.setAttribute('aria-hidden', 'false'); }
+    else { panel.classList.remove('active'); panel.setAttribute('aria-hidden', 'true'); }
+  });
+  if (step === 3) {
+    buildReviewCard();
+    bindDisclaimerObserver();
+  } else {
+    disconnectDisclaimerObserver();
+  }
+  scrollToTop();
+}
+
+// ─── Per-step validation ──────────────────────────────────────────────────────
+function validateStep1() {
+  const name = document.getElementById('cust-name')?.value.trim();
+  const email = document.getElementById('cust-email')?.value.trim();
+  if (!name) { showToast({ title: 'Name required', message: 'Please enter your full name.', icon: ICONS.warning, duration: 3500 }); document.getElementById('cust-name')?.focus(); return false; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast({ title: 'Valid email required', message: 'Please enter a valid email address.', icon: ICONS.warning, duration: 3500 }); document.getElementById('cust-email')?.focus(); return false; }
+  return true;
+}
+function validateStep2() {
+  const req = [
+    { id: 'rec-name', label: 'Recipient name' },
+    { id: 'rec-address', label: 'Street address' },
+    { id: 'rec-city', label: 'City' },
+    { id: 'rec-state', label: 'State / Province' },
+    { id: 'rec-zip', label: 'Postal / ZIP code' },
+    { id: 'rec-delivery-date', label: 'Delivery date' },
+  ];
+  for (const { id, label } of req) {
+    if (!document.getElementById(id)?.value.trim()) {
+      showToast({ title: label + ' required', message: 'Please fill in the ' + label.toLowerCase() + '.', icon: ICONS.warning, duration: 3500 });
+      document.getElementById(id)?.focus();
+      return false;
+    }
+  }
+  return true;
+}
+
+// ─── Disclaimer in-view observer ──────────────────────────────────────────────
+function bindDisclaimerObserver() {
+  const el = document.getElementById('checkout-billing-disclaimer');
+  if (!el) return;
+  disconnectDisclaimerObserver();
+  if ('IntersectionObserver' in window) {
+    disclaimerObserver = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => el.classList.toggle('is-in-view', entry.isIntersecting)),
+      { threshold: 0.2 },
+    );
+    disclaimerObserver.observe(el);
+  } else { el.classList.add('is-in-view'); }
+}
+
+function disconnectDisclaimerObserver() {
+  disclaimerObserver?.disconnect();
+  disclaimerObserver = null;
+  document.getElementById('checkout-billing-disclaimer')?.classList.remove('is-in-view');
+}
+
 /**
- * Render the full Order Details & Recipient Information Page
+ * Render the multi-step Order Details & Recipient Information Page
  */
 export function renderCheckoutPage() {
   const checkoutView = document.getElementById("checkout-view");
@@ -127,6 +543,7 @@ export function renderCheckoutPage() {
   const confirmationView = document.getElementById("order-confirmation-view");
 
   if (!checkoutView) return;
+  disconnectDisclaimerObserver();
 
   // View visibility
   if (homeView) homeView.style.display = "none";
@@ -135,6 +552,11 @@ export function renderCheckoutPage() {
   checkoutView.style.display = "block";
   document.title = "Order Details & Recipient Information — Petal & Bloom";
   scrollToTop();
+
+  // Reset wizard state on every fresh render
+  currentStep = 1;
+  selectedTimeWindow = 'morning';
+  selectedLocationType = 'residential';
 
   // Load items from local storage
   let cart = [];
@@ -196,464 +618,90 @@ export function renderCheckoutPage() {
   const shippingRemaining = shippingThreshold - subtotal;
   const shippingProgressPct = Math.min(100, Math.round((subtotal / shippingThreshold) * 100));
 
-  checkoutView.innerHTML = `
-    <!-- Top PDP-Style Page Header & Breadcrumbs Banner -->
-    <header class="pdp-page-header">
-      <div class="container">
-        <h1>Order Details</h1>
-        <nav class="pdp-breadcrumb" aria-label="Breadcrumb">
-          <a href="#" class="btn-checkout-home">Home</a>
-          <span>/</span>
-          <a href="#" class="btn-checkout-cart">Shopping Bag</a>
-          <span>/</span>
-          <span class="pdp-breadcrumb-current">Recipient &amp; Delivery</span>
-        </nav>
+  const summaryData = { cart, subtotal, isFreeDelivery, kingsbiteOffer, deliveryFee, discount, promotion, totalDue, shippingRemaining, shippingProgressPct };
+
+  checkoutView.innerHTML =
+    `<header class="pdp-page-header"><div class="container"><h1>Order Details</h1><nav class="pdp-breadcrumb" aria-label="Breadcrumb"><a href="#" class="btn-checkout-home">Home</a><span>/</span><a href="#" class="btn-checkout-cart">Shopping Bag</a><span>/</span><span class="pdp-breadcrumb-current">Recipient &amp; Delivery</span></nav></div></header>` +
+    `<div class="checkout-page-section"><div class="container">` +
+      buildStepperHtml() +
+      `<div class="checkout-layout">` +
+        `<div class="checkout-form-card">` +
+          `<form id="recipient-order-form" novalidate>` +
+            buildStep1Html() +
+            buildStep2Html(deliveryState) +
+            buildStep3Html({ ghsFormatted, usdFormatted }) +
+          `</form>` +
+        `</div>` +
+        `<aside class="checkout-summary-card" id="checkout-sidebar">` +
+          buildSidebarHtml(summaryData) +
+        `</aside>` +
+      `</div>` +
+    `</div></div>`;
+
+  // Activate panel 1
+  document.querySelectorAll('.co-step-panel').forEach((panel, i) => {
+    if (i === 0) { panel.classList.add('active'); panel.setAttribute('aria-hidden', 'false'); }
+    else { panel.setAttribute('aria-hidden', 'true'); }
+  });
+
+  bindCheckoutEvents();
+}
+
+// ─── Sidebar Order Summary (called from buildSidebarHtml template) ─────────────
+function buildSidebarHtml({ cart, subtotal, isFreeDelivery, kingsbiteOffer, deliveryFee, discount, promotion, totalDue, shippingRemaining, shippingProgressPct }) {
+  return `
+    <div class="checkout-summary-header">
+      <h3>Order Summary</h3>
+      <button type="button" class="btn-edit-bag" id="btn-edit-cart-bag">Edit Bag</button>
+    </div>
+    <div class="checkout-shipping-meter ${isFreeDelivery ? 'unlocked' : ''}">
+      <p class="checkout-shipping-meter-text">
+        ${isFreeDelivery
+          ? `<span class="checkout-meter-icon">${ICONS.sparkles || '✨'}</span> <span><strong>Congratulations!</strong> You unlocked <strong>${kingsbiteOffer.isEligible ? 'Kingsbite free delivery' : 'FREE Local Delivery'}</strong>!</span>`
+          : `<span class="checkout-meter-icon">🚚</span> <span>Add <strong>$${Math.max(0, shippingRemaining).toFixed(2)}</strong> more for <strong>${kingsbiteOffer.hasKingsbite ? 'Kingsbite free delivery' : 'FREE Local Delivery'}</strong></span>`
+        }
+      </p>
+      <div class="checkout-shipping-meter-track">
+        <div class="checkout-shipping-meter-fill ${isFreeDelivery ? 'unlocked' : ''}" style="width: ${shippingProgressPct}%"></div>
       </div>
-    </header>
-
-    <div class="checkout-page-section">
-      <div class="container">
-        <div class="checkout-layout">
-          
-          <!-- Left: Recipient & Delivery Information Form -->
-          <div class="checkout-form-card">
-            
-            <div class="checkout-header-intro">
-              <h2>Customer &amp; Delivery Logistics</h2>
-              <p class="checkout-subtitle">Please provide your contact details, followed by the recipient and destination details.</p>
-            </div>
-
-            <form id="recipient-order-form">
-              
-              <!-- 1. Customer / Purchaser Information -->
-              <fieldset class="checkout-fieldset">
-                <legend class="checkout-legend">
-                  <span class="legend-num">1</span>
-                  <span>Customer Information</span>
-                </legend>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="cust-name">Your Full Name *</label>
-                    <input type="text" id="cust-name" class="form-control" placeholder="e.g. Eleanor Vance" required />
-                  </div>
-                  <div class="form-group">
-                    <label for="cust-email">Your Email Address (For order updates) *</label>
-                    <input type="email" id="cust-email" class="form-control" placeholder="e.g. eleanor@example.com" required />
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="cust-phone">Your Phone Number (Optional)</label>
-                  <input type="tel" id="cust-phone" class="form-control" placeholder="e.g. +1 555-0199" />
-                </div>
-              </fieldset>
-
-              <!-- 2. Recipient & Hand-Delivery Destination -->
-              <fieldset class="checkout-fieldset">
-                <legend class="checkout-legend">
-                  <span class="legend-num">2</span>
-                  <span>Recipient Information</span>
-                </legend>
-
-                <div class="checkout-same-as-buyer-wrap">
-                  <label class="checkout-checkbox-label" for="same-as-buyer">
-                    <input type="checkbox" id="same-as-buyer" class="checkout-checkbox" />
-                    <span>I am the recipient (Deliver to myself)</span>
-                  </label>
-                </div>
-
-                <div class="form-group">
-                  <label for="rec-name">Recipient Full Name *</label>
-                  <input type="text" id="rec-name" class="form-control" placeholder="e.g. Clara Harrington" required />
-                </div>
-
-                <div class="form-group">
-                  <label for="rec-address">Street Address *</label>
-                  <input type="text" id="rec-address" class="form-control" placeholder="e.g. 742 Evergreen Terrace" required />
-                </div>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="rec-suite">Apt / Suite / Floor (Optional)</label>
-                    <input type="text" id="rec-suite" class="form-control" placeholder="e.g. Apt 4B" />
-                  </div>
-                  <div class="form-group">
-                    <label for="rec-city">City *</label>
-                    <input type="text" id="rec-city" class="form-control" placeholder="e.g. Edmonton" required />
-                  </div>
-                </div>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="rec-state">State / Province *</label>
-                    <input type="text" id="rec-state" class="form-control" placeholder="e.g. AB" required />
-                  </div>
-                  <div class="form-group">
-                    <label for="rec-zip">Postal / ZIP Code *</label>
-                    <input type="text" id="rec-zip" class="form-control" placeholder="e.g. T5N 1R5" required />
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="rec-notes">Courier Notes / Gate Code (Optional)</label>
-                  <input type="text" id="rec-notes" class="form-control" placeholder="e.g. Leave with concierge on 1st floor, ring buzzer #4" />
-                </div>
-              </fieldset>
-
-              <!-- 3. Delivery Schedule & Preferred Window -->
-              <fieldset class="checkout-fieldset">
-                <legend class="checkout-legend">
-                  <span class="legend-num">3</span>
-                  <span>Delivery Schedule &amp; Timing</span>
-                </legend>
-
-                <div class="form-group">
-                  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px 12px; margin-bottom: 6px;">
-                    <label for="rec-delivery-date" style="margin-bottom: 0;">Requested Delivery Date *</label>
-                    <span style="font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: 9999px; background: ${deliveryState.isSameDayAvailable ? "rgba(16, 185, 129, 0.12)" : "rgba(245, 158, 11, 0.12)"}; color: ${deliveryState.isSameDayAvailable ? "#047857" : "#b45309"};">
-                      ${deliveryState.badgeText}
-                    </span>
-                  </div>
-                  <input 
-                    type="date" 
-                    id="rec-delivery-date" 
-                    class="form-control" 
-                    value="${minDateStr}" 
-                    min="${minDateStr}" 
-                    required 
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label>Preferred Delivery Time Window:</label>
-                  <div class="time-window-grid">
-                    <div class="time-window-pill active" data-window="morning">
-                      <div class="time-window-icon">${sunSvg}</div>
-                      <span class="time-window-title">Morning</span>
-                      <span class="time-window-hours">9:00 AM – 1:00 PM</span>
-                    </div>
-                    <div class="time-window-pill" data-window="afternoon">
-                      <div class="time-window-icon">${afternoonSvg}</div>
-                      <span class="time-window-title">Afternoon</span>
-                      <span class="time-window-hours">1:00 PM – 5:00 PM</span>
-                    </div>
-                    <div class="time-window-pill" data-window="evening">
-                      <div class="time-window-icon">${moonSvg}</div>
-                      <span class="time-window-title">Evening</span>
-                      <span class="time-window-hours">5:00 PM – 8:00 PM</span>
-                    </div>
-                  </div>
-                </div>
-              </fieldset>
-
-              <!-- 4. Handwritten Letterpress Card Note -->
-              <fieldset class="checkout-fieldset">
-                <legend class="checkout-legend">
-                  <span class="legend-num">4</span>
-                  <span>Letterpress Card Note</span>
-                </legend>
-
-                <div class="form-group">
-                  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px 12px; margin-bottom: 6px;">
-                    <label for="rec-card-msg" style="margin-bottom: 0;">Personal Gift Note (Printed on luxury cardstock)</label>
-                    ${cart[0]?.giftMessage ? `
-                      <span class="badge-transferred" style="font-size: 0.72rem; font-weight: 600; color: #047857; background: rgba(16, 185, 129, 0.12); padding: 2px 8px; border-radius: 9999px;">
-                        ✓ Transferred from bouquet
-                      </span>
-                    ` : ""}
-                  </div>
-                  <textarea 
-                    id="rec-card-msg" 
-                    class="form-control" 
-                    rows="3" 
-                    maxlength="250" 
-                    placeholder="Write your heartfelt note for the recipient..."
-                  >${cart[0]?.giftMessage || ""}</textarea>
-                  <div class="checkout-gift-note-footer">
-                    <span>Handwritten by our studio team</span>
-                    <span id="checkout-char-count">${(cart[0]?.giftMessage || "").length} / 250</span>
-                  </div>
-                </div>
-              </fieldset>
-
-              <!-- International Payment Readiness & Billing Guidance -->
-              <div class="checkout-billing-disclaimer" id="checkout-billing-disclaimer">
-                <div class="billing-disclaimer-inner">
-                  <div class="billing-disclaimer-header">
-                    <div class="billing-disclaimer-title">
-                      <svg class="billing-disclaimer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect width="20" height="14" x="2" y="5" rx="2"/>
-                        <line x1="2" y1="10" x2="22" y2="10"/>
-                      </svg>
-                      <span>Billing &amp; Payment Security</span>
-                    </div>
-                  </div>
-
-                  <!-- Accepted Payment Methods & Guarantee Strip -->
-                  <div class="checkout-payment-methods-strip">
-                    <div class="payment-methods-header-group">
-                      <span class="payment-methods-label">We accept</span>
-                      <div class="payment-methods-badges">
-                        <span class="payment-method-logo logo-apple-pay" title="Apple Pay" aria-label="Apple Pay">
-                          <svg viewBox="2.8 7.5 18.5 9" fill="#000000" role="img" xmlns="http://www.w3.org/2000/svg"><title>Apple Pay</title><path d="M6.86 8.018c-.3.016-.668.199-.88.456-.191.22-.36.58-.316.918.338.03.675-.169.888-.418.205-.258.345-.603.308-.955zm2.207.42v5.493h.852v-1.877h1.18c1.078 0 1.835-.739 1.835-1.812 0-1.07-.742-1.805-1.808-1.805zm.852.719h.982c.739 0 1.161.396 1.161 1.089 0 .692-.422 1.092-1.164 1.092h-.979zm-3.154.3c-.45.01-.83.28-1.05.28-.235 0-.593-.264-.981-.257a1.446 1.446 0 0 0-1.23.747c-.527.908-.139 2.255.374 2.995.249.366.549.769.944.754.373-.014.52-.242.973-.242.454 0 .586.242.98.235.41-.007.667-.366.915-.733.286-.417.403-.82.41-.841-.007-.008-.79-.308-.797-1.209-.008-.754.615-1.113.644-1.135-.352-.52-.9-.578-1.09-.593a1.123 1.123 0 0 0-.092-.002zm8.204.397c-.99 0-1.606.533-1.652 1.256h.777c.072-.358.369-.586.845-.586.502 0 .803.266.803.711v.309l-1.097.064c-.951.054-1.488.484-1.488 1.184 0 .72.548 1.207 1.332 1.207.526 0 1.032-.281 1.264-.727h.019v.659h.788v-2.76c0-.803-.62-1.317-1.591-1.317zm1.94.072l1.446 4.009c0 .003-.073.24-.073.247-.125.41-.33.571-.711.571-.069 0-.206 0-.267-.015v.666c.06.011.267.019.335.019.83 0 1.226-.312 1.568-1.283l1.5-4.214h-.868l-1.012 3.259h-.015l-1.013-3.26zm-1.167 2.189v.316c0 .521-.45.917-1.024.917-.442 0-.731-.228-.731-.579 0-.342.278-.56.769-.593z"/></svg>
-                        </span>
-
-                        <span class="payment-method-logo logo-visa" title="Visa" aria-label="Visa">
-                          <svg viewBox="0 8 24 8" fill="#1A1F71" role="img" xmlns="http://www.w3.org/2000/svg"><title>Visa</title><path d="M9.112 8.262L5.97 15.758H3.92L2.374 9.775c-.094-.368-.175-.503-.461-.658C1.447 8.864.677 8.627 0 8.479l.046-.217h3.3a.904.904 0 01.894.764l.817 4.338 2.018-5.102zm8.033 5.049c.008-1.979-2.736-2.088-2.717-2.972.006-.269.262-.555.822-.628a3.66 3.66 0 011.913.336l.34-1.59a5.207 5.207 0 00-1.814-.333c-1.917 0-3.266 1.02-3.278 2.479-.012 1.079.963 1.68 1.698 2.04.756.367 1.01.603 1.006.931-.005.504-.602.725-1.16.734-.975.015-1.54-.263-1.992-.473l-.351 1.642c.453.208 1.289.39 2.156.398 2.037 0 3.37-1.006 3.377-2.564m5.061 2.447H24l-1.565-7.496h-1.656a.883.883 0 00-.826.55l-2.909 6.946h2.036l.405-1.12h2.488zm-2.163-2.656l1.02-2.815.588 2.815zm-8.16-4.84l-1.603 7.496H8.34l1.605-7.496z"/></svg>
-                        </span>
-
-                        <span class="payment-method-logo logo-mastercard" title="Mastercard" aria-label="Mastercard">
-                          <svg viewBox="1 2.5 22 13" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" role="img"><title>Mastercard</title><circle cx="7.5" cy="9" r="6.5" fill="#EB001B" /><circle cx="16.5" cy="9" r="6.5" fill="#F79E1B" /><path d="M 12 3.895 A 6.5 6.5 0 0 0 10 9 A 6.5 6.5 0 0 0 12 14.105 A 6.5 6.5 0 0 0 14 9 A 6.5 6.5 0 0 0 12 3.895 Z" fill="#FF5F00" /></svg>
-                        </span>
-                      </div>
-                    </div>
-
-                    <div class="payment-guarantee-badge">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                      <span><strong>Visa &amp; Mastercard</strong> recommended for successful card payments</span>
-                    </div>
-                  </div>
-
-                  <!-- 3-Pillar Pre-Screening Checklist -->
-                  <div class="payment-readiness-checklist">
-                    <div class="readiness-item">
-                      <div class="readiness-icon-wrap" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <circle cx="12" cy="12" r="10"></circle>
-                          <line x1="2" y1="12" x2="22" y2="12"></line>
-                          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                        </svg>
-                      </div>
-                      <div class="readiness-content">
-                        <strong>Apple Pay &amp; International Cards</strong>
-                        <span>Pay in seconds with Apple Pay or any international Visa &amp; Mastercard debit/credit card.</span>
-                      </div>
-                    </div>
-
-                    <div class="readiness-item">
-                      <div class="readiness-icon-wrap" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <rect width="14" height="20" x="5" y="2" rx="2" ry="2"/>
-                          <path d="M12 18h.01"/>
-                        </svg>
-                      </div>
-                      <div class="readiness-content">
-                        <strong>3D Secure / OTP Authentication</strong>
-                        <span>Have your device ready to approve your bank's SMS OTP or mobile app confirmation.</span>
-                      </div>
-                    </div>
-
-                    <div class="readiness-item">
-                      <div class="readiness-icon-wrap" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        </svg>
-                      </div>
-                      <div class="readiness-content">
-                        <strong>Cross-Border Clearance</strong>
-                        <span>If an initial attempt is flagged by bank security filters, approving the bank SMS alert or trying an alternate card resolves it immediately.</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <p class="billing-disclaimer-text">
-                    All orders are billed in USD. International amounts (${ghsFormatted}, CAD, GBP etc) <strong>automatically convert when you enter your card details</strong>.
-                  </p>
-
-                  <!-- Dynamic Payment Currency Conversion Micro-Animation -->
-                  <div class="disclaimer-sim-card" aria-hidden="true">
-                    <div class="sim-card-form-grid">
-                      <!-- Card Number Row -->
-                      <div class="sim-card-field-group">
-                        <span class="sim-card-label">Card Number</span>
-                        <div class="sim-card-input-box">
-                          <div class="sim-card-digits">
-                            <span class="sim-card-hashed">•••• •••• •••• </span>
-                            <span class="sim-typed-digits">2204</span>
-                            <span class="sim-cursor"></span>
-                          </div>
-                          <div class="sim-card-brand-logos">
-                            <div class="sim-card-brand-logo brand-apple-pay" title="Apple Pay">
-                              <svg fill="#000000" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Apple Pay</title><path d="M2.15 4.318a42.16 42.16 0 0 0-.454.003c-.15.005-.303.013-.452.04a1.44 1.44 0 0 0-1.06.772c-.07.138-.114.278-.14.43-.028.148-.037.3-.04.45A10.2 10.2 0 0 0 0 6.222v11.557c0 .07.002.138.003.207.004.15.013.303.04.452.027.15.072.291.142.429a1.436 1.436 0 0 0 .63.63c.138.07.278.115.43.142.148.027.3.036.45.04l.208.003h20.194l.207-.003c.15-.004.303-.013.452-.04.15-.027.291-.071.428-.141a1.432 1.432 0 0 0 .631-.631c.07-.138.115-.278.141-.43.027-.148.036-.3.04-.45.002-.07.003-.138.003-.208l.001-.246V6.221c0-.07-.002-.138-.004-.207a2.995 2.995 0 0 0-.04-.452 1.446 1.446 0 0 0-1.2-1.201 3.022 3.022 0 0 0-.452-.04 10.448 10.448 0 0 0-.453-.003zm0 .512h19.942c.066 0 .131.002.197.003.115.004.25.01.375.032.109.02.2.05.287.094a.927.927 0 0 1 .407.407.997.997 0 0 1 .094.288c.022.123.028.258.031.374.002.065.003.13.003.197v11.552c0 .065 0 .13-.003.196-.003.115-.009.25-.032.375a.927.927 0 0 1-.5.693 1.002 1.002 0 0 1-.286.094 2.598 2.598 0 0 1-.373.032l-.2.003H1.906c-.066 0-.133-.002-.196-.003a2.61 2.61 0 0 1-.375-.032c-.109-.02-.2-.05-.288-.094a.918.918 0 0 1-.406-.407 1.006 1.006 0 0 1-.094-.288 2.531 2.531 0 0 1-.032-.373 9.588 9.588 0 0 1-.002-.197V6.224c0-.065 0-.131.002-.197.004-.114.01-.248.032-.375.02-.108.05-.199.094-.287a.925.925 0 0 1 .407-.406 1.03 1.03 0 0 1 .287-.094c.125-.022.26-.029.375-.032.065-.002.131-.002.196-.003zm4.71 3.7c-.3.016-.668.199-.88.456-.191.22-.36.58-.316.918.338.03.675-.169.888-.418.205-.258.345-.603.308-.955zm2.207.42v5.493h.852v-1.877h1.18c1.078 0 1.835-.739 1.835-1.812 0-1.07-.742-1.805-1.808-1.805zm.852.719h.982c.739 0 1.161.396 1.161 1.089 0 .692-.422 1.092-1.164 1.092h-.979zm-3.154.3c-.45.01-.83.28-1.05.28-.235 0-.593-.264-.981-.257a1.446 1.446 0 0 0-1.23.747c-.527.908-.139 2.255.374 2.995.249.366.549.769.944.754.373-.014.52-.242.973-.242.454 0 .586.242.98.235.41-.007.667-.366.915-.733.286-.417.403-.82.41-.841-.007-.008-.79-.308-.797-1.209-.008-.754.615-1.113.644-1.135-.352-.52-.9-.578-1.09-.593a1.123 1.123 0 0 0-.092-.002zm8.204.397c-.99 0-1.606.533-1.652 1.256h.777c.072-.358.369-.586.845-.586.502 0 .803.266.803.711v.309l-1.097.064c-.951.054-1.488.484-1.488 1.184 0 .72.548 1.207 1.332 1.207.526 0 1.032-.281 1.264-.727h.019v.659h.788v-2.76c0-.803-.62-1.317-1.591-1.317zm1.94.072l1.446 4.009c0 .003-.073.24-.073.247-.125.41-.33.571-.711.571-.069 0-.206 0-.267-.015v.666c.06.011.267.019.335.019.83 0 1.226-.312 1.568-1.283l1.5-4.214h-.868l-1.012 3.259h-.015l-1.013-3.26zm-1.167 2.189v.316c0 .521-.45.917-1.024.917-.442 0-.731-.228-.731-.579 0-.342.278-.56.769-.593z"/></svg>
-                            </div>
-                            <div class="sim-card-brand-logo brand-visa">
-                              <svg fill="#1A1F71" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Visa</title><path d="M9.112 8.262L5.97 15.758H3.92L2.374 9.775c-.094-.368-.175-.503-.461-.658C1.447 8.864.677 8.627 0 8.479l.046-.217h3.3a.904.904 0 01.894.764l.817 4.338 2.018-5.102zm8.033 5.049c.008-1.979-2.736-2.088-2.717-2.972.006-.269.262-.555.822-.628a3.66 3.66 0 011.913.336l.34-1.59a5.207 5.207 0 00-1.814-.333c-1.917 0-3.266 1.02-3.278 2.479-.012 1.079.963 1.68 1.698 2.04.756.367 1.01.603 1.006.931-.005.504-.602.725-1.16.734-.975.015-1.54-.263-1.992-.473l-.351 1.642c.453.208 1.289.39 2.156.398 2.037 0 3.37-1.006 3.377-2.564m5.061 2.447H24l-1.565-7.496h-1.656a.883.883 0 00-.826.55l-2.909 6.946h2.036l.405-1.12h2.488zm-2.163-2.656l1.02-2.815.588 2.815zm-8.16-4.84l-1.603 7.496H8.34l1.605-7.496z"/></svg>
-                            </div>
-                            <div class="sim-card-brand-logo brand-mastercard">
-                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 18" width="100%" height="100%" role="img">
-                                <title>Mastercard</title>
-                                <circle cx="7.5" cy="9" r="6.5" fill="#EB001B" />
-                                <circle cx="16.5" cy="9" r="6.5" fill="#F79E1B" />
-                                <path d="M 12 3.895 A 6.5 6.5 0 0 0 10 9 A 6.5 6.5 0 0 0 12 14.105 A 6.5 6.5 0 0 0 14 9 A 6.5 6.5 0 0 0 12 3.895 Z" fill="#FF5F00" />
-                              </svg>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <!-- 2-Column Row: Expiry Date & Security Code -->
-                      <div class="sim-card-split-row">
-                        <div class="sim-card-field-group">
-                          <span class="sim-card-label">Expiry Date</span>
-                          <div class="sim-card-input-box">
-                            <span class="sim-card-val">02 / 24</span>
-                            <div class="sim-card-icon-end">
-                              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="sim-card-field-group">
-                          <span class="sim-card-label">Security Code</span>
-                          <div class="sim-card-input-box">
-                            <span class="sim-card-hashed">•••</span>
-                            <div class="sim-card-icon-end">
-                              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="sim-action-row">
-                      <div class="sim-pay-btn">
-                        <span class="sim-btn-content sim-btn-ghs">
-                          Pay ${ghsFormatted}
-                        </span>
-                        <span class="sim-btn-content sim-btn-usd">
-                          Pay ${usdFormatted} USD
-                        </span>
-                      </div>
-                      <span class="sim-conversion-pill">
-                        <span class="sim-pill-icon-slot">
-                          <svg class="sim-pill-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity="0.25" stroke-width="2.5"/>
-                            <path d="M12 3a9 9 0 0 1 9 9" stroke="currentColor" stroke-width="2.5"/>
-                          </svg>
-                          <svg class="sim-pill-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-                            <path d="M0 0h32v32H0z" fill="none" />
-                            <path fill="currentColor" d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2m-2 19.59l-5-5L10.59 15L14 18.41L21.41 11l1.596 1.586Z" />
-                            <path fill="none" d="m14 21.591l-5-5L10.591 15L14 18.409L21.41 11l1.595 1.585z" />
-                          </svg>
-                        </span>
-                        <span class="sim-pill-label">Auto-converts to USD</span>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <button type="submit" class="btn-proceed-payment" id="btn-submit-order-details">
-                Proceed to Checkout &rarr;
-              </button>
-            </form>
-          </div>
-
-          <!-- Right: Sticky Order Summary Sidebar -->
-          <aside class="checkout-summary-card">
-            <div class="checkout-summary-header">
-              <h3>Order Summary</h3>
-              <button type="button" class="btn-edit-bag" id="btn-edit-cart-bag">Edit Bag</button>
-            </div>
-
-            <!-- Free Shipping Progress Meter -->
-            <div class="checkout-shipping-meter ${isFreeDelivery ? 'unlocked' : ''}">
-              <p class="checkout-shipping-meter-text">
-                ${isFreeDelivery
-                  ? `<span class="checkout-meter-icon">${ICONS.sparkles || '✨'}</span> <span><strong>Congratulations!</strong> You unlocked <strong>${kingsbiteOffer.isEligible ? 'Kingsbite free delivery' : 'FREE Local Delivery'}</strong>!</span>`
-                  : `<span class="checkout-meter-icon">🚚</span> <span>Add <strong>$${Math.max(0, shippingRemaining).toFixed(2)}</strong> more for <strong>${kingsbiteOffer.hasKingsbite ? 'Kingsbite free delivery' : 'FREE Local Delivery'}</strong></span>`
-                }
-              </p>
-              <div class="checkout-shipping-meter-track">
-                <div class="checkout-shipping-meter-fill ${isFreeDelivery ? 'unlocked' : ''}" style="width: ${shippingProgressPct}%"></div>
-              </div>
-            </div>
-
-            <!-- Itemized List -->
-            <div class="checkout-items-list">
-              ${cart.map(item => {
-                const liveProduct = getProductBySlug(item.slug);
-                const itemImg = liveProduct?.images.primary || item.image;
-                return `
-                  <div class="checkout-item-row">
-                    <div class="checkout-item-thumb">
-                      <img src="${itemImg}" alt="${item.name}" loading="lazy" />
-                    </div>
-                    <div class="checkout-item-info">
-                      <h4>${item.name}</h4>
-                      <div class="checkout-item-meta">
-                        <span><strong>${item.size.name}</strong> • ${item.vase.name} • Qty: ${item.quantity}</span>
-                      </div>
-                    </div>
-                    <div class="checkout-item-price">
-                      $${(item.unitPrice * item.quantity).toFixed(2)}
-                    </div>
-                  </div>
-                `;
-              }).join("")}
-            </div>
-
-            <form class="checkout-promo-form" id="checkout-promo-form" novalidate>
-              <label for="checkout-promo-code">Promo code</label>
-              <div class="checkout-promo-controls">
-                <input id="checkout-promo-code" type="text" autocomplete="off" autocapitalize="characters" maxlength="32" value="${getPromotionCode()}" placeholder="BLOOM10" aria-describedby="checkout-promo-status" />
-                <button type="submit">Apply</button>
-              </div>
-              <p class="checkout-promo-status ${promotion.state}" id="checkout-promo-status" role="status">${promotion.message || "Enter a code to see your eligible discount."}</p>
-            </form>
-
-            <!-- Totals & Calculations -->
-            <div class="checkout-calc-rows">
-              <div class="checkout-breakdown-row" style="display:flex; justify-content:space-between; font-size:0.88rem; color:var(--muted); margin-bottom:6px;">
-                <span>Subtotal:</span>
-                <span>$${subtotal.toFixed(2)}</span>
-              </div>
-              <div class="checkout-breakdown-row" style="display:flex; justify-content:space-between; font-size:0.88rem; color:var(--muted); margin-bottom:10px;">
-                <span>Delivery:</span>
-                <span>${isFreeDelivery ? `<strong style="color:#059669;">FREE${kingsbiteOffer.isEligible ? ' · Kingsbite' : ''}</strong>` : '<strong>$14.00</strong>'}</span>
-              </div>
-              <div class="checkout-breakdown-row checkout-discount-row" id="checkout-discount-row" ${discount > 0 ? '' : 'hidden'}>
-                <span>Discount <strong id="checkout-promo-label">${discount > 0 ? `(${promotion.code})` : ''}</strong></span>
-                <strong id="checkout-discount-value">${discount > 0 ? `−$${discount.toFixed(2)}` : ''}</strong>
-              </div>
-              <div class="checkout-total-row">
-                <div class="checkout-total-label-wrap">
-                  <span>Total Due:</span>
-                  <small class="checkout-delivery-note">${isFreeDelivery ? (kingsbiteOffer.isEligible ? 'Kingsbite free delivery applied ($40+ with Kingsbite)' : 'Complimentary delivery applied (orders over $100)') : 'Standard delivery ($14.00) applied'}</small>
-                </div>
-                <strong id="checkout-total-due">$${totalDue.toFixed(2)}</strong>
-              </div>
-
-              <!-- International Store Estimates -->
-              <div class="checkout-intl-prices" id="checkout-intl-prices">
-                <div class="checkout-intl-header">International Store Estimates</div>
-                <div class="checkout-intl-strip-items">
-                  ${getInternationalEstimates(totalDue).map(est => `
-                    <span class="checkout-intl-item">
-                      <span class="checkout-intl-code">${est.code}</span>
-                      <span class="checkout-intl-val">${est.formatted}</span>
-                    </span>
-                  `).join('<span class="checkout-intl-sep">•</span>')}
-                </div>
-              </div>
-            </div>
-
-            <!-- Trust & Freshness Badges -->
-            <div class="checkout-trust-badges">
-              <div class="trust-badge-item">
-                <div class="trust-badge-icon">${lockSvg}</div>
-                <span><strong>256-Bit SSL Encrypted Checkout</strong></span>
-              </div>
-            </div>
-          </aside>
-
+    </div>
+    <div class="checkout-items-list">
+      ${cart.map(item => {
+        const liveProduct = getProductBySlug(item.slug);
+        const itemImg = liveProduct?.images.primary || item.image;
+        return `<div class="checkout-item-row"><div class="checkout-item-thumb"><img src="${itemImg}" alt="${item.name}" loading="lazy" /></div><div class="checkout-item-info"><h4>${item.name}</h4><div class="checkout-item-meta"><span><strong>${item.size.name}</strong> &bull; ${item.vase.name} &bull; Qty: ${item.quantity}</span></div></div><div class="checkout-item-price">$${(item.unitPrice * item.quantity).toFixed(2)}</div></div>`;
+      }).join('')}
+    </div>
+    <form class="checkout-promo-form" id="checkout-promo-form" novalidate>
+      <label for="checkout-promo-code">Promo code</label>
+      <div class="checkout-promo-controls">
+        <input id="checkout-promo-code" type="text" autocomplete="off" autocapitalize="characters" maxlength="32" value="${getPromotionCode()}" placeholder="BLOOM10" aria-describedby="checkout-promo-status" />
+        <button type="submit">Apply</button>
+      </div>
+      <p class="checkout-promo-status ${promotion.state}" id="checkout-promo-status" role="status">${promotion.message || 'Enter a code to see your eligible discount.'}</p>
+    </form>
+    <div class="checkout-calc-rows">
+      <div class="checkout-breakdown-row" style="display:flex;justify-content:space-between;font-size:0.88rem;color:var(--muted);margin-bottom:6px;"><span>Subtotal:</span><span>$${subtotal.toFixed(2)}</span></div>
+      <div class="checkout-breakdown-row" style="display:flex;justify-content:space-between;font-size:0.88rem;color:var(--muted);margin-bottom:10px;"><span>Delivery:</span><span>${isFreeDelivery ? `<strong style="color:#059669;">FREE${kingsbiteOffer.isEligible ? ' &middot; Kingsbite' : ''}</strong>` : '<strong>$14.00</strong>'}</span></div>
+      <div class="checkout-breakdown-row checkout-discount-row" id="checkout-discount-row" ${discount > 0 ? '' : 'hidden'}><span>Discount <strong id="checkout-promo-label">${discount > 0 ? '(' + promotion.code + ')' : ''}</strong></span><strong id="checkout-discount-value">${discount > 0 ? '&minus;$' + discount.toFixed(2) : ''}</strong></div>
+      <div class="checkout-total-row">
+        <div class="checkout-total-label-wrap">
+          <span>Total Due:</span>
+          <small class="checkout-delivery-note">${isFreeDelivery ? (kingsbiteOffer.isEligible ? 'Kingsbite free delivery applied ($40+ with Kingsbite)' : 'Complimentary delivery applied (orders over $100)') : 'Standard delivery ($14.00) applied'}</small>
+        </div>
+        <strong id="checkout-total-due">$${totalDue.toFixed(2)}</strong>
+      </div>
+      <div class="checkout-intl-prices" id="checkout-intl-prices">
+        <div class="checkout-intl-header">International Store Estimates</div>
+        <div class="checkout-intl-strip-items">
+          ${getInternationalEstimates(totalDue).map(est => `<span class="checkout-intl-item"><span class="checkout-intl-code">${est.code}</span><span class="checkout-intl-val">${est.formatted}</span></span>`).join('<span class="checkout-intl-sep">&bull;</span>')}
         </div>
       </div>
     </div>
+    <div class="checkout-trust-badges">
+      <div class="trust-badge-item"><div class="trust-badge-icon">${lockSvg}</div><span><strong>256-Bit SSL Encrypted Checkout</strong></span></div>
+    </div>
   `;
-
-  bindCheckoutEvents();
 }
 
 function updateCheckoutPromotionSummary() {
@@ -725,13 +773,30 @@ function bindCheckoutEvents() {
     updateCheckoutPromotionSummary();
   });
 
-  // Time window pills
-  document.querySelectorAll(".time-window-pill").forEach(pill => {
-    pill.addEventListener("click", () => {
-      document.querySelectorAll(".time-window-pill").forEach(p => p.classList.remove("active"));
-      pill.classList.add("active");
-      selectedTimeWindow = pill.dataset.window || "morning";
-    });
+  // Step navigation buttons
+  document.getElementById('btn-step1-next')?.addEventListener('click', () => { if (validateStep1()) goToStep(2); });
+  document.getElementById('btn-step2-back')?.addEventListener('click', () => goToStep(1));
+  document.getElementById('btn-step2-next')?.addEventListener('click', () => { if (validateStep2()) goToStep(3); });
+  document.getElementById('btn-step3-back')?.addEventListener('click', () => goToStep(2));
+
+  // Let Enter continue a valid form step without submitting payment early.
+  const checkoutForm = document.getElementById('recipient-order-form');
+  checkoutForm?.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' || event.isComposing || currentStep === 3) return;
+    if (event.target.closest('textarea, button')) return;
+
+    event.preventDefault();
+    if (currentStep === 1 && validateStep1()) goToStep(2);
+    if (currentStep === 2 && validateStep2()) goToStep(3);
+  });
+
+  // Time window pills — delegated (step 2 panels start hidden)
+  document.getElementById('recipient-order-form')?.addEventListener('click', e => {
+    const pill = e.target.closest('.time-window-pill');
+    if (!pill) return;
+    document.querySelectorAll('.time-window-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    selectedTimeWindow = pill.dataset.window || 'morning';
   });
 
   // "Same as customer" checkbox handler
@@ -780,10 +845,11 @@ function bindCheckoutEvents() {
     }
   });
 
-  // Form submit handler
+  // Form submit handler — only executes when on step 3
   const form = document.getElementById("recipient-order-form");
   form?.addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (currentStep !== 3) return;
 
     // Customer (Purchaser / Billing) details
     const custName = document.getElementById("cust-name")?.value.trim() || "";
@@ -876,24 +942,6 @@ function bindCheckoutEvents() {
     }
   });
 
-  // Observe disclaimer for scroll in-view rotating border animation
-  const disclaimerEl = document.getElementById("checkout-billing-disclaimer");
-  if (disclaimerEl) {
-    if ("IntersectionObserver" in window) {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            disclaimerEl.classList.add("is-in-view");
-          } else {
-            disclaimerEl.classList.remove("is-in-view");
-          }
-        });
-      }, { threshold: 0.2 });
-      observer.observe(disclaimerEl);
-    } else {
-      disclaimerEl.classList.add("is-in-view");
-    }
-  }
 }
 
 /**

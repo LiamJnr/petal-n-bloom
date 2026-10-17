@@ -123,17 +123,25 @@ const lockSvg = `
 // ─── Stepper ─────────────────────────────────────────────────────────────────
 function buildStepperHtml() {
   const steps = [
-    { num: 1, label: "Your Details" },
-    { num: 2, label: "Delivery & Gift" },
-    { num: 3, label: "Review & Pay" },
+    { num: 1, title: "Personal details", subtitle: "Just a bit about you" },
+    { num: 2, title: "Delivery & gift", subtitle: "Recipient, address & note" },
+    { num: 3, title: "Review & payment", subtitle: "Confirm and submit" },
   ];
-  const checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  const checkSvg = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  const activeSvg = '<svg class="co-step-active-svg" xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none" /><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="18" d="M12 3c4.97 0 9 4.03 9 9"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="18;0" /><animateTransform attributeName="transform" dur="1.5s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12" /></path><path stroke-dasharray="60" d="M12 3c4.97 0 9 4.03 9 9c0 4.97 -4.03 9 -9 9c-4.97 0 -9 -4.03 -9 -9c0 -4.97 4.03 -9 9 -9Z" opacity=".3"><animate fill="freeze" attributeName="stroke-dashoffset" dur="1.2s" values="60;0" /></path></g></svg>';
+
   return '<div class="co-stepper" id="co-stepper" role="navigation" aria-label="Checkout steps">' +
     steps.map(s => {
       const cls = s.num < currentStep ? 'done' : s.num === currentStep ? 'active' : '';
-      const bubble = s.num < currentStep ? checkSvg : String(s.num);
+      const bubble = s.num < currentStep ? checkSvg : s.num === currentStep ? activeSvg : `<span class="co-step-num">${s.num}</span>`;
       const track = s.num < steps.length ? `<div class="co-step-track ${s.num < currentStep ? 'done' : ''}"></div>` : '';
-      return `<div class="co-step ${cls}" data-step="${s.num}"><div class="co-step-bubble">${bubble}</div><span class="co-step-label">${s.label}</span></div>${track}`;
+      return `<div class="co-step ${cls}" data-step="${s.num}" role="button" tabindex="${s.num < currentStep ? '0' : '-1'}" aria-current="${s.num === currentStep ? 'step' : 'false'}">` +
+        `<div class="co-step-bubble">${bubble}</div>` +
+        `<div class="co-step-text">` +
+          `<span class="co-step-title">${s.title}</span>` +
+          `<span class="co-step-subtitle">${s.subtitle}</span>` +
+        `</div>` +
+      `</div>${track}`;
     }).join('') + '</div>';
 }
 
@@ -164,7 +172,7 @@ function buildStep1Html() {
       </fieldset>
       <div class="co-step-nav">
         <span></span>
-        <button type="button" class="btn-co-next" id="btn-step1-next">Continue: Delivery &amp; Gift &rarr;</button>
+        <button type="button" class="btn-co-next" id="btn-step1-next">Continue: Delivery Details</button>
       </div>
     </div>`;
 }
@@ -268,7 +276,7 @@ function buildStep2Html(deliveryState) {
 
       <div class="co-step-nav">
         <button type="button" class="btn-co-back" id="btn-step2-back">&larr; Back</button>
-        <button type="button" class="btn-co-next" id="btn-step2-next">Review &amp; Pay &rarr;</button>
+        <button type="button" class="btn-co-next" id="btn-step2-next">Review &amp; Pay</button>
       </div>
     </div>`;
 }
@@ -284,6 +292,21 @@ function buildStep3Html({ ghsFormatted, usdFormatted }) {
 
       <div class="co-review-card" id="co-review-card"></div>
 
+      <!-- Accepted Payment Methods Logos -->
+      <div class="checkout-accepted-methods-bar">
+        <div class="payment-methods-badges">
+          <span class="payment-method-logo logo-apple-pay" title="Apple Pay" aria-label="Apple Pay">
+            <svg viewBox="2.8 7.5 18.5 9" fill="#000000" role="img" xmlns="http://www.w3.org/2000/svg"><title>Apple Pay</title><path d="M6.86 8.018c-.3.016-.668.199-.88.456-.191.22-.36.58-.316.918.338.03.675-.169.888-.418.205-.258.345-.603.308-.955zm2.207.42v5.493h.852v-1.877h1.18c1.078 0 1.835-.739 1.835-1.812 0-1.07-.742-1.805-1.808-1.805zm.852.719h.982c.739 0 1.161.396 1.161 1.089 0 .692-.422 1.092-1.164 1.092h-.979zm-3.154.3c-.45.01-.83.28-1.05.28-.235 0-.593-.264-.981-.257a1.446 1.446 0 0 0-1.23.747c-.527.908-.139 2.255.374 2.995.249.366.549.769.944.754.373-.014.52-.242.973-.242.454 0 .586.242.98.235.41-.007.667-.366.915-.733.286-.417.403-.82.41-.841-.007-.008-.79-.308-.797-1.209-.008-.754.615-1.113.644-1.135-.352-.52-.9-.578-1.09-.593a1.123 1.123 0 0 0-.092-.002zm8.204.397c-.99 0-1.606.533-1.652 1.256h.777c.072-.358.369-.586.845-.586.502 0 .803.266.803.711v.309l-1.097.064c-.951.054-1.488.484-1.488 1.184 0 .72.548 1.207 1.332 1.207.526 0 1.032-.281 1.264-.727h.019v.659h.788v-2.76c0-.803-.62-1.317-1.591-1.317zm1.94.072l1.446 4.009c0 .003-.073.24-.073.247-.125.41-.33.571-.711.571-.069 0-.206 0-.267-.015v.666c.06.011.267.019.335.019.83 0 1.226-.312 1.568-1.283l1.5-4.214h-.868l-1.012 3.259h-.015l-1.013-3.26zm-1.167 2.189v.316c0 .521-.45.917-1.024.917-.442 0-.731-.228-.731-.579 0-.342.278-.56.769-.593z"/></svg>
+          </span>
+          <span class="payment-method-logo logo-visa" title="Visa" aria-label="Visa">
+            <svg viewBox="0 8 24 8" fill="#1A1F71" role="img" xmlns="http://www.w3.org/2000/svg"><title>Visa</title><path d="M9.112 8.262L5.97 15.758H3.92L2.374 9.775c-.094-.368-.175-.503-.461-.658C1.447 8.864.677 8.627 0 8.479l.046-.217h3.3a.904.904 0 01.894.764l.817 4.338 2.018-5.102zm8.033 5.049c.008-1.979-2.736-2.088-2.717-2.972.006-.269.262-.555.822-.628a3.66 3.66 0 011.913.336l.34-1.59a5.207 5.207 0 00-1.814-.333c-1.917 0-3.266 1.02-3.278 2.479-.012 1.079.963 1.68 1.698 2.04.756.367 1.01.603 1.006.931-.005.504-.602.725-1.16.734-.975.015-1.54-.263-1.992-.473l-.351 1.642c.453.208 1.289.39 2.156.398 2.037 0 3.37-1.006 3.377-2.564m5.061 2.447H24l-1.565-7.496h-1.656a.883.883 0 00-.826.55l-2.909 6.946h2.036l.405-1.12h2.488zm-2.163-2.656l1.02-2.815.588 2.815zm-8.16-4.84l-1.603 7.496H8.34l1.605-7.496z"/></svg>
+          </span>
+          <span class="payment-method-logo logo-mastercard" title="Mastercard" aria-label="Mastercard">
+            <svg viewBox="1 2.5 22 13" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" role="img"><title>Mastercard</title><circle cx="7.5" cy="9" r="6.5" fill="#EB001B" /><circle cx="16.5" cy="9" r="6.5" fill="#F79E1B" /><path d="M 12 3.895 A 6.5 6.5 0 0 0 10 9 A 6.5 6.5 0 0 0 12 14.105 A 6.5 6.5 0 0 0 14 9 A 6.5 6.5 0 0 0 12 3.895 Z" fill="#FF5F00" /></svg>
+          </span>
+        </div>
+      </div>
+
       <!-- International Billing Disclaimer & Payment Readiness -->
       <div class="checkout-billing-disclaimer" id="checkout-billing-disclaimer">
         <div class="billing-disclaimer-inner">
@@ -297,122 +320,26 @@ function buildStep3Html({ ghsFormatted, usdFormatted }) {
             </div>
           </div>
 
-          <div class="checkout-payment-methods-strip">
-            <div class="payment-methods-header-group">
-              <span class="payment-methods-label">We accept</span>
-              <div class="payment-methods-badges">
-                <span class="payment-method-logo logo-apple-pay" title="Apple Pay" aria-label="Apple Pay">
-                  <svg viewBox="2.8 7.5 18.5 9" fill="#000000" role="img" xmlns="http://www.w3.org/2000/svg"><title>Apple Pay</title><path d="M6.86 8.018c-.3.016-.668.199-.88.456-.191.22-.36.58-.316.918.338.03.675-.169.888-.418.205-.258.345-.603.308-.955zm2.207.42v5.493h.852v-1.877h1.18c1.078 0 1.835-.739 1.835-1.812 0-1.07-.742-1.805-1.808-1.805zm.852.719h.982c.739 0 1.161.396 1.161 1.089 0 .692-.422 1.092-1.164 1.092h-.979zm-3.154.3c-.45.01-.83.28-1.05.28-.235 0-.593-.264-.981-.257a1.446 1.446 0 0 0-1.23.747c-.527.908-.139 2.255.374 2.995.249.366.549.769.944.754.373-.014.52-.242.973-.242.454 0 .586.242.98.235.41-.007.667-.366.915-.733.286-.417.403-.82.41-.841-.007-.008-.79-.308-.797-1.209-.008-.754.615-1.113.644-1.135-.352-.52-.9-.578-1.09-.593a1.123 1.123 0 0 0-.092-.002zm8.204.397c-.99 0-1.606.533-1.652 1.256h.777c.072-.358.369-.586.845-.586.502 0 .803.266.803.711v.309l-1.097.064c-.951.054-1.488.484-1.488 1.184 0 .72.548 1.207 1.332 1.207.526 0 1.032-.281 1.264-.727h.019v.659h.788v-2.76c0-.803-.62-1.317-1.591-1.317zm1.94.072l1.446 4.009c0 .003-.073.24-.073.247-.125.41-.33.571-.711.571-.069 0-.206 0-.267-.015v.666c.06.011.267.019.335.019.83 0 1.226-.312 1.568-1.283l1.5-4.214h-.868l-1.012 3.259h-.015l-1.013-3.26zm-1.167 2.189v.316c0 .521-.45.917-1.024.917-.442 0-.731-.228-.731-.579 0-.342.278-.56.769-.593z"/></svg>
-                </span>
-                <span class="payment-method-logo logo-visa" title="Visa" aria-label="Visa">
-                  <svg viewBox="0 8 24 8" fill="#1A1F71" role="img" xmlns="http://www.w3.org/2000/svg"><title>Visa</title><path d="M9.112 8.262L5.97 15.758H3.92L2.374 9.775c-.094-.368-.175-.503-.461-.658C1.447 8.864.677 8.627 0 8.479l.046-.217h3.3a.904.904 0 01.894.764l.817 4.338 2.018-5.102zm8.033 5.049c.008-1.979-2.736-2.088-2.717-2.972.006-.269.262-.555.822-.628a3.66 3.66 0 011.913.336l.34-1.59a5.207 5.207 0 00-1.814-.333c-1.917 0-3.266 1.02-3.278 2.479-.012 1.079.963 1.68 1.698 2.04.756.367 1.01.603 1.006.931-.005.504-.602.725-1.16.734-.975.015-1.54-.263-1.992-.473l-.351 1.642c.453.208 1.289.39 2.156.398 2.037 0 3.37-1.006 3.377-2.564m5.061 2.447H24l-1.565-7.496h-1.656a.883.883 0 00-.826.55l-2.909 6.946h2.036l.405-1.12h2.488zm-2.163-2.656l1.02-2.815.588 2.815zm-8.16-4.84l-1.603 7.496H8.34l1.605-7.496z"/></svg>
-                </span>
-                <span class="payment-method-logo logo-mastercard" title="Mastercard" aria-label="Mastercard">
-                  <svg viewBox="1 2.5 22 13" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" role="img"><title>Mastercard</title><circle cx="7.5" cy="9" r="6.5" fill="#EB001B" /><circle cx="16.5" cy="9" r="6.5" fill="#F79E1B" /><path d="M 12 3.895 A 6.5 6.5 0 0 0 10 9 A 6.5 6.5 0 0 0 12 14.105 A 6.5 6.5 0 0 0 14 9 A 6.5 6.5 0 0 0 12 3.895 Z" fill="#FF5F00" /></svg>
-                </span>
-              </div>
-            </div>
-            <div class="payment-guarantee-badge">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              <span><strong>Visa &amp; Mastercard</strong> recommended for successful card payments</span>
-            </div>
-          </div>
-
-          <div class="payment-readiness-checklist">
-            <div class="readiness-item">
-              <div class="readiness-icon-wrap" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-              </div>
-              <div class="readiness-content">
-                <strong>Apple Pay &amp; International Cards</strong>
-                <span>Pay in seconds with Apple Pay or any international Visa &amp; Mastercard debit/credit card.</span>
-              </div>
-            </div>
-            <div class="readiness-item">
-              <div class="readiness-icon-wrap" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
-              </div>
-              <div class="readiness-content">
-                <strong>3D Secure / OTP Authentication</strong>
-                <span>Have your device ready to approve your bank&rsquo;s SMS OTP or mobile app confirmation.</span>
-              </div>
-            </div>
-            <div class="readiness-item">
-              <div class="readiness-icon-wrap" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              </div>
-              <div class="readiness-content">
-                <strong>Cross-Border Clearance</strong>
-                <span>If an initial attempt is flagged by bank security filters, approving the bank SMS alert or trying an alternate card resolves it immediately.</span>
-              </div>
-            </div>
-          </div>
-
           <p class="billing-disclaimer-text">
-            All orders are billed in USD. International amounts (${ghsFormatted}, CAD, GBP etc) <strong>automatically convert when you enter your card details</strong>.
+            As part of our expansion into Ghana (West Africa), <strong>per international store policies prices are shown at checkout in Ghanaian Cedis for convenience  (${ghsFormatted}, CAD, GBP etc.)</strong> Our checkout automatically converts to USD when you enter your card details.
           </p>
 
-          <!-- Dynamic Payment Currency Conversion Micro-Animation -->
-          <div class="disclaimer-sim-card" aria-hidden="true">
-            <div class="sim-card-form-grid">
-              <div class="sim-card-field-group">
-                <span class="sim-card-label">Card Number</span>
-                <div class="sim-card-input-box">
-                  <div class="sim-card-digits">
-                    <span class="sim-card-hashed">&#x2022;&#x2022;&#x2022;&#x2022; &#x2022;&#x2022;&#x2022;&#x2022; &#x2022;&#x2022;&#x2022;&#x2022; </span>
-                    <span class="sim-typed-digits">2204</span>
-                    <span class="sim-cursor"></span>
-                  </div>
-                  <div class="sim-card-brand-logos">
-                    <div class="sim-card-brand-logo brand-apple-pay" title="Apple Pay">
-                      <svg fill="#000000" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Apple Pay</title><path d="M2.15 4.318a42.16 42.16 0 0 0-.454.003c-.15.005-.303.013-.452.04a1.44 1.44 0 0 0-1.06.772c-.07.138-.114.278-.14.43-.028.148-.037.3-.04.45A10.2 10.2 0 0 0 0 6.222v11.557c0 .07.002.138.003.207.004.15.013.303.04.452.027.15.072.291.142.429a1.436 1.436 0 0 0 .63.63c.138.07.278.115.43.142.148.027.3.036.45.04l.208.003h20.194l.207-.003c.15-.004.303-.013.452-.04.15-.027.291-.071.428-.141a1.432 1.432 0 0 0 .631-.631c.07-.138.115-.278.141-.43.027-.148.036-.3.04-.45.002-.07.003-.138.003-.208l.001-.246V6.221c0-.07-.002-.138-.004-.207a2.995 2.995 0 0 0-.04-.452 1.446 1.446 0 0 0-1.2-1.201 3.022 3.022 0 0 0-.452-.04 10.448 10.448 0 0 0-.453-.003zm0 .512h19.942c.066 0 .131.002.197.003.115.004.25.01.375.032.109.02.2.05.287.094a.927.927 0 0 1 .407.407.997.997 0 0 1 .094.288c.022.123.028.258.031.374.002.065.003.13.003.197v11.552c0 .065 0 .13-.003.196-.003.115-.009.25-.032.375a.927.927 0 0 1-.5.693 1.002 1.002 0 0 1-.286.094 2.598 2.598 0 0 1-.373.032l-.2.003H1.906c-.066 0-.133-.002-.196-.003a2.61 2.61 0 0 1-.375-.032c-.109-.02-.2-.05-.288-.094a.918.918 0 0 1-.406-.407 1.006 1.006 0 0 1-.094-.288 2.531 2.531 0 0 1-.032-.373 9.588 9.588 0 0 1-.002-.197V6.224c0-.065 0-.131.002-.197.004-.114.01-.248.032-.375.02-.108.05-.199.094-.287a.925.925 0 0 1 .407-.406 1.03 1.03 0 0 1 .287-.094c.125-.022.26-.029.375-.032.065-.002.131-.002.196-.003zm4.71 3.7c-.3.016-.668.199-.88.456-.191.22-.36.58-.316.918.338.03.675-.169.888-.418.205-.258.345-.603.308-.955zm2.207.42v5.493h.852v-1.877h1.18c1.078 0 1.835-.739 1.835-1.812 0-1.07-.742-1.805-1.808-1.805zm.852.719h.982c.739 0 1.161.396 1.161 1.089 0 .692-.422 1.092-1.164 1.092h-.979zm-3.154.3c-.45.01-.83.28-1.05.28-.235 0-.593-.264-.981-.257a1.446 1.446 0 0 0-1.23.747c-.527.908-.139 2.255.374 2.995.249.366.549.769.944.754.373-.014.52-.242.973-.242.454 0 .586.242.98.235.41-.007.667-.366.915-.733.286-.417.403-.82.41-.841-.007-.008-.79-.308-.797-1.209-.008-.754.615-1.113.644-1.135-.352-.52-.9-.578-1.09-.593a1.123 1.123 0 0 0-.092-.002zm8.204.397c-.99 0-1.606.533-1.652 1.256h.777c.072-.358.369-.586.845-.586.502 0 .803.266.803.711v.309l-1.097.064c-.951.054-1.488.484-1.488 1.184 0 .72.548 1.207 1.332 1.207.526 0 1.032-.281 1.264-.727h.019v.659h.788v-2.76c0-.803-.62-1.317-1.591-1.317zm1.94.072l1.446 4.009c0 .003-.073.24-.073.247-.125.41-.33.571-.711.571-.069 0-.206 0-.267-.015v.666c.06.011.267.019.335.019.83 0 1.226-.312 1.568-1.283l1.5-4.214h-.868l-1.012 3.259h-.015l-1.013-3.26zm-1.167 2.189v.316c0 .521-.45.917-1.024.917-.442 0-.731-.228-.731-.579 0-.342.278-.56.769-.593z"/></svg>
-                    </div>
-                    <div class="sim-card-brand-logo brand-visa">
-                      <svg fill="#1A1F71" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Visa</title><path d="M9.112 8.262L5.97 15.758H3.92L2.374 9.775c-.094-.368-.175-.503-.461-.658C1.447 8.864.677 8.627 0 8.479l.046-.217h3.3a.904.904 0 01.894.764l.817 4.338 2.018-5.102zm8.033 5.049c.008-1.979-2.736-2.088-2.717-2.972.006-.269.262-.555.822-.628a3.66 3.66 0 011.913.336l.34-1.59a5.207 5.207 0 00-1.814-.333c-1.917 0-3.266 1.02-3.278 2.479-.012 1.079.963 1.68 1.698 2.04.756.367 1.01.603 1.006.931-.005.504-.602.725-1.16.734-.975.015-1.54-.263-1.992-.473l-.351 1.642c.453.208 1.289.39 2.156.398 2.037 0 3.37-1.006 3.377-2.564m5.061 2.447H24l-1.565-7.496h-1.656a.883.883 0 00-.826.55l-2.909 6.946h2.036l.405-1.12h2.488zm-2.163-2.656l1.02-2.815.588 2.815zm-8.16-4.84l-1.603 7.496H8.34l1.605-7.496z"/></svg>
-                    </div>
-                    <div class="sim-card-brand-logo brand-mastercard">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 18" width="100%" height="100%" role="img"><title>Mastercard</title><circle cx="7.5" cy="9" r="6.5" fill="#EB001B" /><circle cx="16.5" cy="9" r="6.5" fill="#F79E1B" /><path d="M 12 3.895 A 6.5 6.5 0 0 0 10 9 A 6.5 6.5 0 0 0 12 14.105 A 6.5 6.5 0 0 0 14 9 A 6.5 6.5 0 0 0 12 3.895 Z" fill="#FF5F00" /></svg>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="sim-card-split-row">
-                <div class="sim-card-field-group">
-                  <span class="sim-card-label">Expiry Date</span>
-                  <div class="sim-card-input-box">
-                    <span class="sim-card-val">02 / 24</span>
-                    <div class="sim-card-icon-end"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></div>
-                  </div>
-                </div>
-                <div class="sim-card-field-group">
-                  <span class="sim-card-label">Security Code</span>
-                  <div class="sim-card-input-box">
-                    <span class="sim-card-hashed">&#x2022;&#x2022;&#x2022;</span>
-                    <div class="sim-card-icon-end"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="sim-action-row">
-              <div class="sim-pay-btn">
-                <span class="sim-btn-content sim-btn-ghs">Pay ${ghsFormatted}</span>
-                <span class="sim-btn-content sim-btn-usd">Pay ${usdFormatted} USD</span>
-              </div>
-              <span class="sim-conversion-pill">
-                <span class="sim-pill-icon-slot">
-                  <svg class="sim-pill-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity="0.25" stroke-width="2.5"/><path d="M12 3a9 9 0 0 1 9 9" stroke="currentColor" stroke-width="2.5"/></svg>
-                  <svg class="sim-pill-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M0 0h32v32H0z" fill="none" /><path fill="currentColor" d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2m-2 19.59l-5-5L10.59 15L14 18.41L21.41 11l1.596 1.586Z" /></svg>
-                </span>
-                <span class="sim-pill-label">Auto-converts to USD</span>
-              </span>
-            </div>
+          <div class="billing-disclaimer-footer">
+            <button type="button" class="btn-card-help-link" id="btn-trigger-payment-help">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              <span>Need help with international cards or 3D Secure?</span>
+            </button>
+          </div>
+
+          <!-- Proceed to Payment Action moved inside card -->
+          <div class="billing-disclaimer-action">
+            <button type="submit" class="btn-proceed-payment" id="btn-submit-order-details">Proceed to Payment</button>
           </div>
         </div>
       </div>
 
-      <div class="co-step-nav">
+      <div class="co-step-nav co-step-nav-single">
         <button type="button" class="btn-co-back" id="btn-step3-back">&larr; Back</button>
-        <button type="submit" class="btn-proceed-payment" id="btn-submit-order-details">Proceed to Checkout &rarr;</button>
       </div>
     </div>`;
 }
@@ -464,12 +391,18 @@ function buildReviewCard() {
 // ─── Step navigation ──────────────────────────────────────────────────────────
 function goToStep(step) {
   currentStep = step;
-  const checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  const checkSvg = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  const activeSvg = '<svg class="co-step-active-svg" xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none" /><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="18" d="M12 3c4.97 0 9 4.03 9 9"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="18;0" /><animateTransform attributeName="transform" dur="1.5s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12" /></path><path stroke-dasharray="60" d="M12 3c4.97 0 9 4.03 9 9c0 4.97 -4.03 9 -9 9c-4.97 0 -9 -4.03 -9 -9c0 -4.97 4.03 -9 9 -9Z" opacity=".3"><animate fill="freeze" attributeName="stroke-dashoffset" dur="1.2s" values="60;0" /></path></g></svg>';
+
   document.querySelectorAll('.co-step').forEach(el => {
     const n = parseInt(el.dataset.step, 10);
     el.className = 'co-step ' + (n < step ? 'done' : n === step ? 'active' : '');
+    el.setAttribute('aria-current', n === step ? 'step' : 'false');
+    el.setAttribute('tabindex', n < step ? '0' : '-1');
     const b = el.querySelector('.co-step-bubble');
-    if (b) b.innerHTML = n < step ? checkSvg : String(n);
+    if (b) {
+      b.innerHTML = n < step ? checkSvg : n === step ? activeSvg : `<span class="co-step-num">${n}</span>`;
+    }
   });
   document.querySelectorAll('.co-step-track').forEach((el, i) => el.classList.toggle('done', i + 1 < step));
   document.querySelectorAll('.co-step-panel').forEach(panel => {
@@ -778,6 +711,25 @@ function bindCheckoutEvents() {
   document.getElementById('btn-step2-back')?.addEventListener('click', () => goToStep(1));
   document.getElementById('btn-step2-next')?.addEventListener('click', () => { if (validateStep2()) goToStep(3); });
   document.getElementById('btn-step3-back')?.addEventListener('click', () => goToStep(2));
+
+  // Direct stepper click navigation (to previously completed steps)
+  document.getElementById('co-stepper')?.addEventListener('click', (e) => {
+    const stepEl = e.target.closest('.co-step');
+    if (!stepEl) return;
+    const n = parseInt(stepEl.dataset.step, 10);
+    if (n < currentStep) {
+      goToStep(n);
+    }
+  });
+
+  // On-demand payment troubleshooting modal trigger
+  document.getElementById('recipient-order-form')?.addEventListener('click', (e) => {
+    const helpBtn = e.target.closest('#btn-trigger-payment-help');
+    if (helpBtn) {
+      e.preventDefault();
+      showPaymentTroubleshootingModal();
+    }
+  });
 
   // Let Enter continue a valid form step without submitting payment early.
   const checkoutForm = document.getElementById('recipient-order-form');

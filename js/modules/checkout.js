@@ -275,7 +275,7 @@ function buildStep2Html(deliveryState) {
       </fieldset>
 
       <div class="co-step-nav">
-        <button type="button" class="btn-co-back" id="btn-step2-back">&larr; Back</button>
+        <button type="button" class="btn-co-back" id="btn-step2-back">Back</button>
         <button type="button" class="btn-co-next" id="btn-step2-next">Review &amp; Pay</button>
       </div>
     </div>`;
@@ -326,8 +326,17 @@ function buildStep3Html({ ghsFormatted, usdFormatted }) {
 
           <div class="billing-disclaimer-footer">
             <button type="button" class="btn-card-help-link" id="btn-trigger-payment-help">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-              <span>Need help with international cards or 3D Secure?</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                <path d="M0 0h24v24H0z" fill="none" />
+                <g fill="none">
+                  <circle cx="12" cy="12" r="10.25" fill="currentColor" opacity=".2" transform="rotate(90 12 12)" />
+                  <circle cx="12" cy="12" r="10.25" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" transform="rotate(90 12 12)" />
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 13.98c0-2.23 2.9-2.4 2.9-4.77c0-1.5-1.3-2.71-2.9-2.71S9.1 7.7 9.1 9.2" />
+                  <path fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12.42 17.37a.42.42 0 1 1-.84 0a.42.42 0 0 1 .84 0" />
+                </g>
+              </svg>
+
+              <span>Need help with payment?</span>
             </button>
           </div>
 
@@ -339,7 +348,7 @@ function buildStep3Html({ ghsFormatted, usdFormatted }) {
       </div>
 
       <div class="co-step-nav co-step-nav-single">
-        <button type="button" class="btn-co-back" id="btn-step3-back">&larr; Back</button>
+        <button type="button" class="btn-co-back" id="btn-step3-back">Back</button>
       </div>
     </div>`;
 }

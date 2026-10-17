@@ -996,7 +996,7 @@ input[type="date"].form-control {
 .checkout-accepted-methods-bar {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 16px;
   flex-wrap: wrap;
   padding: 0;
@@ -1206,8 +1206,15 @@ input[type="date"].form-control {
 }
 
 .btn-card-help-link svg {
+  --size: 18px;
   flex-shrink: 0;
-  stroke: var(--primary, #9d007e);
+  block-size: var(--size);
+  inline-size: var(--size);
+  /* stroke: var(--primary, #9d007e); */
+}
+
+.btn-card-help-link span{
+  text-align: start;
 }
 
 /* Payment Currency Conversion Micro-Animation Card */

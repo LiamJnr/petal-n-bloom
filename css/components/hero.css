@@ -14,6 +14,12 @@
   border-bottom: 1px solid var(--border);
 }
 
+/* Halloween seasonal hero variant */
+.hero--halloween {
+  background-image: url('../../images/halloween-hero.webp');
+  background-position: center center;
+}
+
 /* Dark purple overlay for contrast */
 .hero::before {
   content: '';
@@ -22,6 +28,16 @@
   background: rgba(30, 8, 42, 0.52);
   z-index: 1;
   pointer-events: none;
+}
+
+/* Deeper, moodier overlay for Halloween */
+.hero--halloween::before {
+  background: linear-gradient(
+    110deg,
+    rgba(10, 2, 18, 0.72) 0%,
+    rgba(20, 4, 36, 0.58) 55%,
+    rgba(10, 2, 18, 0.25) 100%
+  );
 }
 
 .hero-container {
@@ -100,6 +116,46 @@
   background-color: var(--primary-hover);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(157, 0, 126, 0.25);
+}
+
+/* Halloween CTA button — warm amber-orange with glow */
+.btn-halloween {
+  background-color: #c94b00 !important;
+  letter-spacing: 0.02em;
+  box-shadow: 0 0 0 0 rgba(201, 75, 0, 0.45);
+  animation: halloweenPulse 2.8s ease-in-out infinite;
+}
+
+.btn-halloween:hover {
+  background-color: #e05500 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(201, 75, 0, 0.45) !important;
+  animation: none;
+}
+
+@keyframes halloweenPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 75, 0, 0.45); }
+  50%       { box-shadow: 0 0 0 8px rgba(201, 75, 0, 0); }
+}
+
+/* Ghost/secondary link in hero actions */
+.hero-ghost-link {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 240, 220, 0.85);
+  text-decoration: none;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid rgba(255, 220, 180, 0.35);
+  padding-bottom: 1px;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.hero-ghost-link:hover {
+  color: #ffcf8a;
+  border-color: rgba(255, 207, 138, 0.7);
 }
 
 /* Trust Pillars Infinite Scrolling Strip */

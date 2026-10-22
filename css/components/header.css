@@ -56,6 +56,29 @@
   color: #ffffff;
 }
 
+/* Halloween Theme Modifier for Announcement Bar */
+.announcement-bar--halloween {
+  background-color: #150a1c;
+  border-bottom: 1px solid rgba(220, 90, 0, 0.35);
+}
+
+.announcement-bar--halloween .announcement-inner {
+  justify-content: center;
+}
+
+.announcement-bar--halloween .announcement-promo a {
+  color: #ff9f43;
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 159, 67, 0.5);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.announcement-bar--halloween .announcement-promo a:hover {
+  color: #ffb775;
+  border-color: #ffb775;
+}
+
 /* Site Header */
 .site-header {
   position: sticky;

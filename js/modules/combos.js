@@ -1,4 +1,4 @@
-import { getGiftCombosForGrid, getHomepageComboBanner, getProductBySlug } from "../data/products.js";
+import { getGiftCombosForGrid, getProductBySlug } from "../data/products.js";
 import { isInWishlist, toggleWishlist } from "./wishlist.js";
 import { navigateToShop } from "./router.js";
 
@@ -155,10 +155,8 @@ export function renderCombosGrid() {
 
 function renderHomepageComboBanner() {
   const container = document.getElementById("ghana-gift-banner");
-  const combo = getHomepageComboBanner();
-  if (!container || !combo) return;
+  if (!container) return;
 
-  const price = combo.sizes.find(size => size.default)?.price ?? combo.sizes[0].price;
   container.innerHTML = `
     <section class="ghana-gift-banner" aria-labelledby="ghana-gift-banner-title">
       <div class="container ghana-gift-banner-container">

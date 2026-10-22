@@ -3,8 +3,6 @@ export const KINGSBITE_FREE_DELIVERY_THRESHOLD_USD = 40
 export const KINGSBITE_QUALIFYING_SLUGS = [
   'kingsbite-medium-pack',
   'kingsbite-deluxe-duo',
-  'combo-kingsbite-roses',
-  'combo-kingsbite-celebration',
 ]
 
 export function isKingsbiteItem(item) {

@@ -130,6 +130,47 @@ export const PRODUCTS = [
     ]
   },
   {
+    id: "ember-and-ash",
+    slug: "ember-and-ash",
+    name: "Ember & Ash",
+    subtitle: "Splatter Obsidian & Fire-Kissed Orange Roses",
+    category: "bouquet",
+    occasion: "Halloween & Autumn",
+    tag: "",
+    featured: true,
+    rating: 4.9,
+    reviewCount: 52,
+    images: {
+      primary: "images/ember-and-ash.webp",
+      gallery: [
+        "images/ember-and-ash.webp",
+        "images/ember-and-ash-1.webp"
+      ]
+    },
+    shortDescription: "A mesmerizing dance of inky black roses flecked with flame and vivid pumpkin blooms kissed with ash.",
+    description: "Channeling the hypnotic beauty of a midnight bonfire, Ember & Ash pairs velvety black roses with electric pumpkin orange blooms—each petal uniquely detailed with fine contrasting flecks. Bold, warm, and theatrical, this arrangement is the ultimate tribute to Halloween night.",
+    stems: [
+      { name: "Fire-Speckled Black Roses", count: 8 },
+      { name: "Charcoal-Flecked Pumpkin Orange Roses", count: 8 },
+      { name: "Midnight Garden Foliage", count: 4 }
+    ],
+    careGuide: [
+      "Trim stems at a 45-degree angle under cool running water before placing in vase.",
+      "Keep water clear and clean with floral food, refreshing every 2 days.",
+      "Display away from direct sunlight and heat registers to preserve bloom vibrancy."
+    ],
+    sizes: [
+      { id: "standard", name: "Standard", stems: "12-14 stems", price: 19, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "18-20 stems", price: 23, default: false },
+      { id: "premium", name: "Premium", stems: "24-26 stems", price: 26, default: false }
+    ],
+    vases: [
+      { id: "none", name: "Matte Flame Kraft Wrap", price: 0 },
+      { id: "glass", name: "Fluted Clear Glass Vase", price: 14 },
+      { id: "ceramic", name: "Textured White Ceramic Vase", price: 24 }
+    ]
+  },
+  {
     id: "blue-white-bouquets",
     slug: "blue-white-bouquets",
     name: "Blue White Bouquets",
@@ -738,51 +779,6 @@ export const PRODUCTS = [
     ],
     vases: [
       { id: "none", name: "Signature Rose Wrap", price: 0 }
-    ]
-  },
-  {
-    id: "combo-kingsbite-roses",
-    slug: "combo-kingsbite-roses",
-    name: "Roses & Kingsbite Gift Pack",
-    subtitle: "Classic Dozen Roses + Medium Kingsbite Chocolate Pack",
-    category: "combo",
-    isCombo: true,
-    homepagePlacement: "banner",
-    occasion: "Everyday",
-    tag: "Ghana Gift Pick",
-    featured: true,
-    rating: 4.9,
-    reviewCount: 28,
-    comboSavings: 4,
-    originalPrice: 32,
-    comboItems: [
-      { slug: "classic-dozen-roses", sizeId: "standard", vaseId: "none" },
-      { slug: "kingsbite-medium-pack", sizeId: "standard", vaseId: "none" }
-    ],
-    comboIncludes: [
-      "Classic Dozen Red Roses",
-      "Medium Kingsbite Chocolate Pack",
-      "Complimentary Gift Card"
-    ],
-    images: {
-      primary: "images/kingsbite.webp",
-      gallery: ["images/kingsbite.webp", "images/dozen-roses.webp"]
-    },
-    shortDescription: "A simple, generous gift: a dozen fresh roses with a medium Kingsbite chocolate pack.",
-    description: "A thoughtful Ghanaian gift pairing for everyday celebrations. Twelve fresh red roses arrive hand-tied in our signature wrap alongside a medium Kingsbite chocolate pack and a complimentary gift card.",
-    stems: [
-      { name: "Fresh Red Roses", count: 12 },
-      { name: "Medium Kingsbite Chocolate Pack", count: 1 }
-    ],
-    careGuide: [
-      "Trim rose stems at a 45-degree angle and refresh water every two days.",
-      "Store chocolate in a cool, dry place away from direct sunlight."
-    ],
-    sizes: [
-      { id: "standard", name: "Complete Gift Pack (Save $4)", stems: "12 Roses + Medium Kingsbite", price: 28, default: true }
-    ],
-    vases: [
-      { id: "none", name: "Signature Gift Wrap", price: 0 }
     ]
   },
   {

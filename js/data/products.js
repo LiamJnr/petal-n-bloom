@@ -5,6 +5,131 @@
 
 export const PRODUCTS = [
   {
+    id: "covens-whisper",
+    slug: "covens-whisper",
+    name: "Coven's Whisper",
+    subtitle: "Gothic Black Velvet Blooms",
+    category: "bouquet",
+    occasion: "Halloween & Autumn",
+    tag: "",
+    featured: true,
+    rating: 4.9,
+    reviewCount: 42,
+    images: {
+      primary: "images/covens-whisper.webp",
+      gallery: [
+        "images/covens-whisper.webp",
+        "images/covens-whisper-1.webp"
+      ]
+    },
+    shortDescription: "An alluring, mysterious bouquet of dark velvet roses with smoldering garnet undertones, hand-arranged for the spooky season.",
+    description: "Cast a spell with a bouquet born from the shadows. Each rose in Coven's Whisper is selected for its near-black outer petals and rich blood-red center, creating an enchanting centerpiece for the Halloween season. Arranged in a dense, velvety dome that evokes dark romance and gothic luxury.",
+    stems: [
+      { name: "Black Baccara Velvet Roses", count: 12 },
+      { name: "Midnight Crimson Spray Roses", count: 6 },
+      { name: "Dark Italian Ruscus Foliage", count: 4 }
+    ],
+    careGuide: [
+      "Trim stems at a 45-degree angle under cool running water before placing in vase.",
+      "Keep in cool room temperatures away from direct heat to preserve the deep velvet petal texture.",
+      "Replenish with fresh cold water daily."
+    ],
+    sizes: [
+      { id: "standard", name: "Standard", stems: "12-14 stems", price: 20, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "18-20 stems", price: 24, default: false },
+      { id: "premium", name: "Premium", stems: "24-26 stems", price: 26, default: false }
+    ],
+    vases: [
+      { id: "none", name: "Midnight Matte Wrap", price: 0 },
+      { id: "glass", name: "Fluted Smoked Glass Vase", price: 14 },
+      { id: "ceramic", name: "Textured White Ceramic Vase", price: 24 }
+    ]
+  },
+  {
+    id: "witches-brew",
+    slug: "witches-brew",
+    name: "Witches' Brew",
+    subtitle: "Midnight Plum Mums, Pumpkin Sprays & Black Thistle",
+    category: "bouquet",
+    occasion: "Halloween & Autumn",
+    tag: "",
+    featured: true,
+    rating: 4.9,
+    reviewCount: 38,
+    images: {
+      primary: "images/witches-brew.webp",
+      gallery: [
+        "images/witches-brew.webp"
+      ]
+    },
+    shortDescription: "An intoxicating potion of plum spider mums, pumpkin orange spray roses, and inky sea holly thistles.",
+    description: "Stir up something magical this season. Witches' Brew is an exuberant collision of deep plum disbud chrysanthemums, bright tangerine spray roses, ruffled magenta garden roses, and dramatic black-tinted eryngium thistles. Richly textured and unapologetically bold, it brings enchanting theatricality to any Halloween gathering.",
+    stems: [
+      { name: "Plum Spider Chrysanthemums", count: 4 },
+      { name: "Pumpkin Orange Spray Roses", count: 6 },
+      { name: "Black Sea Holly Thistles (Eryngium)", count: 5 },
+      { name: "Ruffled Magenta Garden Roses", count: 4 },
+      { name: "Lavender Stock & Eucalyptus", count: 4 }
+    ],
+    careGuide: [
+      "Trim stems at a 45-degree angle under cool running water before placing in vase.",
+      "Replenish with cold, clean water every 2 days to keep the chrysanthemums and thistles crisp.",
+      "Display away from heat sources and direct drafts."
+    ],
+    sizes: [
+      { id: "standard", name: "Standard", stems: "14-16 stems", price: 21, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "20-22 stems", price: 24, default: false },
+      { id: "premium", name: "Premium", stems: "28-30 stems", price: 26, default: false }
+    ],
+    vases: [
+      { id: "none", name: "Kraft Autumn Wrap", price: 0 },
+      { id: "glass", name: "Fluted Clear Glass Vase", price: 14 },
+      { id: "ceramic", name: "Artisan Matte Ceramic Pot", price: 24 }
+    ]
+  },
+  {
+    id: "phantoms-masquerade",
+    slug: "phantoms-masquerade",
+    name: "Phantom's Masquerade",
+    subtitle: "Obsidian Roses, Ghost Anemones & Blackberry Scabiosa",
+    category: "bouquet",
+    occasion: "Halloween & Autumn",
+    tag: "",
+    featured: true,
+    rating: 4.9,
+    reviewCount: 46,
+    images: {
+      primary: "images/phantoms-masquerade.webp",
+      gallery: [
+        "images/phantoms-masquerade.webp",
+        "images/phantoms-masquerade-1.webp"
+      ]
+    },
+    shortDescription: "A dramatic contrast of inky black roses, dark-eyed ghost anemones, and deep blackberry scabiosa.",
+    description: "Echoing the mystery of a midnight masquerade, this stunning monochromatic design pairs velvety jet-black roses with pale ghost anemones and deep burgundy scabiosa. High-contrast and undeniably chic, it brings an air of haunting, high-fashion romance to Halloween decor.",
+    stems: [
+      { name: "Jet Black Velvet Roses", count: 8 },
+      { name: "Ghost White Dark-Eyed Anemones", count: 6 },
+      { name: "Blackberry Scabiosa Pincushions", count: 5 },
+      { name: "Parvifolia Eucalyptus Greens", count: 4 }
+    ],
+    careGuide: [
+      "Trim stems at a 45-degree angle under cool running water before placing in vase.",
+      "Anemones drink water quickly; check and top up the water reservoir daily.",
+      "Keep in a cool, draft-free spot away from direct heat to extend petal longevity."
+    ],
+    sizes: [
+      { id: "standard", name: "Standard", stems: "12-14 stems", price: 19, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "18-20 stems", price: 23, default: false },
+      { id: "premium", name: "Premium", stems: "26-28 stems", price: 26, default: false }
+    ],
+    vases: [
+      { id: "none", name: "Midnight Charcoal Wrap", price: 0 },
+      { id: "glass", name: "Fluted Smoked Glass Vase", price: 14 },
+      { id: "ceramic", name: "Textured White Ceramic Vase", price: 24 }
+    ]
+  },
+  {
     id: "blue-white-bouquets",
     slug: "blue-white-bouquets",
     name: "Blue White Bouquets",

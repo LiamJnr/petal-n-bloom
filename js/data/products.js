@@ -256,6 +256,46 @@ export const PRODUCTS = [
     ]
   },
   {
+    id: "blush-spray-roses",
+    slug: "blush-spray-roses",
+    name: "Blush Romance Spray Roses",
+    subtitle: "Pastel Pink Spray Roses, Ruffled Buds & Arching Grass",
+    category: "bouquet",
+    occasion: "Romantic",
+    tag: "Everyday Romance",
+    featured: true,
+    rating: 4.9,
+    reviewCount: 44,
+    images: {
+      primary: "images/blush-spray-roses.webp",
+      gallery: [
+        "images/blush-spray-roses.webp"
+      ]
+    },
+    shortDescription: "A delightful gathering of multi-headed pink spray roses and tender garden buds, wrapped in crisp white paper with a soft pink satin bow.",
+    description: "Delicate, feminine, and utterly charming. Each stem features a branching spray of petite pink roses in shades of rose quartz, blush, and candy pink. Accompanied by fine arching botanical grasses and wrapped in tailored white parchment with a satin ribbon, this bouquet brings effortless sweetness to bedside tables and romantic gestures.",
+    stems: [
+      { name: "Pastel Pink Multi-Bloom Spray Roses", count: 8 },
+      { name: "Tender Rosebud Accents", count: 6 },
+      { name: "Arching Botanical Grass Blades", count: 4 }
+    ],
+    careGuide: [
+      "Trim stems at a 45-degree angle under cool running water before placing in vase.",
+      "Remove any foliage below the waterline to keep water sparkling clean.",
+      "Spray roses are thirsty and long-lasting: top up cool water daily."
+    ],
+    sizes: [
+      { id: "standard", name: "Standard", stems: "14-16 rosebud blooms", price: 54, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "22-24 rosebud blooms", price: 74, default: false },
+      { id: "premium", name: "Premium", stems: "32-34 rosebud blooms", price: 98, default: false }
+    ],
+    vases: [
+      { id: "none", name: "Crisp White Vellum Wrap & Pink Satin Ribbon", price: 0 },
+      { id: "glass", name: "Fluted Clear Glass Vase", price: 14 },
+      { id: "ceramic", name: "Artisan Matte Ceramic Pot", price: 24 }
+    ]
+  },
+  {
     id: "casablanca-lilies",
     slug: "casablanca-lilies",
     name: "Casablanca Imperial Lilies",
@@ -295,6 +335,85 @@ export const PRODUCTS = [
       { id: "none", name: "Beige Kraft Wrap & Silk Ribbon", price: 0 },
       { id: "glass", name: "Fluted Clear Glass Vase", price: 14 },
       { id: "ceramic", name: "Artisan Matte Ceramic Pot", price: 24 }
+    ]
+  },
+  {
+    id: "oceanic-lily-cloud",
+    slug: "oceanic-lily-cloud",
+    name: "Oceanic Lily Cloud",
+    subtitle: "Vibrant Cobalt Lilies, Misty Baby’s Breath & Silver Eucalyptus",
+    category: "luxury",
+    occasion: "Celebrations",
+    tag: "Rare Botanical",
+    featured: true,
+    rating: 5.0,
+    reviewCount: 28,
+    images: {
+      primary: "images/oceanic-lily-cloud.webp",
+      gallery: [
+        "images/oceanic-lily-cloud.webp"
+      ]
+    },
+    shortDescription: "An extraordinary statement bouquet featuring radiant sapphire-tinted lilies nestled in a cloud of delicate baby’s breath and fresh eucalyptus.",
+    description: "Ethereal, dramatic, and captivating. Hand-selected oriental lilies are infused with deep cobalt hues, revealing velvety blue petals that open alongside upright sculpted buds. Encircled by a frothy sea of million-star gypsophila and fragrant blue-grey eucalyptus, this striking design is wrapped in layered architectural white paper and bound with a sapphire silk bow.",
+    stems: [
+      { name: "Grand Sapphire Blue Lilies", count: 6 },
+      { name: "Misty White Million-Star Gypsophila", count: 8 },
+      { name: "Silver Spiral Eucalyptus", count: 4 }
+    ],
+    careGuide: [
+      "Trim stems 1 inch at a 45-degree angle under cool running water before placing in vase.",
+      "Gently remove pollen anthers as buds open to preserve the deep blue petals.",
+      "Lilies and eucalyptus are thirsty: change vase water and rinse stems every 2 days."
+    ],
+    sizes: [
+      { id: "standard", name: "Standard", stems: "14-16 blooms & stems", price: 85, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "20-22 blooms & stems", price: 115, default: false },
+      { id: "premium", name: "Premium", stems: "28-30 blooms & stems", price: 155, default: false }
+    ],
+    vases: [
+      { id: "none", name: "Origami Pleated Cloud Wrap & Sapphire Ribbon", price: 0 },
+      { id: "glass", name: "Fluted Clear Glass Vase", price: 14 },
+      { id: "ceramic", name: "Textured White Ceramic Vase", price: 24 }
+    ]
+  },
+  {
+    id: "cerulean-mirage-roses",
+    slug: "cerulean-mirage-roses",
+    name: "Cerulean Mirage Roses",
+    subtitle: "Reflexed Royal Blue Garden Roses in Sculptural White Wrap",
+    category: "luxury",
+    occasion: "Romantic",
+    tag: "Avant-Garde Chic",
+    featured: true,
+    rating: 5.0,
+    reviewCount: 32,
+    images: {
+      primary: "images/cerulean-mirage-roses.webp",
+      gallery: [
+        "images/cerulean-mirage-roses.webp"
+      ]
+    },
+    shortDescription: "Surreal electric blue garden roses with hand-reflexed petals, presented in a sculptural Korean-style architectural white wrap.",
+    description: "A contemporary masterpiece of floral design. Sourced for their velvety texture, these extraordinary royal blue garden roses are individually reflexed by hand to unveil their full bloom architecture. Framed by sweeping layers of matte white editorial paper and tied with a minimalist cord, this arrangement is an unforgettable tribute to rare beauty and modern design.",
+    stems: [
+      { name: "Hand-Reflexed Royal Blue Garden Roses", count: 8 },
+      { name: "Deep Emerald Foliage Accents", count: 4 }
+    ],
+    careGuide: [
+      "Trim stems at a 45-degree angle under cold running water before placing in vase.",
+      "Reflexed roses absorb water quickly; keep vase filled with fresh, chilled water.",
+      "Display in a cool space away from direct heat to preserve petal firmness and vibrant color."
+    ],
+    sizes: [
+      { id: "standard", name: "Standard", stems: "6-8 reflexed stems", price: 44, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "12-14 reflexed stems", price: 64, default: false },
+      { id: "premium", name: "Premium", stems: "18-20 reflexed stems", price: 88, default: false }
+    ],
+    vases: [
+      { id: "none", name: "Sculptural White Atelier Wrap & Minimalist Cord", price: 0 },
+      { id: "glass", name: "Fluted Smoked Glass Vase", price: 14 },
+      { id: "ceramic", name: "Textured White Ceramic Vase", price: 24 }
     ]
   },
   {
@@ -779,6 +898,46 @@ export const PRODUCTS = [
     ],
     vases: [
       { id: "none", name: "Signature Rose Wrap", price: 0 }
+    ]
+  },
+  {
+    id: "midnight-iris",
+    slug: "midnight-iris",
+    name: "Midnight Iris & Snow Tulips",
+    subtitle: "Vibrant Violet Dutch Irises & Crisp White Tulips",
+    category: "bouquet",
+    occasion: "Celebrations",
+    tag: "Editorial Chic",
+    featured: true,
+    rating: 4.9,
+    reviewCount: 36,
+    images: {
+      primary: "images/midnight-iris.webp",
+      gallery: [
+        "images/midnight-iris.webp"
+      ]
+    },
+    shortDescription: "A high-fashion monochromatic study pairing velvety violet Dutch irises with crystalline white tulips, wrapped in architectural matte obsidian paper.",
+    description: "Striking, bold, and unapologetically modern. Inspired by contemporary East Asian floral artistry, this arrangement sets brilliant violet-blue Dutch irises with golden throats against pure white Dutch tulips. Accented with arching lines of lily grass and framed in structured matte black wrap with tailored grosgrain ribbon, it makes an unforgettable artistic statement.",
+    stems: [
+      { name: "Royal Violet Dutch Irises", count: 8 },
+      { name: "Pure White Dutch Tulips", count: 8 },
+      { name: "Architectural Lily Grass Spines", count: 5 }
+    ],
+    careGuide: [
+      "Cut stems at a 45-degree angle under cool running water before placing in a clean vase.",
+      "Both irises and tulips thrive in cold water; refresh with chilled water every 1 to 2 days.",
+      "Keep in a cool spot away from direct sunlight and heat sources to extend bloom life."
+    ],
+    sizes: [
+      { id: "standard", name: "Standard", stems: "14-16 stems", price: 68, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "22-24 stems", price: 88, default: false },
+      { id: "premium", name: "Premium", stems: "32-34 stems", price: 128, default: false }
+    ],
+    vases: [
+      { id: "none", name: "Matte Obsidian Architectural Wrap", price: 0 },
+      { id: "glass", name: "Fluted Smoked Glass Vase", price: 14 },
+      { id: "ceramic", name: "Textured White Ceramic Vase", price: 24 }
     ]
   },
   {

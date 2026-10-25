@@ -13,6 +13,8 @@ let activeOccasion = "all";
 let activePriceRange = "all";
 let activeSearchQuery = "";
 let activeSort = "bestseller";
+let currentPage = 1;
+export const ITEMS_PER_PAGE = 12;
 
 let productClickHandler = null;
 let quickAddHandler = null;
@@ -37,6 +39,7 @@ export function initShop({ onProductClick, onQuickAdd }) {
         categoryPills.forEach(btn => btn.classList.remove("active"));
         button.classList.add("active");
         activeCategory = button.dataset.category || "all";
+        currentPage = 1;
         updateShopUrlParams();
         renderShopGrid();
       });
@@ -45,6 +48,7 @@ export function initShop({ onProductClick, onQuickAdd }) {
     // 2. Occasion dropdown
     occasionSelect?.addEventListener("change", (e) => {
       activeOccasion = e.target.value;
+      currentPage = 1;
       updateShopUrlParams();
       renderShopGrid();
     });
@@ -55,6 +59,7 @@ export function initShop({ onProductClick, onQuickAdd }) {
         pricePills.forEach(btn => btn.classList.remove("active"));
         button.classList.add("active");
         activePriceRange = button.dataset.price || "all";
+        currentPage = 1;
         renderShopGrid();
       });
     });
@@ -62,6 +67,7 @@ export function initShop({ onProductClick, onQuickAdd }) {
     // 4. Sort dropdown
     sortSelect?.addEventListener("change", (e) => {
       activeSort = e.target.value;
+      currentPage = 1;
       updateShopUrlParams();
       renderShopGrid();
     });
@@ -76,6 +82,7 @@ export function initShop({ onProductClick, onQuickAdd }) {
       clearTimeout(searchDebounceTimer);
       searchDebounceTimer = setTimeout(() => {
         activeSearchQuery = query;
+        currentPage = 1;
         updateShopUrlParams();
         renderShopGrid();
       }, 200);
@@ -86,6 +93,7 @@ export function initShop({ onProductClick, onQuickAdd }) {
         searchInput.value = "";
         searchClearBtn.classList.remove("visible");
         activeSearchQuery = "";
+        currentPage = 1;
         updateShopUrlParams();
         renderShopGrid();
         searchInput.focus();
@@ -214,11 +222,15 @@ export function renderShop(filters = {}) {
   if (filters.occasion) activeOccasion = filters.occasion;
   if (filters.search) activeSearchQuery = filters.search;
   if (filters.sort) activeSort = filters.sort;
+  if (filters.page) {
+    const p = parseInt(filters.page, 10);
+    if (!isNaN(p) && p > 0) currentPage = p;
+  }
 
   // Sync controls in the DOM
   syncControlElements();
 
-  // Render cards and chips
+  // Render cards, pagination, and chips
   renderShopGrid();
 }
 
@@ -260,20 +272,39 @@ function syncControlElements() {
 }
 
 /**
- * Render active filter chips and product grid
+ * Render active filter chips, paginated product grid, and pagination bar
  */
 export function renderShopGrid() {
   const grid = document.getElementById("shop-product-grid");
   const countEl = document.getElementById("shop-catalog-count");
   const chipsContainer = document.getElementById("shop-active-chips");
+  const paginationContainer = document.getElementById("shop-pagination");
 
   if (!grid) return;
 
   const items = getFilteredShopProducts();
+  const totalItems = items.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
 
-  // 1. Update count badge
+  // Keep currentPage within valid bounds
+  if (currentPage > totalPages) {
+    currentPage = totalPages;
+  }
+  if (currentPage < 1) {
+    currentPage = 1;
+  }
+
+  // 1. Update count badge with clear pagination context
   if (countEl) {
-    countEl.textContent = `${items.length} flower arrangement${items.length === 1 ? "" : "s"} found`;
+    if (totalItems === 0) {
+      countEl.textContent = "0 flower arrangements found";
+    } else if (totalPages === 1) {
+      countEl.textContent = `${totalItems} flower arrangement${totalItems === 1 ? "" : "s"} found`;
+    } else {
+      const startIndex = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+      const endIndex = Math.min(currentPage * ITEMS_PER_PAGE, totalItems);
+      countEl.textContent = `Showing ${startIndex}–${endIndex} of ${totalItems} arrangements (Page ${currentPage} of ${totalPages})`;
+    }
   }
 
   // 2. Render Active Filter Chips
@@ -287,6 +318,7 @@ export function renderShopGrid() {
         label: `Category: ${catLabel}`,
         onRemove: () => {
           activeCategory = "all";
+          currentPage = 1;
           syncControlElements();
           updateShopUrlParams();
           renderShopGrid();
@@ -300,6 +332,7 @@ export function renderShopGrid() {
         label: `Occasion: ${activeOccasion}`,
         onRemove: () => {
           activeOccasion = "all";
+          currentPage = 1;
           syncControlElements();
           updateShopUrlParams();
           renderShopGrid();
@@ -319,6 +352,7 @@ export function renderShopGrid() {
         label: `Price: ${priceLabels[activePriceRange] || activePriceRange}`,
         onRemove: () => {
           activePriceRange = "all";
+          currentPage = 1;
           syncControlElements();
           renderShopGrid();
         }
@@ -331,6 +365,7 @@ export function renderShopGrid() {
         label: `Search: "${activeSearchQuery}"`,
         onRemove: () => {
           activeSearchQuery = "";
+          currentPage = 1;
           syncControlElements();
           updateShopUrlParams();
           renderShopGrid();
@@ -369,7 +404,7 @@ export function renderShopGrid() {
   }
 
   // 3. Empty State
-  if (items.length === 0) {
+  if (totalItems === 0) {
     grid.innerHTML = `
       <div class="catalog-empty shop-empty-state">
         <div class="catalog-empty-icon">${ICONS.flower}</div>
@@ -379,14 +414,22 @@ export function renderShopGrid() {
       </div>
     `;
 
+    if (paginationContainer) {
+      paginationContainer.innerHTML = "";
+    }
+
     document.getElementById("btn-empty-reset-shop")?.addEventListener("click", () => {
       resetShopFilters();
     });
     return;
   }
 
-  // 4. Render Product Cards
-  grid.innerHTML = items.map(product => {
+  // 4. Paginate items for current view
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const pageItems = items.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  // 5. Render Product Cards for the current page
+  grid.innerHTML = pageItems.map(product => {
     const minPrice = Math.min(...product.sizes.map(s => s.price));
     const isSaved = isInWishlist(product.slug);
     const ratingDisplay = (product.rating || 4.8).toFixed(1);
@@ -435,7 +478,10 @@ export function renderShopGrid() {
     `;
   }).join("");
 
-  // Render Recently Viewed Products Strip in Shop view
+  // 6. Render Pagination Navigation
+  renderPagination(paginationContainer, totalPages);
+
+  // 7. Render Recently Viewed Products Strip in Shop view
   renderRecentlyViewed({
     containerId: "shop-recently-viewed-container",
     onProductClick: (slug) => {
@@ -452,6 +498,125 @@ export function renderShopGrid() {
 }
 
 /**
+ * Render pagination controls beneath the shop grid
+ */
+function renderPagination(container, totalPages) {
+  if (!container) return;
+
+  if (totalPages <= 1) {
+    container.innerHTML = "";
+    container.style.display = "none";
+    return;
+  }
+
+  container.style.display = "flex";
+
+  // Build page buttons range
+  const maxButtons = 5;
+  let startPage = Math.max(1, currentPage - 2);
+  let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+
+  if (endPage - startPage < maxButtons - 1) {
+    startPage = Math.max(1, endPage - maxButtons + 1);
+  }
+
+  let pagesHtml = "";
+
+  // First page + ellipsis if needed
+  if (startPage > 1) {
+    pagesHtml += `<button type="button" class="shop-page-btn" data-page="1">1</button>`;
+    if (startPage > 2) {
+      pagesHtml += `<span class="shop-page-ellipsis" aria-hidden="true">&hellip;</span>`;
+    }
+  }
+
+  // Visible page sequence
+  for (let p = startPage; p <= endPage; p++) {
+    const isCurrent = p === currentPage;
+    pagesHtml += `
+      <button 
+        type="button" 
+        class="shop-page-btn ${isCurrent ? 'active' : ''}" 
+        data-page="${p}"
+        aria-current="${isCurrent ? 'page' : 'false'}"
+        aria-label="Go to page ${p}"
+      >
+        ${p}
+      </button>
+    `;
+  }
+
+  // Last page + ellipsis if needed
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) {
+      pagesHtml += `<span class="shop-page-ellipsis" aria-hidden="true">&hellip;</span>`;
+    }
+    pagesHtml += `<button type="button" class="shop-page-btn" data-page="${totalPages}">${totalPages}</button>`;
+  }
+
+  container.innerHTML = `
+    <div class="shop-pagination-wrapper">
+      <button 
+        type="button" 
+        class="shop-pagination-nav shop-page-prev" 
+        data-page="${currentPage - 1}"
+        ${currentPage === 1 ? 'disabled aria-disabled="true"' : ''}
+        aria-label="Previous page of arrangements"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+        <span>Prev</span>
+      </button>
+
+      <div class="shop-pagination-numbers">
+        ${pagesHtml}
+      </div>
+
+      <button 
+        type="button" 
+        class="shop-pagination-nav shop-page-next" 
+        data-page="${currentPage + 1}"
+        ${currentPage === totalPages ? 'disabled aria-disabled="true"' : ''}
+        aria-label="Next page of arrangements"
+      >
+        <span>Next</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m9 18 6-6-6-6"/>
+        </svg>
+      </button>
+    </div>
+  `;
+
+  // Wire click events
+  container.querySelectorAll("button[data-page]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const targetPage = parseInt(btn.dataset.page, 10);
+      if (targetPage && targetPage !== currentPage && targetPage >= 1 && targetPage <= totalPages) {
+        goToShopPage(targetPage);
+      }
+    });
+  });
+}
+
+/**
+ * Navigate to a specific shop page with smooth scroll up to the grid top
+ */
+function goToShopPage(page) {
+  currentPage = page;
+  updateShopUrlParams();
+  renderShopGrid();
+
+  // Smooth scroll up so customer lands at top of catalog
+  const scrollTarget = document.querySelector(".shop-toolbar-card") || document.getElementById("shop-view");
+  if (scrollTarget) {
+    const yOffset = -24;
+    const y = scrollTarget.getBoundingClientRect().top + window.pageYOffset + yOffset;
+    window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+  }
+}
+
+/**
  * Reset all active shop filters back to default
  */
 export function resetShopFilters() {
@@ -460,6 +625,7 @@ export function resetShopFilters() {
   activePriceRange = "all";
   activeSearchQuery = "";
   activeSort = "bestseller";
+  currentPage = 1;
 
   syncControlElements();
   updateShopUrlParams();
@@ -471,6 +637,7 @@ export function resetShopFilters() {
  */
 export function setShopSearchQuery(query) {
   activeSearchQuery = query;
+  currentPage = 1;
   syncControlElements();
   updateShopUrlParams();
   renderShopGrid();
@@ -481,13 +648,14 @@ export function setShopSearchQuery(query) {
  */
 export function setShopCategory(category) {
   activeCategory = category;
+  currentPage = 1;
   syncControlElements();
   updateShopUrlParams();
   renderShopGrid();
 }
 
 /**
- * Synchronize current filter state to browser URL search params without triggering full page reload
+ * Synchronize current filter & pagination state to browser URL search params
  */
 function updateShopUrlParams() {
   const newUrl = new URL(window.location.href);
@@ -504,6 +672,9 @@ function updateShopUrlParams() {
 
   if (activeSort !== "bestseller") newUrl.searchParams.set("sort", activeSort);
   else newUrl.searchParams.delete("sort");
+
+  if (currentPage > 1) newUrl.searchParams.set("page", currentPage.toString());
+  else newUrl.searchParams.delete("page");
 
   window.history.replaceState({ view: "shop" }, "", newUrl.toString());
 }

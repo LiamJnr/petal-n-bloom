@@ -417,6 +417,45 @@ export const PRODUCTS = [
     ]
   },
   {
+    id: "serene-calla-spires",
+    slug: "serene-calla-spires",
+    name: "Serene Calla Spires",
+    subtitle: "Ivory Dutch Calla Lilies & Arching Grass in a Modern Glass Cube",
+    category: "luxury",
+    occasion: "Milestones & Corporate",
+    tag: "Architectural Minimalist",
+    featured: true,
+    rating: 5.0,
+    reviewCount: 38,
+    images: {
+      primary: "images/serene-calla-spires.webp",
+      gallery: [
+        "images/serene-calla-spires.webp"
+      ]
+    },
+    shortDescription: "Sleek, trumpet-shaped white calla lilies arranged in a tiered spiral with fine botanical grass, set in a contemporary clear glass cube.",
+    description: "The epitome of modern botanical sculpture. Prized for their clean lines and velvety ivory spathes, each Dutch calla lily is cut at staggered heights to create an organic vertical spiral. Accented with fine arching lily grass, nestled in a crystal-clear glass cube vase with architectural white wrap and finished with draped monochrome silk ribbons.",
+    stems: [
+      { name: "Dutch Alabaster Calla Lilies", count: 8 },
+      { name: "Architectural Lily Grass Tendrils", count: 4 },
+      { name: "Modern Clear Glass Cube Vase", count: 1 }
+    ],
+    careGuide: [
+      "Calla lilies have soft fleshy stems: trim 1/2 inch straight across (not diagonal).",
+      "Keep in shallow water (2–3 inches) to prevent stem waterlogging, refilling daily.",
+      "Display in bright, indirect light away from hot drafts to preserve crisp ivory petals."
+    ],
+    sizes: [
+      { id: "standard", name: "Standard", stems: "5-6 stems in Glass Cube", price: 32, default: true },
+      { id: "deluxe", name: "Deluxe", stems: "9-10 stems in Glass Cube", price: 52, default: false },
+      { id: "premium", name: "Premium", stems: "14-16 stems in Glass Cube", price: 78, default: false }
+    ],
+    vases: [
+      { id: "cube", name: "Modern Clear Glass Cube (Included)", price: 0 },
+      { id: "ceramic", name: "Artisan Matte Ceramic Pot", price: 24 }
+    ]
+  },
+  {
     id: "royal-orchid",
     slug: "royal-orchid",
     name: "Royal Phalaenopsis Orchid",
